@@ -1,0 +1,1737 @@
+{
+  "info": {
+    "name": "PicoClaw Launcher & Gateway",
+    "description": "OpenAPI-style import for the two HTTP services shipped with the PicoClaw launcher image. The `picoclaw-launcher` binary (default port 18800) proxies browser traffic to a managed `picoclaw gateway` subprocess (default port 18790). All launcher endpoints except the public auth + static assets require a session cookie set by POST /api/auth/login. The gateway exposes /health, /ready, /reload (bearer-token), and channel-specific webhook mounts (LINE, Pico). See docs/reference/api-reference.md for the full reference.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{pidfile_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "launcher_host",
+      "value": "http://localhost:18800",
+      "type": "string"
+    },
+    {
+      "key": "gateway_host",
+      "value": "http://localhost:18790",
+      "type": "string"
+    },
+    {
+      "key": "session_cookie",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pidfile_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "config_path",
+      "value": "~/.picoclaw/config.json",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Launcher API (port 18800)",
+      "description": "picoclaw-launcher web dashboard + API. Cookies/session required for every endpoint except the items in the \"Public\" subfolder.",
+      "item": [
+        {
+          "name": "Auth (public)",
+          "description": "No session cookie required. POST /api/auth/login sets the `picoclaw_launcher_auth` HttpOnly cookie automatically when status=200.",
+          "item": [
+            {
+              "name": "Get auth status",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/auth/status",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "status"
+                  ]
+                },
+                "description": "Returns `{\"authenticated\":bool,\"initialized\":bool}`. Use this to decide whether to render login or setup page."
+              }
+            },
+            {
+              "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const setCookie = pm.response.headers.get('Set-Cookie');",
+                      "if (setCookie) {",
+                      "  const m = setCookie.match(/picoclaw_launcher_auth=([^;]+)/);",
+                      "  if (m) pm.collectionVariables.set('session_cookie', m[1]);",
+                      "}",
+                      "pm.test('login ok', () => pm.response.code === 200);"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"password\": \"REPLACE_ME\"\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/auth/login",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ]
+                },
+                "description": "Body `{\"password\":\"…\"}`. Returns 200 `{\"status\":\"ok\"}` and sets the `picoclaw_launcher_auth` HttpOnly cookie. Also rate-limited per source IP."
+              }
+            },
+            {
+              "name": "Logout",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/auth/logout",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "logout"
+                  ]
+                },
+                "description": "Empty JSON body. Clears the session cookie."
+              }
+            },
+            {
+              "name": "Setup dashboard password",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Origin",
+                    "value": "{{launcher_host}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"password\": \"REPLACE_ME\",\n  \"confirm\": \"REPLACE_ME\"\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/auth/setup",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "setup"
+                  ]
+                },
+                "description": "First-run password creation. After init, requires an existing session (change-password flow). Cross-site requests blocked (matching Origin/Referer required)."
+              }
+            }
+          ]
+        },
+        {
+          "name": "System",
+          "item": [
+            {
+              "name": "Get version",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/system/version",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "system",
+                    "version"
+                  ]
+                },
+                "description": "Returns `{version,git_commit,build_time,go_version}` resolved from `picoclaw --version` if available, else launcher ldflags."
+              }
+            },
+            {
+              "name": "Get launcher config",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/system/launcher-config",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "system",
+                    "launcher-config"
+                  ]
+                },
+                "description": "Returns `{port,public,allowed_cidrs,allow_localhost_bypass,trusted_proxy_cidrs}`."
+              }
+            },
+            {
+              "name": "Update launcher config",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"port\": 18800,\n  \"public\": false,\n  \"allowed_cidrs\": [],\n  \"allow_localhost_bypass\": true,\n  \"trusted_proxy_cidrs\": []\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/system/launcher-config",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "system",
+                    "launcher-config"
+                  ]
+                },
+                "description": "Round-trips the launcher's persistent settings."
+              }
+            },
+            {
+              "name": "Get autostart status",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/system/autostart",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "system",
+                    "autostart"
+                  ]
+                },
+                "description": "Returns `{enabled,supported,platform,message}`."
+              }
+            },
+            {
+              "name": "Set autostart",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"enabled\": true\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/system/autostart",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "system",
+                    "autostart"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Self-update",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"url\": \"https://github.com/sipeed/picoclaw/releases/latest\",\n  \"binary\": \"picoclaw-launcher\"\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/update",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "update"
+                  ]
+                },
+                "description": "Shells out to the bundled updater to replace the launcher binary in place. Restart required after success."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Config",
+          "item": [
+            {
+              "name": "Get full config",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/config",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "config"
+                  ]
+                },
+                "description": "Returns the full `config.Config` JSON (gateway token masked in lists, secrets omitted)."
+              }
+            },
+            {
+              "name": "Replace full config",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"version\": 2,\n  \"agents\": {},\n  \"channels\": {},\n  \"model_list\": []\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/config",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "config"
+                  ]
+                },
+                "description": "Full replacement. Validates against `validateConfig`. Returns 400 `validation_error` with `errors` list on failure. Secret fields are preserved via `SecurityCopyFrom` + `applyConfigSecretsFromMap`."
+              }
+            },
+            {
+              "name": "Patch config (RFC 7396)",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"agents\": {\n    \"defaults\": {\n      \"model_name\": \"REPLACE_ME\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/config",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "config"
+                  ]
+                },
+                "description": "Partial update via JSON Merge Patch (RFC 7396). Only fields present in the body are updated."
+              }
+            },
+            {
+              "name": "Reset config to defaults",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/config/reset",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "config",
+                    "reset"
+                  ]
+                },
+                "description": "Preserves API keys/secrets. Restarts the gateway if it was running."
+              }
+            },
+            {
+              "name": "Test command patterns",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"allow_patterns\": [\"^ls\\b\", \"^git\\b\"],\n  \"deny_patterns\": [\"rm\\s+-rf\", \"sudo\\b\"],\n  \"command\": \"ls -la /tmp\"\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/config/test-command-patterns",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "config",
+                    "test-command-patterns"
+                  ]
+                },
+                "description": "Returns `{allowed,blocked,matched_whitelist?,matched_blacklist?}`."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Models",
+          "item": [
+            {
+              "name": "List models",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/models",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "models"
+                  ]
+                },
+                "description": "Returns `{models,total,default_model,provider_options}`. Each model has masked `api_key` (e.g. `sk-****abcd`)."
+              }
+            },
+            {
+              "name": "Fetch upstream models",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"provider\": \"openai\",\n  \"api_key\": \"REPLACE_ME\",\n  \"api_base\": \"https://api.openai.com/v1\",\n  \"model_index\": 0\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/models/fetch",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "models",
+                    "fetch"
+                  ]
+                },
+                "description": "Probes `/v1/models` (or `/api/tags` for Ollama, `/model/list` for `nearai`). Auto-saves to the per-provider catalog."
+              }
+            },
+            {
+              "name": "List catalogs",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/models/catalog",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "models",
+                    "catalog"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Delete catalog",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/models/catalog/REPLACE_CATALOG_ID",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "models",
+                    "catalog",
+                    "REPLACE_CATALOG_ID"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Add model",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"model_name\": \"\",\n  \"provider\": \"openai\",\n  \"model\": \"gpt-4o-mini\",\n  \"api_key\": \"REPLACE_ME\",\n  \"api_base\": \"https://api.openai.com/v1\",\n  \"enabled\": true,\n  \"rpm\": 0,\n  \"request_timeout\": 0,\n  \"streaming\": {\"enabled\": true}\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/models",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "models"
+                  ]
+                },
+                "description": "Appends a new model entry. Returns `{status,index}`."
+              }
+            },
+            {
+              "name": "Set default model",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"model_name\": \"REPLACE_ME\"\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/models/default",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "models",
+                    "default"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update model",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"model_name\": \"\",\n  \"provider\": \"openai\",\n  \"model\": \"gpt-4o-mini\",\n  \"api_key\": \"\",\n  \"api_base\": \"https://api.openai.com/v1\",\n  \"enabled\": true,\n  \"streaming\": {\"enabled\": true}\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/models/0",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "models",
+                    "0"
+                  ]
+                },
+                "description": "Preserves existing `api_key` when omitted. Send `{}` for `extra_body` or `custom_headers` to clear them."
+              }
+            },
+            {
+              "name": "Delete model",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/models/0",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "models",
+                    "0"
+                  ]
+                },
+                "description": "Clears `agents.defaults.model_name` if it was the default."
+              }
+            },
+            {
+              "name": "Test model at index",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/models/0/test",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "models",
+                    "0",
+                    "test"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Test inline model",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"provider\": \"openai\",\n  \"model\": \"gpt-4o-mini\",\n  \"api_key\": \"REPLACE_ME\",\n  \"api_base\": \"https://api.openai.com/v1\"\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/models/test-inline",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "models",
+                    "test-inline"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Channels",
+          "item": [
+            {
+              "name": "List channel catalog",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/channels/catalog",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "channels",
+                    "catalog"
+                  ]
+                },
+                "description": "Fixed catalog: weixin, telegram, discord, slack, feishu, dingtalk, line, qq, onebot, wecom, whatsapp (bridge), whatsapp_native (native), pico, maixcam, matrix, irc, mqtt."
+              }
+            },
+            {
+              "name": "Get channel config",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/channels/telegram/config",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "channels",
+                    "telegram",
+                    "config"
+                  ]
+                },
+                "description": "Returns `{config,configured_secrets,config_key,variant?}`. Secrets are stripped from `config`; only presence is reported in `configured_secrets`."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sessions",
+          "item": [
+            {
+              "name": "List sessions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/sessions",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "sessions"
+                  ]
+                },
+                "description": "Reads from `~/.picoclaw/sessions/` and legacy Pico session JSON/JSONL files."
+              }
+            },
+            {
+              "name": "Get session",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/sessions/REPLACE_SESSION_ID",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "sessions",
+                    "REPLACE_SESSION_ID"
+                  ]
+                },
+                "description": "Returns `{id,title,created,updated,messages[]}`."
+              }
+            },
+            {
+              "name": "Delete session",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/sessions/REPLACE_SESSION_ID",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "sessions",
+                    "REPLACE_SESSION_ID"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Skills",
+          "item": [
+            {
+              "name": "List skills",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/skills",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "skills"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get skill",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/skills/REPLACE_NAME",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "skills",
+                    "REPLACE_NAME"
+                  ]
+                },
+                "description": "Returns the skill metadata plus its full `content`."
+              }
+            },
+            {
+              "name": "Search skills",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/skills/search?q=weather&limit=20&offset=0",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "skills",
+                    "search"
+                  ],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "weather"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                },
+                "description": "Requires `tools.find_skills` enabled (400 otherwise). `limit` 1..50, `offset` >= 0."
+              }
+            },
+            {
+              "name": "Install skill",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"slug\": \"REPLACE_ME\",\n  \"registry\": \"github\",\n  \"version\": \"\",\n  \"force\": false\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/skills/install",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "skills",
+                    "install"
+                  ]
+                },
+                "description": "Requires `tools.install_skill` enabled."
+              }
+            },
+            {
+              "name": "Import skill (multipart)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "multipart/form-data"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "/path/to/skill.zip"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/skills/import",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "skills",
+                    "import"
+                  ]
+                },
+                "description": "Upload a workspace skill bundle (≤ 1 MiB)."
+              }
+            },
+            {
+              "name": "Delete skill",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/skills/REPLACE_NAME",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "skills",
+                    "REPLACE_NAME"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tools",
+          "item": [
+            {
+              "name": "List tools",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/tools",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tools"
+                  ]
+                },
+                "description": "Returns `{tools:[{name,description,category,config_key,status,reason_code?}]}`. status ∈ enabled|disabled|blocked."
+              }
+            },
+            {
+              "name": "Set tool state",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"enabled\": true\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/tools/web_search/state",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tools",
+                    "web_search",
+                    "state"
+                  ]
+                },
+                "description": "Enable/disable a tool by name. `name` matches the `name` field from /api/tools (e.g. web_search, cron, exec, mcp_discovery)."
+              }
+            },
+            {
+              "name": "Get web-search config",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/tools/web-search-config",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tools",
+                    "web-search-config"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update web-search config",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"provider\": \"tavily\",\n  \"prefer_native\": false,\n  \"proxy\": \"\",\n  \"settings\": {\n    \"tavily\": {\n      \"enabled\": true,\n      \"max_results\": 10,\n      \"api_key\": \"REPLACE_ME\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/tools/web-search-config",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "tools",
+                    "web-search-config"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "OAuth",
+          "item": [
+            {
+              "name": "List OAuth providers",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/oauth/providers",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "oauth",
+                    "providers"
+                  ]
+                },
+                "description": "Returns `{providers:[{provider,display_name,methods[],status,logged_in,...}]}`. `status` ∈ not_logged_in|connected|needs_refresh|expired."
+              }
+            },
+            {
+              "name": "OAuth login (token)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"provider\": \"openai\",\n  \"method\": \"token\",\n  \"token\": \"REPLACE_ME\"\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/oauth/login",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "oauth",
+                    "login"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "OAuth login (device_code)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"provider\": \"openai\",\n  \"method\": \"device_code\"\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/oauth/login",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "oauth",
+                    "login"
+                  ]
+                },
+                "description": "Returns `{flow_id,user_code,verify_url,interval,expires_at}`. Poll /api/oauth/flows/{id} until status is connected|expired|error."
+              }
+            },
+            {
+              "name": "OAuth login (browser/PKCE)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"provider\": \"openai\",\n  \"method\": \"browser\"\n}"
+                },
+                "url": {
+                  "raw": "{{launcher_host}}/api/oauth/login",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "oauth",
+                    "login"
+                  ]
+                },
+                "description": "Returns `{flow_id}` plus the authorize URL bits. Browser redirects to the IdP and then hits /oauth/callback."
+              }
+            },
+            {
+              "name": "Get OAuth flow",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/oauth/flows/REPLACE_FLOW_ID",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "oauth",
+                    "flows",
+                    "REPLACE_FLOW_ID"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Poll OAuth flow",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/oauth/flows/REPLACE_FLOW_ID/poll",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "oauth",
+                    "flows",
+                    "REPLACE_FLOW_ID",
+                    "poll"
+                  ]
+                },
+                "description": "For browser flows: exchanges the auth code here on callback."
+              }
+            },
+            {
+              "name": "OAuth logout",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/oauth/logout",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "oauth",
+                    "logout"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "OAuth callback (browser target)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/oauth/callback?code=REPLACE_ME&state=REPLACE_ME",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "oauth",
+                    "callback"
+                  ],
+                  "query": [
+                    {
+                      "key": "code",
+                      "value": "REPLACE_ME"
+                    },
+                    {
+                      "key": "state",
+                      "value": "REPLACE_ME"
+                    }
+                  ]
+                },
+                "description": "Browser redirect target for the `browser` flow. Completes the flow and redirects."
+              }
+            }
+          ]
+        },
+        {
+          "name": "WeChat (weixin) QR login",
+          "item": [
+            {
+              "name": "Start WeChat flow",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/weixin/flows",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "weixin",
+                    "flows"
+                  ]
+                },
+                "description": "Returns `{flow_id,status:\"wait\",qr_data_uri}` (data-URI PNG). TTL 5 min."
+              }
+            },
+            {
+              "name": "Poll WeChat flow",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/weixin/flows/REPLACE_FLOW_ID",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "weixin",
+                    "flows",
+                    "REPLACE_FLOW_ID"
+                  ]
+                },
+                "description": "status ∈ wait|scaned|confirmed|expired|error. On `confirmed`, the bot token + `ilink_bot_id` are saved into `channels.weixin` and the gateway is restarted if it was running."
+              }
+            }
+          ]
+        },
+        {
+          "name": "WeCom QR login",
+          "item": [
+            {
+              "name": "Start WeCom flow",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/wecom/flows",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "wecom",
+                    "flows"
+                  ]
+                },
+                "description": "Returns `{flow_id,status:\"wait\",qr_data_uri}` (data-URI PNG). TTL 5 min."
+              }
+            },
+            {
+              "name": "Poll WeCom flow",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/wecom/flows/REPLACE_FLOW_ID",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "wecom",
+                    "flows",
+                    "REPLACE_FLOW_ID"
+                  ]
+                },
+                "description": "status ∈ wait|scaned|confirmed|expired|error. On `confirmed`, the `bot_id` + `secret` are saved into `channels.wecom` and the gateway is restarted if it was running."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Gateway lifecycle",
+          "item": [
+            {
+              "name": "Get gateway status",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/gateway/status",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "gateway",
+                    "status"
+                  ]
+                },
+                "description": "Returns `{gateway_status,pid?,gateway_version?,boot_default_model?,config_default_model?,gateway_restart_required,gateway_start_allowed,gateway_start_reason?}`."
+              }
+            },
+            {
+              "name": "Get gateway logs",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/gateway/logs?log_offset=0&log_run_id=0",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "gateway",
+                    "logs"
+                  ],
+                  "query": [
+                    {
+                      "key": "log_offset",
+                      "value": "0"
+                    },
+                    {
+                      "key": "log_run_id",
+                      "value": "0"
+                    }
+                  ]
+                },
+                "description": "Ring buffer (200 lines) of stdout+stderr captured by the launcher. Pass back the previous `log_total`/`log_run_id` for incremental reads."
+              }
+            },
+            {
+              "name": "Clear gateway logs",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/gateway/logs/clear",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "gateway",
+                    "logs",
+                    "clear"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Start gateway",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/gateway/start",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "gateway",
+                    "start"
+                  ]
+                },
+                "description": "Returns 400 `precondition_failed` if no usable default model or credentials."
+              }
+            },
+            {
+              "name": "Stop gateway",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/gateway/stop",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "gateway",
+                    "stop"
+                  ]
+                },
+                "description": "SIGTERM, then SIGKILL after 3 s."
+              }
+            },
+            {
+              "name": "Restart gateway",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/gateway/restart",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "gateway",
+                    "restart"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Pico channel",
+          "item": [
+            {
+              "name": "Get Pico info",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/pico/info",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pico",
+                    "info"
+                  ]
+                },
+                "description": "Returns `{ws_url,enabled,configured}`. No secrets."
+              }
+            },
+            {
+              "name": "Setup Pico channel",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/pico/setup",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pico",
+                    "setup"
+                  ]
+                },
+                "description": "Idempotent: enables the Pico channel and generates a token if none exists."
+              }
+            },
+            {
+              "name": "Rotate Pico token",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/api/pico/token",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "api",
+                    "pico",
+                    "token"
+                  ]
+                },
+                "description": "Rotates the WebSocket token in-place."
+              }
+            },
+            {
+              "name": "Pico WebSocket proxy",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Upgrade",
+                    "value": "websocket"
+                  },
+                  {
+                    "key": "Connection",
+                    "value": "Upgrade"
+                  },
+                  {
+                    "key": "Sec-WebSocket-Version",
+                    "value": "13"
+                  }
+                ],
+                "url": {
+                  "raw": "{{launcher_host}}/pico/ws",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "pico",
+                    "ws"
+                  ]
+                },
+                "description": "WebSocket upgrade. The launcher injects the raw Pico token via `Sec-Websocket-Protocol: token.<pico-token>` on the upstream request. 401 when no session cookie."
+              }
+            },
+            {
+              "name": "Pico media proxy",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{launcher_host}}/pico/media/REPLACE_MEDIA_ID",
+                  "host": [
+                    "{{launcher_host}}"
+                  ],
+                  "path": [
+                    "pico",
+                    "media",
+                    "REPLACE_MEDIA_ID"
+                  ]
+                },
+                "description": "Proxied to the gateway with `Authorization: Bearer <pico-token>` injected. 503 when gateway is down, 403 when token is missing."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Gateway API (port 18790)",
+      "description": "picoclaw gateway runtime. The shared HTTP server is created by the channel manager and binds to `gateway.host:gateway.port` (default 127.0.0.1:18790). Bearer token for /reload comes from `~/.picoclaw/picoclaw.pid.json` (`token` field), generated at startup.",
+      "item": [
+        {
+          "name": "Health",
+          "item": [
+            {
+              "name": "GET /health",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gateway_host}}/health",
+                  "host": [
+                    "{{gateway_host}}"
+                  ],
+                  "path": [
+                    "health"
+                  ]
+                },
+                "description": "Liveness probe. Returns `{status:\"ok\",uptime,pid,checks}` with 5 s timeouts. Used by `Dockerfile.launcher` HEALTHCHECK."
+              }
+            },
+            {
+              "name": "GET /ready",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{gateway_host}}/ready",
+                  "host": [
+                    "{{gateway_host}}"
+                  ],
+                  "path": [
+                    "ready"
+                  ]
+                },
+                "description": "Readiness probe. 200 once `HealthServer.SetReady(true)` is flipped after services are up; 503 otherwise."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Config hot-reload",
+          "item": [
+            {
+              "name": "POST /reload",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{pidfile_token}}",
+                    "description": "Bearer token from ~/.picoclaw/picoclaw.pid.json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{gateway_host}}/reload",
+                  "host": [
+                    "{{gateway_host}}"
+                  ],
+                  "path": [
+                    "reload"
+                  ]
+                },
+                "description": "Returns `{status:\"reload triggered\"}` / 401 unauthorized / 405 method not allowed / 500 / 503 `reload not configured`. Refuses if the pidfile token is set and the bearer is missing/wrong."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Channel webhook receivers",
+          "description": "Only channels that implement `WebhookHandler` register routes on the shared gateway mux. Currently: LINE (HTTP webhook) and Pico (WebSocket + media).",
+          "item": [
+            {
+              "name": "POST /webhook/line",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Line-Signature",
+                    "value": "REPLACE_ME",
+                    "description": "HMAC-SHA256 of body with channels.line.channel_secret"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"destination\": \"REPLACE_ME\",\n  \"events\": []\n}"
+                },
+                "url": {
+                  "raw": "{{gateway_host}}/webhook/line",
+                  "host": [
+                    "{{gateway_host}}"
+                  ],
+                  "path": [
+                    "webhook",
+                    "line"
+                  ]
+                },
+                "description": "LINE Messaging API webhook. HMAC signature validated via line-bot-sdk-go. Body limit 1 MiB (oversize → 413, invalid signature → 403, parse errors → 400). On success returns 200 immediately and processes events in goroutines. Mount path is configurable via `channels.line.webhook_path`."
+              }
+            },
+            {
+              "name": "GET /pico/ws",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Upgrade",
+                    "value": "websocket"
+                  },
+                  {
+                    "key": "Connection",
+                    "value": "Upgrade"
+                  },
+                  {
+                    "key": "Sec-WebSocket-Version",
+                    "value": "13"
+                  },
+                  {
+                    "key": "Sec-Websocket-Protocol",
+                    "value": "token.REPLACE_ME",
+                    "description": "Subprotocol `token.<pico-token>` authenticates the WebSocket"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_host}}/pico/ws",
+                  "host": [
+                    "{{gateway_host}}"
+                  ],
+                  "path": [
+                    "pico",
+                    "ws"
+                  ]
+                },
+                "description": "Pico channel WebSocket. Authenticated via `Sec-Websocket-Protocol: token.<pico-token>`."
+              }
+            },
+            {
+              "name": "GET /pico/media/{id}",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer REPLACE_ME",
+                    "description": "Bearer pico token (managed by the launcher; clients read it via /api/pico/info)"
+                  }
+                ],
+                "url": {
+                  "raw": "{{gateway_host}}/pico/media/REPLACE_MEDIA_ID",
+                  "host": [
+                    "{{gateway_host}}"
+                  ],
+                  "path": [
+                    "pico",
+                    "media",
+                    "REPLACE_MEDIA_ID"
+                  ]
+                },
+                "description": "Cached media downloads. 404 for unknown IDs."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
