@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: agentplatform
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d agentplatform"
+          --health-interval 2s --health-timeout 2s --health-retries 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install API package
+        run: pip install -e "apps/api[dev]"
+      - name: Lint
+        run: ruff check apps/api
+      - name: Run migrations
+        run: python db/migrate.py
+      - name: Two-tenant RLS leakage suite
+        working-directory: apps/api
+        run: python -m pytest -q
