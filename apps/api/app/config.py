@@ -13,6 +13,11 @@ class Settings(BaseSettings):
     # Dev-only HS256 secret; prod uses the IdP's JWKS (Phase 0 stub).
     jwt_secret: str = "dev-secret-change-me"
     jwt_algorithm: str = "HS256"
+    # Browser origins allowed to call the API (comma-separated in AP_CORS_ORIGINS).
+    cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    # OpenRouter (hosted LLM gateway). Key comes from Secret Manager in prod.
+    openrouter_api_key: str = ""
+    openrouter_base_url: str = "https://openrouter.ai/api/v1"
 
     model_config = {"env_prefix": "AP_"}
 
