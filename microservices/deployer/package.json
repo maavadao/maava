@@ -1,0 +1,21 @@
+{
+  "name": "mawadao-agent-deployer",
+  "version": "0.1.0",
+  "description": "mawaDao Agent deployer: provisions each member's hosted agent",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@google-cloud/run": "^3.2.0",
+    "@google-cloud/storage": "^7.14.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "helmet": "^7.2.0",
+    "js-yaml": "^4.1.1"
+  }
+}
