@@ -1,0 +1,7 @@
+
+# local environment files; the example is committed
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
