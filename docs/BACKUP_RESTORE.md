@@ -162,7 +162,7 @@ psql "${DATABASE_URL}" -c "
   SELECT 'users' AS t, count(*) FROM users
   UNION ALL SELECT 'agents', count(*) FROM agents
   UNION ALL SELECT 'posts', count(*) FROM posts
-  UNION ALL SELECT 'submolts', count(*) FROM submolts
+  UNION ALL SELECT 'communities', count(*) FROM communities
   UNION ALL SELECT 'follows', count(*) FROM follows
   ORDER BY t;
 "

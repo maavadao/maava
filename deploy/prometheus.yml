@@ -7,12 +7,12 @@ global:
 
 scrape_configs:
   # Configuration API — Prometheus-compatible /metrics endpoint
-  - job_name: "configuration-api"
+  - job_name: "mawadao-agent-api"
     metrics_path: /metrics
     static_configs:
       - targets: ["host.docker.internal:3003"]
         labels:
-          service: configuration-api
+          service: mawadao-agent-api
           environment: production
 
   # Auth service health (probe-style — check /health returns 200)
@@ -25,7 +25,7 @@ scrape_configs:
 
 
   # Cloud Run deployer health
-  - job_name: "cloud-run-deployer"
+  - job_name: "mawadao-agent-deployer"
     metrics_path: /health
     static_configs:
       - targets: ["host.docker.internal:3002"]

@@ -126,9 +126,9 @@ export function loadTest() {
     checkResponse(res, "agents");
   });
 
-  group("Submolts", () => {
-    const res = http.get(`${API}/submolts?sort=popular&limit=10`, { headers: authHeaders() });
-    checkResponse(res, "submolts");
+  group("Communities", () => {
+    const res = http.get(`${API}/communities?sort=popular&limit=10`, { headers: authHeaders() });
+    checkResponse(res, "communities");
   });
 
   group("Marketplace", () => {

@@ -43,17 +43,17 @@ The mawaDao platform currently relies on **11+ distinct polling loops** across 4
 
 | # | Location | Endpoint | Interval | Condition | Severity |
 |---|----------|----------|----------|-----------|----------|
-| P1 | `tenant-dashboard` chat | `/api/conversations/{id}/stream-status` | **1.5s** | `isStreamRecovery === true` | 🔴 Critical |
-| P2 | `tenant-dashboard` chat | `/api/conversations/{id}/stream-status` | **1.5s** (max 30s) | Post-stream DB sync | 🔴 Critical |
+| P1 | `mawadao-agent-dashboard` chat | `/api/conversations/{id}/stream-status` | **1.5s** | `isStreamRecovery === true` | 🔴 Critical |
+| P2 | `mawadao-agent-dashboard` chat | `/api/conversations/{id}/stream-status` | **1.5s** (max 30s) | Post-stream DB sync | 🔴 Critical |
 | P3 | `openclaw-ui` control panel | `/api/nodes` (gateway WS) | **5s** | Always when panel open | 🟡 Medium |
 | P4 | `openclaw-ui` control panel | `/api/logs` (gateway WS) | **2s** | `tab === "logs"` | 🟡 Medium |
 | P5 | `openclaw-ui` control panel | `/api/debug` (gateway WS) | **3s** | `tab === "debug"` | 🟡 Medium |
-| P6 | `tenant-dashboard` import modal | `/api/products/import-job/{id}` | **2s** | Job active | 🟠 High |
+| P6 | `mawadao-agent-dashboard` import modal | `/api/products/import-job/{id}` | **2s** | Job active | 🟠 High |
 | P7 | `mawadao-frontend` chat | `/api/setup/provision/status` | **15s** | During provisioning | 🟢 Low |
-| P8 | `tenant-dashboard` chat | `/api/backend-status` | On-demand | `IS_CLOUD` mode | 🟢 Low |
+| P8 | `mawadao-agent-dashboard` chat | `/api/backend-status` | On-demand | `IS_CLOUD` mode | 🟢 Low |
 | P9 | `mawadao-frontend` chat | `/api/conversations/{id}/stream-status` | **1.5s** | Stream recovery | 🔴 Critical |
 | P10 | `mawadao-frontend` chat | Provision animation | **2.5s** | Client-only timers | ⚪ N/A |
-| P11 | `tenant-dashboard` social accounts | OAuth callback check | **2–5s** | During OAuth flow | 🟢 Low |
+| P11 | `mawadao-agent-dashboard` social accounts | OAuth callback check | **2–5s** | During OAuth flow | 🟢 Low |
 
 ### 2.2 Stream Recovery Deep Dive (P1 + P2 — Highest Impact)
 
@@ -74,9 +74,9 @@ Browser refresh during AI stream → isStreamRecovery = true
 - Post-stream sync (P2) fires 20 additional polls after *every* chat response, even when content is already complete
 - No deduplication — multiple tabs = multiplied polls
 
-### 2.3 OpenClaw Control Panel Polling (P3–P5)
+### 2.3 mawaDao Agent Control Panel Polling (P3–P5)
 
-The OpenClaw UI already connects to the gateway via WebSocket (`openclaw-ws-chat.ts`), yet the control panel uses HTTP polling for nodes/logs/debug. The gateway's `broadcast()` function can push these events directly.
+The mawaDao Agent UI already connects to the gateway via WebSocket (`openclaw-ws-chat.ts`), yet the control panel uses HTTP polling for nodes/logs/debug. The gateway's `broadcast()` function can push these events directly.
 
 **Current waste:** A developer with the control panel open and logs tab active generates:
 - Nodes: 12 polls/min
@@ -199,7 +199,7 @@ graph TB
     subgraph "Browser"
         TD[Tenant Dashboard]
         BF[mawaDao Frontend]
-        OC[OpenClaw UI]
+        OC[mawaDao Agent UI]
     end
 
     subgraph "Next.js API Layer"
@@ -209,7 +209,7 @@ graph TB
         API_PS["/api/setup/provision/status"]
     end
 
-    subgraph "OpenClaw Gateway"
+    subgraph "mawaDao Agent Gateway"
         GW_WS["WS Server :19001"]
         GW_HTTP["HTTP Handlers"]
     end
@@ -249,7 +249,7 @@ graph TB
     subgraph "Browser"
         TD[Tenant Dashboard]
         BF[mawaDao Frontend]
-        OC[OpenClaw UI]
+        OC[mawaDao Agent UI]
         EB["EventBridge<br/>(shared lib)"]
     end
 
@@ -259,7 +259,7 @@ graph TB
         API_AI["/api/ai-chat (SSE stream)"]
     end
 
-    subgraph "OpenClaw Gateway"
+    subgraph "mawaDao Agent Gateway"
         GW_WS["WS Server :19001<br/>+ stream.status<br/>+ nodes.delta<br/>+ logs.append<br/>+ debug.update"]
     end
 
@@ -497,10 +497,10 @@ useEffect(() => unsub, []);
 |------|--------|
 | `gateway/src/gateway/server-methods/chat/` | Emit `stream.status` event when AI stream writes to buffer |
 | `gateway/src/gateway/server-runtime-state.ts` | Add `streamStatusSubscriptions` map to track which clients care about which conversations |
-| `tenant-dashboard/src/lib/openclaw-ws-chat.ts` | Add `subscribeStreamStatus(convId)` method |
-| `tenant-dashboard/src/components/chat/index.tsx` | Replace `setInterval(poll, 1500)` blocks with WS subscription |
+| `mawadao-agent-dashboard/src/lib/gateway-ws-chat.ts` | Add `subscribeStreamStatus(convId)` method |
+| `mawadao-agent-dashboard/src/components/chat/index.tsx` | Replace `setInterval(poll, 1500)` blocks with WS subscription |
 | `mawadao-frontend/src/components/chat/index.tsx` | Same replacement |
-| `tenant-dashboard/src/app/api/conversations/[id]/stream-status/route.ts` | Keep as fallback; add `Cache-Control: no-store` header |
+| `mawadao-agent-dashboard/src/app/api/conversations/[id]/stream-status/route.ts` | Keep as fallback; add `Cache-Control: no-store` header |
 
 **Feature flag:** `NEXT_PUBLIC_REALTIME_STREAM_STATUS=ws|poll` (default: `poll`)
 
@@ -514,13 +514,13 @@ useEffect(() => unsub, []);
 
 | File | Change |
 |------|--------|
-| `tenant-dashboard/src/app/api/products/import-job/[id]/events/route.ts` | **New** SSE endpoint using `pg_notify` listener |
-| `tenant-dashboard/src/components/import-market-modal.tsx` | Replace `setInterval(2000)` with `EventSource` connection |
+| `mawadao-agent-dashboard/src/app/api/products/import-job/[id]/events/route.ts` | **New** SSE endpoint using `pg_notify` listener |
+| `mawadao-agent-dashboard/src/components/import-market-modal.tsx` | Replace `setInterval(2000)` with `EventSource` connection |
 | Database migration | Add `NOTIFY` trigger on `import_jobs` table status updates |
 
 **Feature flag:** `NEXT_PUBLIC_REALTIME_IMPORT_SSE=true|false` (default: `false`)
 
-### Phase 3: OpenClaw Control Panel → WS Push (Medium Impact)
+### Phase 3: mawaDao Agent Control Panel → WS Push (Medium Impact)
 
 **Priority:** 🟡 Medium — eliminates 42 HTTP requests/min per developer
 
@@ -625,7 +625,7 @@ function useStreamRecovery(conversationId: string, userId: string) {
 // WS-based (new)
 function useWsStreamRecovery(conversationId: string) {
   const [recovering, setRecovering] = useState(false);
-  const wsChat = useOpenClawWsChat();
+  const wsChat = useGatewayWsChat();
 
   useEffect(() => {
     if (!recovering || !conversationId) return;
@@ -778,7 +778,7 @@ ORDER BY 1;
 **Symptoms:** 502/503 errors, high instance count, SSE connections timing out  
 **Check:**
 1. Cloud Run console → instance count, request count
-2. `gcloud run services describe tenant-dashboard --format='value(status.traffic)'`
+2. `gcloud run services describe mawadao-agent-dashboard --format='value(status.traffic)'`
 
 **Mitigate:**
 1. Flip feature flag: `NEXT_PUBLIC_REALTIME_IMPORT_SSE=false`
@@ -827,24 +827,24 @@ WS Push (Tier 1) ──fails──→ SSE (Tier 2) ──fails──→ Adaptive
 | `apps/microservices/openclaw-gateway/src/gateway/server-runtime-state.ts` | Add stream subscription tracking |
 | `apps/microservices/openclaw-gateway/src/gateway/server/ws-connection.ts` | Handle `stream.status.subscribe` requests |
 | `apps/microservices/openclaw-gateway/src/gateway/server-methods/` | Emit `stream.status` events during chat streaming |
-| `apps/frontend/tenant-dashboard/src/lib/openclaw-ws-chat.ts` | Add `subscribeStreamStatus()` |
-| `apps/frontend/tenant-dashboard/src/components/chat/index.tsx` | Replace polling with WS subscription |
+| `apps/frontend/mawadao-agent-dashboard/src/lib/gateway-ws-chat.ts` | Add `subscribeStreamStatus()` |
+| `apps/frontend/mawadao-agent-dashboard/src/components/chat/index.tsx` | Replace polling with WS subscription |
 | `apps/frontend/mawadao-frontend/src/components/chat/index.tsx` | Same |
-| `apps/frontend/tenant-dashboard/src/lib/feature-flags.ts` | **New** — feature flag utility |
+| `apps/frontend/mawadao-agent-dashboard/src/lib/feature-flags.ts` | **New** — feature flag utility |
 
 ### Phase 2 — Import Job SSE
 
 | File | Action |
 |------|--------|
-| `apps/frontend/tenant-dashboard/src/app/api/products/import-job/[id]/events/route.ts` | **New** — SSE endpoint |
-| `apps/frontend/tenant-dashboard/src/components/import-market-modal.tsx` | Replace polling with EventSource |
+| `apps/frontend/mawadao-agent-dashboard/src/app/api/products/import-job/[id]/events/route.ts` | **New** — SSE endpoint |
+| `apps/frontend/mawadao-agent-dashboard/src/components/import-market-modal.tsx` | Replace polling with EventSource |
 | Database migration | Add `NOTIFY` trigger |
 
 ### Phase 3 — Control Panel
 
 | File | Action |
 |------|--------|
-| `_mc-reference/frontend/src/ui/app-polling.ts` (OpenClaw UI) | Replace with WS subscriptions |
+| `_mc-reference/frontend/src/ui/app-polling.ts` (mawaDao Agent UI) | Replace with WS subscriptions |
 | Gateway server methods | Add node/log/debug push handlers |
 
 ### Phase 4 — Adaptive Polling

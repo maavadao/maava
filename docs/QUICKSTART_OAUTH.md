@@ -10,7 +10,7 @@
 - CORS middleware for frontend integration
 
 ✅ **Platform** (`mawadao/apps/platform/`)
-- OpenClaw Gateway + REST API backend
+- mawaDao Agent Gateway + REST API backend
 - REST API at `/api/v1` with 76+ endpoints
 - WebSocket Gateway for real-time agent sessions
 
@@ -86,7 +86,7 @@ cd mawadao/apps/microservices/auth
 go run ./cmd/
 
 # Terminal 3 - Configuration API
-cd mawadao/apps/microservices/configuration-api
+cd mawadao/apps/microservices/mawadao-agent-api
 node src/index.js
 
 # Terminal 4 - Frontend
@@ -129,9 +129,9 @@ mawadao/
 │   ├── frontend/                    # Next.js 14 web client
 │   ├── microservices/
 │   │   ├── auth/                    # Go Google OAuth service
-│   │   ├── configuration-api/           # Express REST API for social features
-│   │   └── cloud-run-deployer/      # GCP Cloud Run deployment service
-│   └── platform/                    # OpenClaw Gateway + REST API
+│   │   ├── mawadao-agent-api/           # Express REST API for social features
+│   │   └── mawadao-agent-deployer/      # GCP Cloud Run deployment service
+│   └── platform/                    # mawaDao Agent Gateway + REST API
 ├── db/
 │   └── migrations/                  # Centralized SQL schema & migrations
 ├── docs/                            # Project documentation
