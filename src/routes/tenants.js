@@ -17,24 +17,8 @@ const CloudRunDeployService = require("../services/CloudRunDeployService");
 const { Storage } = require("@google-cloud/storage");
 const config = require("../config");
 
-const DNS_SERVICE_URL = process.env.DNS_SERVICE_URL || "http://localhost:3004";
-const DNS_SERVICE_SECRET = process.env.DNS_SERVICE_SECRET || "";
-
-/**
- * TENANT_DASHBOARD_HOST — hostname that tenant subdomains should CNAME to.
- *
- * This must be the nginx load-balancer hostname (or tenant-dashboard Cloud Run URL)
- * so that son.mawadao.com → tenant-dashboard Next.js app, which then proxies all
- * gateway API calls to the individual Cloud Run backend via /api/proxy/v1.
- *
- * If unset, DNS record creation is skipped (subdomain routing must be handled
- * externally, e.g., a wildcard A/CNAME at the DNS provider level).
- *
- * Example values:
- *   nginx LB:             mawadao-lb.example.com
- *   tenant-dashboard CR:  mawadao-tenant-dashboard-xxxxx.a.run.app
- */
-const TENANT_DASHBOARD_HOST = process.env.TENANT_DASHBOARD_HOST || "";
+/** The member space (mawadao-agent-dashboard) that talks to every tenant's runtime. */
+const MEMBER_SPACE_URL = (process.env.MEMBER_SPACE_URL || "https://agent.mawadao.com").replace(/\/+$/, "");
 
 /** bucket-manager service URL and secret for creating GCS folders + seeding openclaw.json */
 const BUCKET_MANAGER_URL = process.env.BUCKET_MANAGER_URL || "";
@@ -147,9 +131,7 @@ function buildDefaultOpenclawConfig(gatewayToken, serviceUrl, subdomain) {
   } else {
     trustedProxies.push("127.0.0.1");
   }
-  if (subdomain) {
-    allowedOrigins.push(`https://${subdomain}.mawadao.com`);
-  }
+  allowedOrigins.push(MEMBER_SPACE_URL);
 
   return {
     meta: {
@@ -658,43 +640,6 @@ router.post(
       ],
     });
 
-    // Create Cloudflare DNS record for the tenant subdomain.
-    //
-    // IMPORTANT: The CNAME target must be TENANT_DASHBOARD_HOST (the nginx LB or
-    // tenant-dashboard Cloud Run URL) so that {subdomain}.mawadao.com → tenant-dashboard
-    // Next.js app. The actual OpenClaw gateway Cloud Run URL is stored as backend_url
-    // in the DB and accessed only via the server-side proxy route.
-    //
-    // If TENANT_DASHBOARD_HOST is not set, DNS record creation is skipped and the
-    // subdomain must be routed externally (e.g., wildcard DNS at the provider level).
-    let dnsRecord = null;
-    if (TENANT_DASHBOARD_HOST) {
-      try {
-        const dnsRes = await fetch(`${DNS_SERVICE_URL}/api/v1/dns/records`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Service-Secret": DNS_SERVICE_SECRET,
-          },
-          body: JSON.stringify({ subdomain, target: TENANT_DASHBOARD_HOST, proxied: true }),
-        });
-        const dnsBody = await dnsRes.json();
-        if (dnsBody.success) {
-          dnsRecord = dnsBody.data;
-          console.log(`[dns] Created CNAME ${subdomain}.mawadao.com → ${TENANT_DASHBOARD_HOST}`);
-        } else {
-          console.warn(`DNS record creation failed for ${subdomain}:`, dnsBody.message);
-        }
-      } catch (dnsErr) {
-        console.warn(`DNS service unreachable for ${subdomain}:`, dnsErr.message);
-      }
-    } else {
-      console.warn(
-        `[dns] TENANT_DASHBOARD_HOST not set — skipping DNS record for ${subdomain}. ` +
-        `Ensure ${subdomain}.mawadao.com is routed to the tenant-dashboard via wildcard DNS.`
-      );
-    }
-
     created(res, {
       serviceName: result.serviceName,
       serviceUrl: result.serviceUrl,
@@ -702,7 +647,6 @@ router.post(
       status: result.status,
       gcsBucket,
       subdomain,
-      dnsRecord,
     });
   })
 );
@@ -722,19 +666,6 @@ router.delete(
     const region = req.query.region || config.cloudRun.region || "europe-west1";
 
     const result = await CloudRunDeployService.deleteService(serviceName, { region });
-
-    // Clean up Cloudflare DNS record
-    let dnsDeleted = false;
-    try {
-      const dnsRes = await fetch(`${DNS_SERVICE_URL}/api/v1/dns/records/${encodeURIComponent(subdomain)}`, {
-        method: "DELETE",
-        headers: { "X-Service-Secret": DNS_SERVICE_SECRET },
-      });
-      const dnsBody = await dnsRes.json();
-      dnsDeleted = dnsBody.success && dnsBody.data?.deleted;
-    } catch (dnsErr) {
-      console.warn(`DNS cleanup failed for ${subdomain}:`, dnsErr.message);
-    }
 
     // Delete the user's GCS folder from the shared bucket (best-effort)
     let gcsFolderDeleted = false;
@@ -764,7 +695,6 @@ router.delete(
       serviceName: result.serviceName,
       subdomain,
       region: result.region,
-      dnsDeleted,
       gcsFolderDeleted,
     });
   })
