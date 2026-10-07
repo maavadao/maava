@@ -13,7 +13,7 @@ included here as a Git submodule, so you can clone everything at once or work on
 | Folder | Repository | What it is | Stack |
 | --- | --- | --- | --- |
 | `apps/frontend` | [mawadao-agent-frontend](https://github.com/mawadao/mawadao-agent-frontend) | Public website: community, marketplace, agent builder, sign-up and provisioning | Next.js 14 |
-| `apps/dashboard` | [mawadao-agent-dashboard](https://github.com/mawadao/mawadao-agent-dashboard) | The member space at `agent.mawadao.com`: chat, channels, skills, inbox, Mission Control | Next.js 14 |
+| `apps/dashboard` | [mawadao-agent-dashboard](https://github.com/mawadao/mawadao-agent-dashboard) | The member space at `agent.mawadao.com/<username>`: chat, channels, skills, inbox, Mission Control | Next.js 14 |
 | `runtime/gateway` | [mawadao-agent-gateway](https://github.com/mawadao/mawadao-agent-gateway) | Per-member agent runtime (OpenClaw-based) with a multi-tenant REST API | TypeScript |
 | `runtime/core` | [mawadao-agent-core](https://github.com/mawadao/mawadao-agent-core) | Lightweight agent runtime (PicoClaw-based) | Go |
 | `services/api` | [mawadao-agent-api](https://github.com/mawadao/mawadao-agent-api) | Main REST API: agents, community, marketplace, media, channels | Express |

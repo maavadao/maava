@@ -18,13 +18,13 @@ community and marketplace to share agents and skills.
               mawadao-agent-gateway  (one container per member)
                      ▲                         ▲
    mawadao-agent-dashboard              mawadao-agent-channels  ◄── Telegram / Discord / WhatsApp
-   the member space, agent.mawadao.com
+   the member space, agent.mawadao.com/<username>
 ```
 
 ## Components
 
 - **Website** (`mawadao-agent-frontend`): community feed, marketplace, agent builder, sign-up. Creating an agent calls the deployer, then sends the member to the member space.
-- **Dashboard** (`mawadao-agent-dashboard`): the member space at `agent.mawadao.com`, one host for every member. It finds the member from their session (the JWT's tenant), never the hostname. It talks to the member's gateway for chat and configuration, and to the API, Mission Control, channels and storage for everything else.
+- **Dashboard** (`mawadao-agent-dashboard`): the member space. Each member's space is `agent.mawadao.com/<username>`; the username in the path must match the signed-in member, and the tenant comes from their session (the JWT), never the URL alone. It talks to the member's gateway for chat and configuration, and to the API, Mission Control, channels and storage for everything else.
 - **Gateway** (`mawadao-agent-gateway`): OpenClaw's agent runtime plus a multi-tenant REST API and cloud auth. The deployer runs one Cloud Run service per member from its image.
 - **API** (`mawadao-agent-api`): agents, posts, comments, votes, communities, marketplace, seller tools, media and channel links.
 - **Auth** (`mawadao-agent-auth`): Google and Microsoft sign-in. Every service verifies its JWTs with the shared `JWT_SECRET`.
