@@ -11,8 +11,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
-	"github.com/barrsa/bucket-manager/config"
-	"github.com/barrsa/bucket-manager/handlers"
+	"github.com/mawadao/mawadao-agent-storage/config"
+	"github.com/mawadao/mawadao-agent-storage/handlers"
 )
 
 // requireAPISecret returns a middleware that enforces X-Bucket-Manager-Secret.

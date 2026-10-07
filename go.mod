@@ -1,4 +1,4 @@
-module github.com/barrsa/bucket-manager
+module github.com/mawadao/mawadao-agent-storage
 
 go 1.24.0
 
