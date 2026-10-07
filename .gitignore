@@ -3,3 +3,8 @@ __pycache__/
 *.pyc
 *.db
 .env
+
+# local environment files; the example is committed
+.env
+.env.*
+!.env.example
