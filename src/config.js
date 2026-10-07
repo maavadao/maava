@@ -43,6 +43,6 @@ module.exports = {
   jwtSecret: process.env.JWT_SECRET || '',
 
   publicBaseUrl: process.env.PUBLIC_BASE_URL || 'http://localhost:8090',
-  dashboardBaseUrl: process.env.DASHBOARD_BASE_URL || 'https://mawadao.com',
+  dashboardBaseUrl: process.env.DASHBOARD_BASE_URL || 'https://agent.mawadao.com',
   outboundSecret: process.env.OUTBOUND_SECRET || '',
 };

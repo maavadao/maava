@@ -91,7 +91,7 @@ router.post('/webhook', async (req, res) => {
           from,
           `Welcome to mawaDao! 🤖\n\n` +
           `I don't recognize your phone number yet.\n` +
-          `Please link it at: https://mawadao.com/channels/whatsapp`,
+          `Please link it at: ${config.dashboardBaseUrl}/channels/whatsapp`,
         );
         continue;
       }

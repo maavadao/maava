@@ -62,7 +62,7 @@ async function startDiscordBot() {
       if (!user) {
         await message.reply(
           `I don't recognize your Discord account yet.\n` +
-          `Link it at: https://mawadao.com/channels/discord`,
+          `Link it at: ${config.dashboardBaseUrl}/channels/discord`,
         );
         return;
       }
@@ -162,7 +162,7 @@ router.get('/oauth/callback', async (req, res) => {
     );
 
     // Redirect back to dashboard
-    res.redirect('https://mawadao.com/channels/discord?linked=true');
+    res.redirect(`${config.dashboardBaseUrl}/channels/discord?linked=true`);
   } catch (err) {
     console.error('[discord] OAuth callback error:', err);
     res.status(500).send('Internal error');
