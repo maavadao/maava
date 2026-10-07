@@ -1,6 +1,6 @@
 {
-  "name": "cloud-run-deployer",
-  "version": "1.9.0",
+  "name": "mawadao-agent-deployer",
+  "version": "0.1.0",
   "description": "Deploy Cloud Run services from YAML template and overrides",
   "main": "src/index.js",
   "scripts": {

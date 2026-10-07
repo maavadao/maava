@@ -24,15 +24,15 @@ const DNS_SERVICE_SECRET = process.env.DNS_SERVICE_SECRET || "";
  * TENANT_DASHBOARD_HOST — hostname that tenant subdomains should CNAME to.
  *
  * This must be the nginx load-balancer hostname (or tenant-dashboard Cloud Run URL)
- * so that son.barrsa.com → tenant-dashboard Next.js app, which then proxies all
+ * so that son.mawadao.com → tenant-dashboard Next.js app, which then proxies all
  * gateway API calls to the individual Cloud Run backend via /api/proxy/v1.
  *
  * If unset, DNS record creation is skipped (subdomain routing must be handled
  * externally, e.g., a wildcard A/CNAME at the DNS provider level).
  *
  * Example values:
- *   nginx LB:             barrsa-lb.example.com
- *   tenant-dashboard CR:  barrsa-tenant-dashboard-xxxxx.a.run.app
+ *   nginx LB:             mawadao-lb.example.com
+ *   tenant-dashboard CR:  mawadao-tenant-dashboard-xxxxx.a.run.app
  */
 const TENANT_DASHBOARD_HOST = process.env.TENANT_DASHBOARD_HOST || "";
 
@@ -42,9 +42,9 @@ const BUCKET_MANAGER_API_SECRET = process.env.BUCKET_MANAGER_API_SECRET || "";
 
 /**
  * GCP project ID for GCS bucket creation — may differ from the Cloud Run project.
- * e.g. Cloud Run lives in "barrsaai" but tenant buckets are in "barrsa-customer-side".
+ * e.g. Cloud Run lives in "mawadao" but tenant buckets are in "mawadao-customer-side".
  */
-const GCS_PROJECT_ID = process.env.GCS_PROJECT_ID || process.env.GCP_PROJECT_ID || "barrsaai";
+const GCS_PROJECT_ID = process.env.GCS_PROJECT_ID || process.env.GCP_PROJECT_ID || "mawadao";
 
 function sanitizeSecret(value) {
   return String(value || "").replace(/^\uFEFF+/, "").trim();
@@ -84,7 +84,7 @@ function getGCSCredentials() {
  * correctly from the first container start.
  *
  * @param {string} gatewayToken  - Auth token for the OpenClaw gateway.
- * @param {string} [serviceUrl]  - Cloud Run service URL (e.g. https://barrsa-foo-xxxx.run.app).
+ * @param {string} [serviceUrl]  - Cloud Run service URL (e.g. https://mawadao-foo-xxxx.run.app).
  *                                 Added to trustedProxies and controlUi.allowedOrigins so the
  *                                 gateway accepts requests routed through Cloud Run's load balancer.
  */
@@ -96,7 +96,7 @@ function buildDefaultOpenclawConfig(gatewayToken, serviceUrl, subdomain) {
   //   Legacy: https://{service}-{legacyHash}-{regionCode}.a.run.app
   // Both must appear in trustedProxies (bare hostname + full https) for gateway to work.
   const legacyHash = process.env.CLOUD_RUN_LEGACY_HASH || "nz5hxkrkiq";
-  const projectNumber = process.env.GCP_PROJECT_NUMBER || "70548103320";
+  const projectNumber = process.env.GCP_PROJECT_NUMBER || "";
   const region = process.env.GCP_REGION || config.cloudRun.region || "europe-west1";
 
   // Build legacy region abbreviation: europe-west1 → "ew"
@@ -106,10 +106,10 @@ function buildDefaultOpenclawConfig(gatewayToken, serviceUrl, subdomain) {
     : regionParts[0].slice(0, 2);
 
   const trustedProxies = [];
-  const allowedOrigins = ["https://platform.barrsa.com", "https://barrsa.com"];
+  const allowedOrigins = ["https://platform.mawadao.com", "https://mawadao.com"];
 
   if (serviceUrl && subdomain) {
-    const serviceName = `barrsa-${subdomain}`;
+    const serviceName = `mawadao-${subdomain}`;
 
     // Detect which format serviceUrl is, and build the other
     // Legacy format contains ".a.run.app", new format contains ".run.app" but NOT ".a.run.app"
@@ -148,7 +148,7 @@ function buildDefaultOpenclawConfig(gatewayToken, serviceUrl, subdomain) {
     trustedProxies.push("127.0.0.1");
   }
   if (subdomain) {
-    allowedOrigins.push(`https://${subdomain}.barrsa.com`);
+    allowedOrigins.push(`https://${subdomain}.mawadao.com`);
   }
 
   return {
@@ -510,7 +510,7 @@ router.use(requireDeployerAuth);
 /** Cloud container image for per-user backends */
 const CLOUD_BACKEND_IMAGE =
   process.env.CLOUD_BACKEND_IMAGE ||
-  `europe-west1-docker.pkg.dev/${config.cloudRun.projectId || "barrsa-customer-side"}/barrsa-platform/tenant-platform:cloud-agent`;
+  "ghcr.io/mawadao/mawadao-agent-gateway:latest";
 
 /** Gateway token sourced from environment — never hardcode */
 const OPENCLAW_GATEWAY_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN || "";
@@ -568,13 +568,13 @@ router.post(
       });
     }
 
-    const serviceName = `barrsa-${subdomain}`;
+    const serviceName = `mawadao-${subdomain}`;
     const resolvedContainerImage =
       typeof containerImage === "string" && containerImage.trim()
         ? containerImage.trim()
         : CLOUD_BACKEND_IMAGE;
     // All tenants share a single pre-existing bucket; bucket-manager SA already has objectAdmin on it.
-    const gcsBucket = process.env.GCS_BUCKET_NAME || "barrsa-prod-tentant-platform-data";
+    const gcsBucket = process.env.GCS_BUCKET_NAME || "mawadao-agent-data";
     const deployRegion = region || config.cloudRun.region || "europe-west1";
 
     // Pre-compute the Cloud Run service URL — the format is deterministic:
@@ -582,7 +582,7 @@ router.post(
     // Seeding the config BEFORE deploying ensures the container starts up with
     // chatCompletions.enabled=true already in place (openAiChatCompletionsEnabled
     // is locked in at binary startup, so the config must exist before first boot).
-    const projectNumber = process.env.GCP_PROJECT_NUMBER || "70548103320";
+    const projectNumber = process.env.GCP_PROJECT_NUMBER || "";
     const predictedServiceUrl = `https://${serviceName}-${projectNumber}.${deployRegion}.run.app`;
 
     // Seed openclaw.json BEFORE deploying so the container reads the correct config on first boot.
@@ -622,10 +622,10 @@ router.post(
       // their own watchdogs (STREAM_READ_TIMEOUT_MS, MAX_CONTINUATIONS).
       // NOTE: existing tenants keep their original timeout until their next
       // deploy/redeploy; operators can update them via:
-      //   gcloud run services update barrsa-{sub} --timeout=3600 \
-      //     --region=europe-west1 --project=barrsa-customer-side
+      //   gcloud run services update mawadao-{sub} --timeout=3600 \
+      //     --region=europe-west1 --project=mawadao-customer-side
       timeout: "3600s",
-      description: `Barrsa Cloud backend for ${subdomain}`,
+      description: `mawaDao Cloud backend for ${subdomain}`,
       publicAccess: true,
       // Mount the user's GCS subfolder at the state directory.
       // only-dir scopes the gcsfuse mount to {userId}/mountfolder/ so that
@@ -661,7 +661,7 @@ router.post(
     // Create Cloudflare DNS record for the tenant subdomain.
     //
     // IMPORTANT: The CNAME target must be TENANT_DASHBOARD_HOST (the nginx LB or
-    // tenant-dashboard Cloud Run URL) so that {subdomain}.barrsa.com → tenant-dashboard
+    // tenant-dashboard Cloud Run URL) so that {subdomain}.mawadao.com → tenant-dashboard
     // Next.js app. The actual OpenClaw gateway Cloud Run URL is stored as backend_url
     // in the DB and accessed only via the server-side proxy route.
     //
@@ -681,7 +681,7 @@ router.post(
         const dnsBody = await dnsRes.json();
         if (dnsBody.success) {
           dnsRecord = dnsBody.data;
-          console.log(`[dns] Created CNAME ${subdomain}.barrsa.com → ${TENANT_DASHBOARD_HOST}`);
+          console.log(`[dns] Created CNAME ${subdomain}.mawadao.com → ${TENANT_DASHBOARD_HOST}`);
         } else {
           console.warn(`DNS record creation failed for ${subdomain}:`, dnsBody.message);
         }
@@ -691,7 +691,7 @@ router.post(
     } else {
       console.warn(
         `[dns] TENANT_DASHBOARD_HOST not set — skipping DNS record for ${subdomain}. ` +
-        `Ensure ${subdomain}.barrsa.com is routed to the tenant-dashboard via wildcard DNS.`
+        `Ensure ${subdomain}.mawadao.com is routed to the tenant-dashboard via wildcard DNS.`
       );
     }
 
@@ -718,7 +718,7 @@ router.delete(
   asyncHandler(async (req, res) => {
     const { subdomain } = req.params;
     const userId = req.query.userId || null;
-    const serviceName = `barrsa-${subdomain}`;
+    const serviceName = `mawadao-${subdomain}`;
     const region = req.query.region || config.cloudRun.region || "europe-west1";
 
     const result = await CloudRunDeployService.deleteService(serviceName, { region });
@@ -739,7 +739,7 @@ router.delete(
     // Delete the user's GCS folder from the shared bucket (best-effort)
     let gcsFolderDeleted = false;
     if (userId && BUCKET_MANAGER_URL) {
-      const gcsBucket = process.env.GCS_BUCKET_NAME || "barrsa-prod-tentant-platform-data";
+      const gcsBucket = process.env.GCS_BUCKET_NAME || "mawadao-agent-data";
       const headers = {};
       if (BUCKET_MANAGER_API_SECRET) headers["X-Bucket-Manager-Secret"] = BUCKET_MANAGER_API_SECRET;
       try {

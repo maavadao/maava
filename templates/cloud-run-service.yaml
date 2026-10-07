@@ -14,7 +14,7 @@ template:
   vpcAccess:
     egress: PRIVATE_RANGES_ONLY
     networkInterfaces:
-      - network: barrsa-tenants-prod-vpc
+      - network: mawadao-tenants-prod-vpc
         subnetwork: prod-euw1-tenants
 
   # Revision-level scaling (ignored when service.scaling.scalingMode=MANUAL)
@@ -28,7 +28,7 @@ template:
   volumes: []
 
   containers:
-    - image: "europe-west1-docker.pkg.dev/barrsa-customer-side/barrsa-platform/tenant-platform:cloud-agent"
+    - image: "ghcr.io/mawadao/mawadao-agent-gateway:latest"
 
       command:
         - node
