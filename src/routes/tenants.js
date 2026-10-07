@@ -532,7 +532,7 @@ const SHARED_ENV = {
  * POST /tenants/provision
  *
  * Body:
- *   - subdomain (string, required): User's chosen subdomain (e.g. "raj")
+ *   - subdomain (string, required): User's chosen subdomain (e.g. "alice")
  *   - userId (string, required): User UUID
  *   - tenantId (string, required): Tenant UUID
  *   - gatewayToken (string, optional): Override gateway token (falls back to OPENCLAW_GATEWAY_TOKEN env var)
