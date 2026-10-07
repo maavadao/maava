@@ -15,7 +15,7 @@ from pathlib import Path
 
 import psycopg
 
-DEFAULT_DSN = "postgresql://postgres:postgres@localhost:5432/agentplatform"
+DEFAULT_DSN = "postgresql://postgres:postgres@localhost:5432/mawadao_agent_platform"
 MIGRATIONS_DIR = Path(__file__).parent / "migrations"
 
 

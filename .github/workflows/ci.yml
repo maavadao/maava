@@ -14,10 +14,10 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: agentplatform
+          POSTGRES_DB: mawadao_agent_platform
         ports: ["5432:5432"]
         options: >-
-          --health-cmd "pg_isready -U postgres -d agentplatform"
+          --health-cmd "pg_isready -U postgres -d mawadao_agent_platform"
           --health-interval 2s --health-timeout 2s --health-retries 15
     steps:
       - uses: actions/checkout@v4

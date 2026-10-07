@@ -1,6 +1,6 @@
 # Demo frontend
 
-Minimal Next.js client for the Agent Platform API. Intended for local demos
+Minimal Next.js client for the mawaDao Agent Platform API. Intended for local demos
 only — the product UI lives in mawadao-agent-dashboard.
 
 Features: connect with a dev token, view your user/org, create and list

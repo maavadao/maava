@@ -171,7 +171,7 @@ export default function Demo() {
 
   return (
     <main>
-      <h1>Agent Platform — Demo Frontend</h1>
+      <h1>mawaDao Agent Platform — Demo Frontend</h1>
       <p className="muted">
         Minimal Next.js demo client. Run <code>make demo-seed</code> to get a token.
       </p>

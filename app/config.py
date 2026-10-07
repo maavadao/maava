@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     env: str = "dev"
     # App role DSN — must be app_api (no BYPASSRLS). Admin DSN is never used here.
-    database_url: str = "postgresql://app_api:app_api_dev_only@localhost:5432/agentplatform"
+    database_url: str = "postgresql://app_api:app_api_dev_only@localhost:5432/mawadao_agent_platform"
     # Per-instance pool: 2-4 connections max (Cloud SQL max_connections budget).
     db_pool_min: int = 1
     db_pool_max: int = 4
