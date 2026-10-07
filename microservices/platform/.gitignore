@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.env
+.env.*
+node_modules/
+.next/
+.terraform/
+*.tfstate*
+.DS_Store
+
+# local environment files; the example is committed
+.env
+.env.*
+!.env.example
