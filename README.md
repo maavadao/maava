@@ -1,10 +1,13 @@
-# PicoClaw PaaS Control Plane
+# mawadao-agent-manager
 
-Multi-tenant management API for customer PicoClaw instances (launcher + gateway
-pods on Kubernetes) with org/instance-scoped RBAC. Design doc:
-[paas-api-design.md](paas-api-design.md). Endpoint reference:
-[paas-api-endpoints.md](paas-api-endpoints.md). Frontend integration guide:
-[frontend-guide.md](frontend-guide.md).
+Control plane for hosted [`mawadao-agent-core`](https://github.com/mawadao/mawadao-agent-core)
+instances (PicoClaw launcher + gateway pods on Kubernetes), with org- and instance-scoped
+roles, API keys and an audit log. Design doc: [docs/paas-api-design.md](docs/paas-api-design.md).
+Endpoint reference: [docs/paas-api-endpoints.md](docs/paas-api-endpoints.md). Frontend
+integration guide: [docs/frontend-guide.md](docs/frontend-guide.md). Launcher API:
+[docs/api-reference.md](docs/api-reference.md).
+
+Part of [mawaDao Agent](https://github.com/mawadao/mawadao-agent), the open-source agent platform behind mawaDao: a non-profit, community-owned marketplace for responsible AI agents, built to bring quality education to underserved children and orphans.
 
 ## Run
 
@@ -61,3 +64,12 @@ Deployment/provisioning (the reconciler that turns `instances` rows into K8s
 workloads and flips them to `running`) is intentionally not implemented yet —
 the `clusters` / `releases` / `instance_deployments` / `deployment_operations`
 tables are already in place for it.
+
+## Contributing
+
+Read the [contributing guide](https://github.com/mawadao/mawadao-agent/blob/main/CONTRIBUTING.md) before opening a pull request.
+Work lands on `main`; releases are tagged `vX.Y.Z` as described in [RELEASING.md](https://github.com/mawadao/mawadao-agent/blob/main/RELEASING.md).
+
+## Licence
+
+Apache 2.0. See [LICENSE](LICENSE).
