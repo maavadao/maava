@@ -1,7 +1,7 @@
 {
   "name": "mawadao-agent-channels",
   "version": "0.1.0",
-  "description": "mawaDao SaaS channel routing service — platform-owned bots that route messages to user OpenClaw instances",
+  "description": "mawaDao Agent channels: platform-owned bots that route messages to members' agents",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

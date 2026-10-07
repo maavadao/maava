@@ -4,7 +4,7 @@
  * Option A (implemented here): Shared Platform Number
  *   - mawaDao registers ONE WhatsApp Business number via Meta Cloud API
  *   - All users message this number
- *   - Routing: phone_number → platform_channel_links → user's OpenClaw instance
+ *   - Routing: phone_number → platform_channel_links → user's mawaDao Agent instance
  *
  * Option B (future): Embedded Signup — each user brings their own number
  */
@@ -96,7 +96,7 @@ router.post('/webhook', async (req, res) => {
         continue;
       }
 
-      // Route to OpenClaw
+      // Route to mawaDao Agent
       const reply = await routeMessage(user.runtimeEndpoint, user.gatewayToken, text);
       await sendWhatsAppMessage(from, reply);
     }

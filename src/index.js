@@ -2,10 +2,10 @@
  * Channel Router — Entry point.
  *
  * A lightweight microservice that owns the platform bots (Telegram, Discord, WhatsApp)
- * and routes incoming messages to each user's OpenClaw instance via REST API.
+ * and routes incoming messages to each user's mawaDao Agent instance via REST API.
  *
  * Architecture:
- *   Platform Webhook → Channel Router → DB lookup → OpenClaw REST → Reply
+ *   Platform Webhook → Channel Router → DB lookup → mawaDao Agent REST → Reply
  */
 const express = require('express');
 const cors = require('cors');
@@ -25,7 +25,7 @@ app.use(express.json());
 
 // Health check
 app.get('/', (req, res) => {
-  res.json({ service: 'channel-router', status: 'ok' });
+  res.json({ service: 'mawadao-agent-channels', status: 'ok' });
 });
 app.get('/health', (req, res) => {
   res.json({ healthy: true });
@@ -39,30 +39,30 @@ app.use('/api/outbound', outboundRouter);
 
 // Start
 app.listen(config.port, async () => {
-  console.log(`[channel-router] Listening on port ${config.port}`);
-  console.log(`[channel-router] DATABASE_URL set: ${!!config.database.url}`);
-  console.log(`[channel-router] DATABASE_URL host: ${config.database.url ? new URL(config.database.url).hostname : 'N/A'}`);
-  console.log(`[channel-router] TELEGRAM_BOT_TOKEN set: ${!!config.telegram.botToken}`);
-  console.log(`[channel-router] PUBLIC_BASE_URL: ${config.publicBaseUrl}`);
+  console.log(`[mawadao-agent-channels] Listening on port ${config.port}`);
+  console.log(`[mawadao-agent-channels] DATABASE_URL set: ${!!config.database.url}`);
+  console.log(`[mawadao-agent-channels] DATABASE_URL host: ${config.database.url ? new URL(config.database.url).hostname : 'N/A'}`);
+  console.log(`[mawadao-agent-channels] TELEGRAM_BOT_TOKEN set: ${!!config.telegram.botToken}`);
+  console.log(`[mawadao-agent-channels] PUBLIC_BASE_URL: ${config.publicBaseUrl}`);
 
   // Test DB connectivity
   const pool = require('./db');
   try {
     const dbTest = await pool.query('SELECT NOW() AS now');
-    console.log(`[channel-router] ✅ DB connected — server time: ${dbTest.rows[0].now}`);
+    console.log(`[mawadao-agent-channels] ✅ DB connected — server time: ${dbTest.rows[0].now}`);
   } catch (dbErr) {
-    console.error(`[channel-router] ❌ DB connection FAILED:`, dbErr.message);
+    console.error(`[mawadao-agent-channels] ❌ DB connection FAILED:`, dbErr.message);
   }
 
   // Set up Telegram webhook (non-blocking)
   setupTelegramWebhook().catch((err) =>
-    console.error('[channel-router] Telegram webhook setup failed:', err),
+    console.error('[mawadao-agent-channels] Telegram webhook setup failed:', err),
   );
 
   // Start Discord bot (long-running WebSocket)
   startDiscordBot().catch((err) =>
-    console.error('[channel-router] Discord bot startup failed:', err),
+    console.error('[mawadao-agent-channels] Discord bot startup failed:', err),
   );
 
-  console.log('[channel-router] All handlers initialized');
+  console.log('[mawadao-agent-channels] All handlers initialized');
 });

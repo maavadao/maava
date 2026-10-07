@@ -16,7 +16,7 @@ module.exports = {
     botToken: process.env.TELEGRAM_BOT_TOKEN || '',
     webhookSecret: process.env.TELEGRAM_WEBHOOK_SECRET || '',
     botUsername: process.env.TELEGRAM_BOT_USERNAME || 'mawadao_bot',
-    webhookBaseUrl: process.env.TELEGRAM_WEBHOOK_BASE_URL || '', // e.g. https://channel-router.mawadao.com
+    webhookBaseUrl: process.env.TELEGRAM_WEBHOOK_BASE_URL || '', // e.g. https://channels.mawadao.com
     webhookPath: process.env.TELEGRAM_WEBHOOK_PATH || '/telegram/webhook',
     allowedUpdates: (process.env.TELEGRAM_ALLOWED_UPDATES || 'message,edited_message,callback_query').split(',').map(s => s.trim()),
     parseMode: process.env.TELEGRAM_PARSE_MODE || 'Markdown',

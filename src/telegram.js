@@ -1,9 +1,9 @@
 /**
  * Telegram Handler — Receives webhook updates from Telegram Bot API,
- * routes messages to the user's OpenClaw instance, and sends replies.
+ * routes messages to the user's mawaDao Agent instance, and sends replies.
  *
  * mawaDao owns ONE bot (@MawadaoBot). All users talk to it.
- * Routing: telegram_user_id → telegram_channel_links → user's OpenClaw URL → reply.
+ * Routing: telegram_user_id → telegram_channel_links → user's mawaDao Agent URL → reply.
  *
  * Account linking:
  *   1. Deep-link: Dashboard generates token → t.me/mawadao_bot?start=TOKEN → bot validates → link.
