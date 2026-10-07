@@ -15,23 +15,23 @@ import (
 	"github.com/mawadao/mawadao-agent-storage/handlers"
 )
 
-// requireAPISecret returns a middleware that enforces X-Bucket-Manager-Secret.
+// requireAPISecret returns a middleware that enforces X-Storage-Secret.
 // In development (no secret configured) all requests are allowed through.
 func requireAPISecret(cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if cfg.APISecret == "" {
 			if cfg.Environment == "production" {
 				c.AbortWithStatusJSON(http.StatusServiceUnavailable, gin.H{
-					"error": "bucket-manager API secret not configured",
+					"error": "mawadao-agent-storage API secret not configured",
 				})
 				return
 			}
 			c.Next()
 			return
 		}
-		provided := c.GetHeader("X-Bucket-Manager-Secret")
+		provided := c.GetHeader("X-Storage-Secret")
 		if subtle.ConstantTimeCompare([]byte(provided), []byte(cfg.APISecret)) != 1 {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid bucket-manager API credentials"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid mawadao-agent-storage API credentials"})
 			return
 		}
 		c.Next()
@@ -73,7 +73,7 @@ func main() {
 	// Health + root endpoints
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"service": "bucket-manager",
+			"service": "mawadao-agent-storage",
 			"status":  "ok",
 		})
 	})
@@ -109,8 +109,8 @@ func main() {
 	}
 
 	addr := ":" + cfg.Port
-	log.Printf("bucket-manager listening on %s", addr)
+	log.Printf("mawadao-agent-storage listening on %s", addr)
 	if err := r.Run(addr); err != nil {
-		log.Fatalf("failed to start bucket-manager: %v", err)
+		log.Fatalf("failed to start mawadao-agent-storage: %v", err)
 	}
 }

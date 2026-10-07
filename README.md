@@ -6,7 +6,7 @@ Part of [mawaDao Agent](https://github.com/mawadao/mawadao-agent), the open-sour
 
 ## Endpoints
 
-Routes need the `BUCKET_MANAGER_API_SECRET` bearer token, except health.
+Routes need the `STORAGE_API_SECRET` bearer token, except health.
 
 | Method | Path | Purpose |
 | --- | --- | --- |

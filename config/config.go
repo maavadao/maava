@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Config holds runtime configuration for the bucket-manager service.
+// Config holds runtime configuration for the mawadao-agent-storage service.
 type Config struct {
 	Port        string
 	Environment string
@@ -18,7 +18,7 @@ type Config struct {
 	DefaultBucket string
 	ProjectID     string
 
-	// APISecret is the shared secret callers must supply in X-Bucket-Manager-Secret.
+	// APISecret is the shared secret callers must supply in X-Storage-Secret.
 	// When empty in development, write operations are allowed without auth.
 	APISecret string
 }
@@ -34,12 +34,12 @@ func Load() (*Config, error) {
 		Environment: getEnv("ENVIRONMENT", "development"),
 		CORSOrigins: getEnv("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001"),
 
-		DefaultBucket: getEnv("BUCKET_MANAGER_DEFAULT_BUCKET", ""),
-		ProjectID:     getEnv("BUCKET_MANAGER_PROJECT_ID", ""),
-		APISecret:     getEnv("BUCKET_MANAGER_API_SECRET", ""),
+		DefaultBucket: getEnv("STORAGE_DEFAULT_BUCKET", ""),
+		ProjectID:     getEnv("STORAGE_PROJECT_ID", ""),
+		APISecret:     getEnv("STORAGE_API_SECRET", ""),
 	}
 
-	log.Printf("bucket-manager starting with ENVIRONMENT=%s PORT=%s", cfg.Environment, cfg.Port)
+	log.Printf("mawadao-agent-storage starting with ENVIRONMENT=%s PORT=%s", cfg.Environment, cfg.Port)
 	return cfg, nil
 }
 
