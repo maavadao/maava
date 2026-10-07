@@ -242,7 +242,7 @@ async def run_awesome_scrape_job(job_id: str) -> None:
     try:
         async with httpx.AsyncClient(
             follow_redirects=True,
-            headers={"User-Agent": "barrsa-skills-scraper/1.0"},
+            headers={"User-Agent": "mawadao-skills-scraper/1.0"},
             timeout=30.0,
         ) as client:
             # Step 1: Fetch README
