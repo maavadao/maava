@@ -1,18 +1,19 @@
-# Agent Platform
+# mawadao-agent-platform
 
-Multi-tenant platform for custom agents, skills, MCP servers, and chat.
+Multi-tenant service for custom agents, skills, MCP servers and chat.
 Serverless architecture (Cloud Run + Cloud SQL + GCS + Secret Manager); see `PLAN.md` for the full spec.
+
+Part of [mawaDao Agent](https://github.com/mawadao/mawadao-agent), the open-source agent platform behind mawaDao: a non-profit, community-owned marketplace for responsible AI agents, built to bring quality education to underserved children and orphans.
 
 ## Repo layout
 
 ```text
-apps/api/          Python FastAPI service — API + agent runtime (Cloud Run)
-apps/web/          Next.js frontend (placeholder for Phase 1)
-packages/shared/   Shared contracts (placeholder)
-db/migrations/     Ordered SQL migrations (schema + RLS)
-db/migrate.py      Minimal migration runner
-demo-frontend-app/ Minimal Next.js demo client for the API (dev only)
-infra/terraform/   GCP infra skeleton
+app/                    FastAPI service: API + agent runtime (Cloud Run)
+tests/                  Two-tenant RLS leakage suite and API tests
+db/migrations/          Ordered SQL migrations (schema + RLS)
+db/migrate.py           Minimal migration runner
+examples/demo-frontend/ Minimal Next.js demo client for the API (dev only)
+infra/terraform/        GCP infra skeleton
 ```
 
 ## Getting started
@@ -29,7 +30,7 @@ infra/terraform/   GCP infra skeleton
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -e "apps/api[dev]"
+pip install -e ".[dev]"
 
 make db-up        # start local Postgres 16
 make migrate      # apply db/migrations/*.sql
@@ -55,7 +56,7 @@ make demo-frontend  # npm install + Next.js dev server on http://localhost:3000
 
 Open <http://localhost:3000>, paste the token from `make demo-seed`, and click
 **Connect**. You can create agents and chat with them (SSE streaming).
-See `demo-frontend-app/README.md` for details.
+See `examples/demo-frontend/README.md` for details.
 
 ### Test and lint
 
@@ -73,3 +74,12 @@ make lint         # ruff
    UPDATE/DELETE on `messages` (append-only).
 3. Secrets never touch Postgres or GCS — only Secret Manager resource names.
 4. User-uploaded content never executes inside the API process.
+
+## Contributing
+
+Read the [contributing guide](https://github.com/mawadao/mawadao-agent/blob/main/CONTRIBUTING.md) before opening a pull request.
+Work lands on `main`; releases are tagged `vX.Y.Z` as described in [RELEASING.md](https://github.com/mawadao/mawadao-agent/blob/main/RELEASING.md).
+
+## Licence
+
+Apache 2.0. See [LICENSE](LICENSE).
