@@ -1,12 +1,12 @@
-# Barrsa Auth Service
+# mawaDao Auth Service
 
-A Golang authentication service using Gin that handles upstream Google/Microsoft sign-in and now exposes an OIDC authorization-code + PKCE surface for the Barrsa frontend.
+A Golang authentication service using Gin that handles upstream Google/Microsoft sign-in and now exposes an OIDC authorization-code + PKCE surface for the mawaDao frontend.
 
 ## Features
 
 - Google OAuth 2.0 authentication flow
 - Microsoft OAuth 2.0 / OIDC authentication flow
-- OIDC provider endpoints for Barrsa frontends
+- OIDC provider endpoints for mawaDao frontends
 - Session management with secure cookies
 - User profile retrieval
 - CSRF protection with state tokens
@@ -72,7 +72,7 @@ The server will start on `http://localhost:8080`
 - `GET /auth/profile` - Get current user profile (requires authentication)
 - `GET /auth/logout` - Logout and clear session
 
-## Barrsa Frontend OIDC Flow
+## mawaDao Frontend OIDC Flow
 
 1. The frontend redirects to `/oauth2/authorize` with `response_type=code`, `state`, and PKCE parameters.
 2. The auth service completes upstream Google or Microsoft authentication.

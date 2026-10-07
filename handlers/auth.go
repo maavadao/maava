@@ -16,9 +16,9 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/googleAuth/config"
-	"github.com/googleAuth/database"
-	"github.com/googleAuth/middleware"
+	"github.com/mawadao/mawadao-agent-auth/config"
+	"github.com/mawadao/mawadao-agent-auth/database"
+	"github.com/mawadao/mawadao-agent-auth/middleware"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	microsoftEndpoint "golang.org/x/oauth2/microsoft"
@@ -199,7 +199,7 @@ func isLocalHostName(host string) bool {
 
 // allowedRedirectDomains restricts OAuth redirects to trusted origins only.
 var allowedRedirectDomains = []string{
-	"barrsa.com",
+	"mawadao.com",
 	"openclaw.ai",
 }
 
@@ -242,7 +242,7 @@ func (h *AuthHandler) resolveGoogleRedirectURL(c *gin.Context) string {
 	if raw == "" {
 		base := baseURLFromRequest(c)
 		if !isAllowedRedirectDomain(base) {
-			base = "https://auth.barrsa.com"
+			base = "https://auth.mawadao.com"
 		}
 		return base + "/auth/google/callback"
 	}
@@ -250,7 +250,7 @@ func (h *AuthHandler) resolveGoogleRedirectURL(c *gin.Context) string {
 	if err != nil || parsed.Host == "" {
 		base := baseURLFromRequest(c)
 		if !isAllowedRedirectDomain(base) {
-			base = "https://auth.barrsa.com"
+			base = "https://auth.mawadao.com"
 		}
 		return base + "/auth/google/callback"
 	}
@@ -262,7 +262,7 @@ func (h *AuthHandler) resolveGoogleRedirectURL(c *gin.Context) string {
 	if !isLocalHostName(requestHost) && isLocalHostName(parsed.Hostname()) {
 		base := baseURLFromRequest(c)
 		if !isAllowedRedirectDomain(base) {
-			base = "https://auth.barrsa.com"
+			base = "https://auth.mawadao.com"
 		}
 		return base + "/auth/google/callback"
 	}
@@ -305,7 +305,7 @@ func (h *AuthHandler) resolveFrontendURL(c *gin.Context) string {
 		if raw != "" {
 			return strings.TrimRight(raw, "/")
 		}
-		return "https://barrsa.com"
+		return "https://mawadao.com"
 	}
 
 	return strings.TrimRight(base, "/")
@@ -565,7 +565,7 @@ func (h *AuthHandler) resolveMicrosoftRedirectURL(c *gin.Context) string {
 	if raw == "" {
 		base := baseURLFromRequest(c)
 		if !isAllowedRedirectDomain(base) {
-			base = "https://auth.barrsa.com"
+			base = "https://auth.mawadao.com"
 		}
 		return base + "/auth/microsoft/callback"
 	}
@@ -573,7 +573,7 @@ func (h *AuthHandler) resolveMicrosoftRedirectURL(c *gin.Context) string {
 	if err != nil || parsed.Host == "" {
 		base := baseURLFromRequest(c)
 		if !isAllowedRedirectDomain(base) {
-			base = "https://auth.barrsa.com"
+			base = "https://auth.mawadao.com"
 		}
 		return base + "/auth/microsoft/callback"
 	}
@@ -585,7 +585,7 @@ func (h *AuthHandler) resolveMicrosoftRedirectURL(c *gin.Context) string {
 	if !isLocalHostName(requestHost) && isLocalHostName(parsed.Hostname()) {
 		base := baseURLFromRequest(c)
 		if !isAllowedRedirectDomain(base) {
-			base = "https://auth.barrsa.com"
+			base = "https://auth.mawadao.com"
 		}
 		return base + "/auth/microsoft/callback"
 	}

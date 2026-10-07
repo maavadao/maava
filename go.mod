@@ -1,4 +1,4 @@
-module github.com/googleAuth
+module github.com/mawadao/mawadao-agent-auth
 
 go 1.23.0
 

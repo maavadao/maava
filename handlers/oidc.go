@@ -19,8 +19,8 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/googleAuth/config"
-	"github.com/googleAuth/middleware"
+	"github.com/mawadao/mawadao-agent-auth/config"
+	"github.com/mawadao/mawadao-agent-auth/middleware"
 )
 
 type oidcSigner struct {
@@ -62,7 +62,7 @@ func newOIDCSigner(cfg *config.Config) *oidcSigner {
 		}
 	}
 	if kid == "" {
-		kid = "barrsa-oidc"
+		kid = "mawadao-oidc"
 	}
 
 	return &oidcSigner{privateKey: key, keyID: kid}
@@ -171,7 +171,7 @@ func (h *AuthHandler) resolveOIDCIssuer(c *gin.Context) string {
 	}
 	base := baseURLFromRequest(c)
 	if !isAllowedRedirectDomain(base) {
-		return "https://auth.barrsa.com"
+		return "https://auth.mawadao.com"
 	}
 	return strings.TrimRight(base, "/")
 }

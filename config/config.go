@@ -63,7 +63,7 @@ func Load() (*Config, error) {
 		SessionSecret:         getEnv("SESSION_SECRET", "change-this-secret-key"),
 		FrontendURL:           getEnv("FRONTEND_URL", "http://localhost:3000"),
 		JWTSecret:             getEnv("JWT_SECRET", "change-this-jwt-secret"),
-		OIDCClientID:          getEnv("OIDC_CLIENT_ID", "barrsa-web"),
+		OIDCClientID:          getEnv("OIDC_CLIENT_ID", "mawadao-web"),
 		OIDCIssuer:            getEnv("OIDC_ISSUER", ""),
 		OIDCPrivateKeyPEM:     getEnv("OIDC_PRIVATE_KEY_PEM", ""),
 		OIDCKeyID:             getEnv("OIDC_KEY_ID", ""),
