@@ -1,0 +1,71 @@
+description: "OpenClaw Gateway"
+
+# Service-level scaling (Cloud Run v2)
+# MANUAL mode with exactly 1 instance.
+scaling:
+  scalingMode: MANUAL
+  manualInstanceCount: 1
+
+template:
+  # 2nd-gen execution environment — required for Cloud Storage (GCS) volume mounts
+  executionEnvironment: EXECUTION_ENVIRONMENT_GEN2
+
+  # VPC: direct VPC egress (Cloud Run API v2 - use vpcAccess, not annotations)
+  vpcAccess:
+    egress: PRIVATE_RANGES_ONLY
+    networkInterfaces:
+      - network: barrsa-tenants-prod-vpc
+        subnetwork: prod-euw1-tenants
+
+  # Revision-level scaling (ignored when service.scaling.scalingMode=MANUAL)
+  scaling:
+    minInstanceCount: 1
+    maxInstanceCount: 1
+
+  timeout: "300s"
+
+  # GCS volume — bucket/subfolder injected per-tenant by CloudRunDeployService applyOverrides
+  volumes: []
+
+  containers:
+    - image: "europe-west1-docker.pkg.dev/barrsa-customer-side/barrsa-platform/tenant-platform:cloud-agent"
+
+      command:
+        - node
+        - dist/index.js
+        - gateway
+        - "--port"
+        - "8080"
+        - "--allow-unconfigured"
+        - "--bind"
+        - "lan"
+
+      ports:
+        - containerPort: 8080
+
+      # GCS volumeMount injected per-tenant by CloudRunDeployService applyOverrides
+      volumeMounts: []
+
+      resources:
+        limits:
+          cpu: "1"
+          memory: "2Gi"
+        cpuIdle: true
+
+      env: []
+
+      # volumeMounts is injected at deploy time by CloudRunDeployService
+      # when BUCKET_MANAGER_BUCKET is configured:
+      #
+      # volumeMounts:
+      #   - name: agent-workspace
+      #     mountPath: /home/node/.openclaw
+
+  # volumes is injected at deploy time by CloudRunDeployService:
+  #
+  # volumes:
+  #   - name: agent-workspace
+  #     gcs:
+  #       bucket: <BUCKET_MANAGER_BUCKET>
+  #       mountOptions:
+  #         - only-dir=<serviceName>
