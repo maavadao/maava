@@ -34,8 +34,9 @@ See [`.env.example`](.env.example). Each platform is optional; leave its token e
 ## Contributing
 
 Read the [contributing guide](https://github.com/mawadao/mawadao-agent/blob/main/CONTRIBUTING.md) before opening a pull request.
-Work lands on `main`; releases are tagged `vX.Y.Z` as described in [RELEASING.md](https://github.com/mawadao/mawadao-agent/blob/main/RELEASING.md).
+This service lives in the `mawadao-agent` repository; pull requests go there. Releases are tagged
+`channels-vX.Y.Z` as described in [RELEASING.md](https://github.com/mawadao/mawadao-agent/blob/main/RELEASING.md).
 
 ## Licence
 
-Apache 2.0. See [LICENSE](LICENSE).
+Apache 2.0. See [LICENSE](../../LICENSE).

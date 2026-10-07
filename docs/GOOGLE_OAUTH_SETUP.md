@@ -154,7 +154,7 @@ cd mawadao/apps/platform
 $env:OPENCLAW_REST_API=1; pnpm run dev
 
 # Terminal 2 - Auth (Go)
-cd mawadao/apps/microservices/auth
+cd microservices/auth
 go run ./cmd/
 
 # Terminal 3 - Frontend
@@ -179,7 +179,7 @@ npm run dev
 ## Database Location
 
 User data is stored in the shared Supabase PostgreSQL database.
-The Go auth service (`mawadao/apps/microservices/auth/`) handles Google OAuth and creates/links users in the `users` table.
+The Go auth service (`microservices/auth/`) handles Google OAuth and creates/links users in the `users` table.
 
 ## Production Deployment
 

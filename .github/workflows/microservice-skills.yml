@@ -1,9 +1,15 @@
-name: CI
+name: microservices/skills
 
 on:
   push:
     branches: [main]
+    paths: ["microservices/skills/**", ".github/workflows/microservice-skills.yml"]
   pull_request:
+    paths: ["microservices/skills/**", ".github/workflows/microservice-skills.yml"]
+
+defaults:
+  run:
+    working-directory: microservices/skills
 
 jobs:
   build:

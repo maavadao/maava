@@ -11,8 +11,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
-	"github.com/mawadao/mawadao-agent-storage/config"
-	"github.com/mawadao/mawadao-agent-storage/handlers"
+	"github.com/mawadao/mawadao-agent/microservices/storage/config"
+	"github.com/mawadao/mawadao-agent/microservices/storage/handlers"
 )
 
 // requireAPISecret returns a middleware that enforces X-Storage-Secret.

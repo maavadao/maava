@@ -1,9 +1,15 @@
-name: CI
+name: microservices/deployer
 
 on:
   push:
     branches: [main]
+    paths: ["microservices/deployer/**", ".github/workflows/microservice-deployer.yml"]
   pull_request:
+    paths: ["microservices/deployer/**", ".github/workflows/microservice-deployer.yml"]
+
+defaults:
+  run:
+    working-directory: microservices/deployer
 
 jobs:
   build:
@@ -14,6 +20,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: microservices/deployer/package-lock.json
       - run: npm ci
       - name: Syntax check
         run: for f in $(find src -name '*.js'); do node --check "$f"; done

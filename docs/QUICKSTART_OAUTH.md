@@ -2,7 +2,7 @@
 
 ## What Was Implemented
 
-✅ **Auth Service** (`mawadao/apps/microservices/auth/`)
+✅ **Auth Service** (`microservices/auth/`)
 - Go-based Google OAuth 2.0 service with Gin framework
 - Google OAuth login/callback → user creation in Supabase PostgreSQL
 - JWT token issuance (HS256, 7-day expiry)
@@ -39,7 +39,7 @@ You'll get:
 ### 2. Configure Auth Service Environment
 
 ```powershell
-cd mawadao/apps/microservices/auth
+cd microservices/auth
 Copy-Item .env.example .env
 notepad .env
 ```
@@ -82,7 +82,7 @@ cd mawadao/apps/platform
 $env:OPENCLAW_REST_API=1; pnpm run dev
 
 # Terminal 2 - Auth (Go)
-cd mawadao/apps/microservices/auth
+cd microservices/auth
 go run ./cmd/
 
 # Terminal 3 - Configuration API

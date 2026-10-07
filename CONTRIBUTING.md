@@ -1,21 +1,25 @@
 # Contributing to mawaDao Agent
 
-Thank you for helping. mawaDao Agent is split into one repository per component, tied together
-by this repository with Git submodules. This guide covers all of them.
+Thank you for helping. mawaDao Agent's larger components have their own repositories, tied
+together by this repository with Git submodules; small microservices live in this repository under
+`microservices/`. This guide covers all of them.
 
 ## Find the right repository
 
 Open issues and pull requests on the component you are changing. The table in the
-[README](README.md#components) lists every repository. If you are not sure where something
-belongs, open an issue here and we will move it.
+[README](README.md#components) lists every component. Microservices in `microservices/` (auth,
+channels, deployer, storage, skills, platform, manager) live in this repository, so their pull
+requests come here. If you are not sure where something belongs, open an issue here and we
+will move it.
 
 | You want to change | Repository |
 | --- | --- |
 | A page on the public website | `mawadao-agent-frontend` |
 | A member's workspace (chat, channels, inbox, boards) | `mawadao-agent-dashboard` |
 | How an agent runs, its tools or skills | `mawadao-agent-gateway` or `mawadao-agent-core` |
-| An API endpoint | the service that owns it (`mawadao-agent-api`, `-auth`, `-channels`…) |
+| An API endpoint | the service that owns it: `mawadao-agent-api`, `mawadao-agent-mission-control`, or a folder in `microservices/` here |
 | A table, column or index | `mawadao-agent-db` (a new migration) |
+| A small microservice (auth, channels, deployer, storage, skills, platform, manager) | `mawadao-agent`, in `microservices/<name>` |
 | How components are wired together, or the docs here | `mawadao-agent` |
 
 ## Workflow

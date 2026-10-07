@@ -10,12 +10,12 @@
 	path = runtime/gateway
 	url = https://github.com/mawadao/mawadao-agent-gateway.git
 	branch = main
-[submodule "services/api"]
-	path = services/api
+[submodule "microservices/api"]
+	path = microservices/api
 	url = https://github.com/mawadao/mawadao-agent-api.git
 	branch = main
-[submodule "services/mission-control"]
-	path = services/mission-control
+[submodule "microservices/mission-control"]
+	path = microservices/mission-control
 	url = https://github.com/mawadao/mawadao-agent-mission-control.git
 	branch = main
 [submodule "db"]

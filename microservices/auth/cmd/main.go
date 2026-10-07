@@ -8,10 +8,10 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/mawadao/mawadao-agent-auth/config"
-	"github.com/mawadao/mawadao-agent-auth/database"
-	"github.com/mawadao/mawadao-agent-auth/handlers"
-	"github.com/mawadao/mawadao-agent-auth/middleware"
+	"github.com/mawadao/mawadao-agent/microservices/auth/config"
+	"github.com/mawadao/mawadao-agent/microservices/auth/database"
+	"github.com/mawadao/mawadao-agent/microservices/auth/handlers"
+	"github.com/mawadao/mawadao-agent/microservices/auth/middleware"
 )
 
 func main() {

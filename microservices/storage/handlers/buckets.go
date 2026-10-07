@@ -10,8 +10,8 @@ import (
 	gcs "cloud.google.com/go/storage"
 	"github.com/gin-gonic/gin"
 
-	"github.com/mawadao/mawadao-agent-storage/config"
-	"github.com/mawadao/mawadao-agent-storage/storage"
+	"github.com/mawadao/mawadao-agent/microservices/storage/config"
+	"github.com/mawadao/mawadao-agent/microservices/storage/storage"
 )
 
 // BucketHandler defines HTTP handlers for bucket, folder, and file operations.

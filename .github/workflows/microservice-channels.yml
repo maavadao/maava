@@ -1,9 +1,15 @@
-name: CI
+name: microservices/channels
 
 on:
   push:
     branches: [main]
+    paths: ["microservices/channels/**", ".github/workflows/microservice-channels.yml"]
   pull_request:
+    paths: ["microservices/channels/**", ".github/workflows/microservice-channels.yml"]
+
+defaults:
+  run:
+    working-directory: microservices/channels
 
 jobs:
   build:
@@ -14,6 +20,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: microservices/channels/package-lock.json
       - run: npm ci
       - name: Syntax check
         run: for f in $(find src -name '*.js'); do node --check "$f"; done

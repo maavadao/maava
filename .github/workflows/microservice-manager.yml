@@ -1,9 +1,15 @@
-name: CI
+name: microservices/manager
 
 on:
   push:
     branches: [main]
+    paths: ["microservices/manager/**", ".github/workflows/microservice-manager.yml"]
   pull_request:
+    paths: ["microservices/manager/**", ".github/workflows/microservice-manager.yml"]
+
+defaults:
+  run:
+    working-directory: microservices/manager
 
 jobs:
   build:
