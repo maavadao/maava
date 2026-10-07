@@ -40,13 +40,12 @@ func Load() (*Config, error) {
 
 	env := getEnv("ENVIRONMENT", "development")
 
-	// In production, refuse to start with insecure default secrets
-	if env == "production" {
-		for envVar, insecureVal := range insecureDefaults {
-			val := os.Getenv(envVar)
-			if val == "" || val == insecureVal {
-				return nil, fmt.Errorf("FATAL: %s is not set or still has the insecure default value — set a strong random secret in production", envVar)
-			}
+	// Refuse to start without real secrets, in every environment: a published default would let
+	// anyone forge sessions and tokens.
+	for envVar, insecureVal := range insecureDefaults {
+		val := os.Getenv(envVar)
+		if val == "" || val == insecureVal {
+			return nil, fmt.Errorf("%s is not set or still has the published default value; set a strong random secret", envVar)
 		}
 	}
 
@@ -60,9 +59,9 @@ func Load() (*Config, error) {
 		MicrosoftClientSecret: getEnv("MICROSOFT_CLIENT_SECRET", ""),
 		MicrosoftRedirectURL:  getEnv("MICROSOFT_REDIRECT_URL", "http://localhost:8080/auth/microsoft/callback"),
 		MicrosoftTenantID:     getEnv("MICROSOFT_TENANT_ID", "common"),
-		SessionSecret:         getEnv("SESSION_SECRET", "change-this-secret-key"),
+		SessionSecret:         os.Getenv("SESSION_SECRET"),
 		FrontendURL:           getEnv("FRONTEND_URL", "http://localhost:3000"),
-		JWTSecret:             getEnv("JWT_SECRET", "change-this-jwt-secret"),
+		JWTSecret:             os.Getenv("JWT_SECRET"),
 		OIDCClientID:          getEnv("OIDC_CLIENT_ID", "mawadao-web"),
 		OIDCIssuer:            getEnv("OIDC_ISSUER", ""),
 		OIDCPrivateKeyPEM:     getEnv("OIDC_PRIVATE_KEY_PEM", ""),

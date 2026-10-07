@@ -500,7 +500,7 @@ const OPENCLAW_GATEWAY_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN || "";
 /** Shared env vars injected into every tenant backend */
 const SHARED_ENV = {
   DATABASE_URL: process.env.DATABASE_URL || "",
-  JWT_SECRET: process.env.JWT_SECRET || "change-this-jwt-secret",
+  JWT_SECRET: process.env.JWT_SECRET || "",
   MOONSHOT_API_KEY: process.env.MOONSHOT_API_KEY || "",
   OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "",
   BRAVE_API_KEY: process.env.BRAVE_API_KEY || "",
