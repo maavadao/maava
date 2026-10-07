@@ -1,6 +1,6 @@
-# PicoClaw PaaS Control-Plane API — Design (RBAC + Instance Management)
+# mawaDao Agent Manager API — Design (RBAC + Instance Management)
 
-> Multi-tenant control plane that manages customer PicoClaw instances running on
+> Multi-tenant control plane that manages customer mawaDao Agent core instances running on
 > Kubernetes. Each **instance** = one launcher (`:18800`) + managed gateway
 > (`:18790`) pod, isolated per customer namespace. The control plane never
 > exposes the launcher/gateway directly — every instance operation goes through
@@ -16,7 +16,7 @@
 ## 1. Architecture at a glance
 
 ```text
-customer ──► PaaS API (this doc) ──► RBAC check ──► instance proxy ──► launcher :18800 ──► gateway :18790
+customer ──► manager API (this doc) ──► RBAC check ──► instance proxy ──► launcher :18800 ──► gateway :18790
                  │                                        ▲
                  ├─ Postgres (tenants, RBAC, instances)   │ service-account session
                  └─ audit log                             │ (platform-held launcher password)
@@ -24,8 +24,8 @@ customer ──► PaaS API (this doc) ──► RBAC check ──► instance p
 
 - The platform owns each instance's launcher dashboard password (generated at
   provision time, stored encrypted). Customers never see it; they authenticate
-  to the **PaaS API** only.
-- The PaaS API maintains a launcher session cookie per instance (re-login on
+  to the **manager API** only.
+- The manager API maintains a launcher session cookie per instance (re-login on
   401) and forwards allowed calls.
 - Instance-level RBAC decides *which* launcher endpoints a caller may reach
   (e.g. a `viewer` can read config and logs, only an `admin` can rotate tokens
@@ -180,13 +180,13 @@ allow iff required_permission ∈ perms
 | PUT | `/v1/instances/{instance_id}/role-bindings/{user_id}` | `org:members:manage` | `{role}` — instance-scoped override. |
 | DELETE | `/v1/instances/{instance_id}/role-bindings/{user_id}` | `org:members:manage` | |
 
-### 4.5 Instance proxy (mapped to the PicoClaw launcher API)
+### 4.5 Instance proxy (mapped to the mawaDao Agent core launcher API)
 
 All under `/v1/instances/{instance_id}/…`; the control plane injects the
 launcher session and forwards. Response bodies are the launcher's, unchanged
 unless noted. Mapping to the launcher reference:
 
-| PaaS route | → Launcher route | Permission |
+| manager route | → Launcher route | Permission |
 | --- | --- | --- |
 | GET `/gateway/status` | GET `/api/gateway/status` | `instance:read` |
 | POST `/gateway/start` / `/stop` / `/restart` | same | `instance:lifecycle` |
@@ -352,7 +352,7 @@ CREATE TABLE api_keys (
 CREATE INDEX ON api_keys (org_id) WHERE revoked_at IS NULL;
 
 -- ===================================================================
--- Instances (the managed PicoClaw launcher+gateway units)
+-- Instances (the managed mawaDao Agent core launcher+gateway units)
 -- ===================================================================
 CREATE TABLE plans (
     id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -533,10 +533,10 @@ INSERT INTO permissions (id) VALUES
 1. **Launcher password is platform-owned.** The launcher's single-password auth
    is unusable for multi-user RBAC, so the platform treats it as an internal
    service credential (`instance_credentials`) and layers real RBAC in front.
-2. **Proxy, don't reimplement.** The PaaS routes in §4.5 map 1:1 onto launcher
+2. **Proxy, don't reimplement.** The manager routes in §4.5 map 1:1 onto launcher
    endpoints, so the control plane stays a thin policy layer and inherits
    launcher-side validation (`validateConfig`, secret masking, etc.).
-3. **Instance-scoped role bindings** cover the common PaaS ask ("give this
+3. **Instance-scoped role bindings** cover the common manager ask ("give this
    contractor access to one bot only") without complicating the org model.
 4. **API keys narrow, never widen** — stored as an explicit permission array
    intersected with live role resolution, so revoking a user's role instantly

@@ -1,12 +1,12 @@
-# PicoClaw PaaS Control Plane — Endpoint Reference
+# mawaDao Agent Manager — Endpoint Reference
 
 > HTTP reference for the control-plane API implemented in [app/](app/)
-> (FastAPI, `app.main:app`). Design rationale: [paas-api-design.md](paas-api-design.md).
+> (FastAPI, `app.main:app`). Design rationale: [design.md](design.md).
 > Interactive OpenAPI docs are served at `/docs` when the app is running.
 
 | Service | Default listen | Purpose |
 | --- | --- | --- |
-| PaaS Control Plane | `:8000` (uvicorn default) | Tenant auth, orgs, RBAC, instance management, RBAC-gated proxy to each instance's PicoClaw launcher |
+| manager Control Plane | `:8000` (uvicorn default) | Tenant auth, orgs, RBAC, instance management, RBAC-gated proxy to each instance's mawaDao Agent core launcher |
 
 ---
 
@@ -42,7 +42,7 @@ if api_key: perms ∩= api_key.permissions     # keys only narrow
 ```
 
 Built-in roles: `owner`, `admin`, `operator`, `developer`, `viewer`,
-`billing`. Full role → permission matrix: [paas-api-design.md §3.3](paas-api-design.md).
+`billing`. Full role → permission matrix: [design.md §3.3](design.md).
 
 ---
 
@@ -177,7 +177,7 @@ Lists the caller's own orgs. `200 {"data":[{id,slug,name,status,created_at}]}`.
 // 201 POST /v1/orgs/{org_id}/invitations
 {
   "id": "uuid", "email": "new@acme.com",
-  "expires_at": "…",                // TTL 7 days (PAAS_INVITATION_TTL_DAYS)
+  "expires_at": "…",                // TTL 7 days (MANAGER_INVITATION_TTL_DAYS)
   "accepted_at": null, "created_at": "…",
   "token": "…"                      // returned ONCE; deliver to the invitee
 }
@@ -300,7 +300,7 @@ mapped permission, authenticates to the instance's launcher with the
 platform-held password (cached session cookie, auto re-login on 401), forwards
 the request, and returns the launcher's response body unchanged. Request and
 response shapes are therefore the **launcher's own** — see
-[api-reference.md](api-reference.md).
+[launcher-api.md](launcher-api.md).
 
 Proxy-layer errors (before the launcher is reached):
 
@@ -311,7 +311,7 @@ Proxy-layer errors (before the launcher is reached):
 
 ### Route → permission map
 
-| Method | PaaS subpath | → Launcher route | Permission |
+| Method | manager subpath | → Launcher route | Permission |
 | --- | --- | --- | --- |
 | `GET` | `gateway/status` | `GET /api/gateway/status` | `instance:read` |
 | `POST` | `gateway/start` · `gateway/stop` · `gateway/restart` | same | `instance:lifecycle` |
@@ -410,7 +410,7 @@ POST/GET /v1/orgs/{org}/instances
 GET/PATCH/DELETE /v1/instances/{id}     POST /v1/instances/{id}/{suspend,resume}
 GET /v1/instances/{id}/role-bindings    PUT/DELETE /v1/instances/{id}/role-bindings/{user}
 
-# proxied to the instance's PicoClaw launcher (RBAC-gated, see §9):
+# proxied to the instance's mawaDao Agent core launcher (RBAC-gated, see §9):
 GET/POST /v1/instances/{id}/gateway/{status,start,stop,restart,logs,logs/clear}
 GET/PUT/PATCH/POST /v1/instances/{id}/config[/reset|/test-command-patterns]
 GET/POST/PUT/DELETE /v1/instances/{id}/models[...]

@@ -1,14 +1,14 @@
-# PicoClaw HTTP API Reference
+# mawaDao Agent core HTTP API Reference
 
-> OpenAPI-style reference for the two HTTP services shipped with the PicoClaw
+> OpenAPI-style reference for the two HTTP services shipped with the mawaDao Agent core
 > launcher image. The launcher binary (`picoclaw-launcher`) embeds the Vue
 > dashboard and proxies browser traffic to a managed `picoclaw gateway`
 > subprocess.
 
 | Service | Process | Default listen | Default port | Purpose |
 | --- | --- | --- | --- | --- |
-| **Launcher API** | `picoclaw-launcher` | loopback (`127.0.0.1`) — overridden by `-public`/`-host` or `PICOCLAW_LAUNCHER_HOST` | **18800** | Web dashboard, config CRUD, model catalog, OAuth login flows, gateway lifecycle control, session history, skill management |
-| **Gateway API** | `picoclaw gateway` | loopback (`127.0.0.1`) — overridden by `gateway.host` or `PICOCLAW_GATEWAY_HOST` | **18790** | Shared webhook receiver, channel runtime health, runtime events, config hot-reload, managed child of the launcher |
+| **Launcher API** | `picoclaw-launcher` | loopback (`127.0.0.1`) — overridden by `-public`/`-host` or `CORE_LAUNCHER_HOST` | **18800** | Web dashboard, config CRUD, model catalog, OAuth login flows, gateway lifecycle control, session history, skill management |
+| **Gateway API** | `picoclaw gateway` | loopback (`127.0.0.1`) — overridden by `gateway.host` or `CORE_GATEWAY_HOST` | **18790** | Shared webhook receiver, channel runtime health, runtime events, config hot-reload, managed child of the launcher |
 
 The Docker compose file maps both ports to the host (`18800:18800`, `18790:18790`)
 and overrides the gateway host to `0.0.0.0` so reverse proxies / webhooks can

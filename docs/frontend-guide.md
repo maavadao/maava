@@ -1,7 +1,7 @@
-# Frontend Developer Guide — PicoClaw PaaS Dashboard
+# Frontend Developer Guide — mawaDao Agent Manager Dashboard
 
 > How to build the customer dashboard against the control-plane API.
-> Endpoint details: [paas-api-endpoints.md](paas-api-endpoints.md).
+> Endpoint details: [endpoints.md](endpoints.md).
 > Base URL below assumed as `https://api.example.com` (dev: `http://localhost:8000`).
 > Interactive playground: `/docs` (Swagger UI) on the running API.
 
@@ -13,16 +13,16 @@ Three nouns drive the whole UI:
 
 1. **Org** — the tenant. A user can belong to several orgs with a different
    role in each. Everything else lives inside an org.
-2. **Instance** — one managed PicoClaw bot (launcher + gateway in the cloud).
+2. **Instance** — one managed mawaDao Agent core bot (launcher + gateway in the cloud).
    Has a lifecycle `status` you must render prominently.
 3. **Permission** — what the current user may do *in the current org/instance*.
    The UI never hardcodes "is admin?" checks — it derives visibility from the
    role's permission list (see §5).
 
-Instance pages are mostly a **remote control for the PicoClaw launcher**: the
+Instance pages are mostly a **remote control for the mawaDao Agent core launcher**: the
 `/v1/instances/{id}/…` proxy routes return the launcher's own JSON unchanged,
 so the dashboard's config/models/sessions screens are built against the
-launcher payloads documented in [api-reference.md](api-reference.md).
+launcher payloads documented in [launcher-api.md](launcher-api.md).
 
 ---
 
@@ -189,7 +189,7 @@ On switch, refetch roles + instances for that org.
 ### 4.4 Instance detail — `/o/{org}/instances/{id}`
 
 Tabs, each mapping to proxy routes (launcher payloads, see
-[api-reference.md](api-reference.md) for shapes):
+[launcher-api.md](launcher-api.md) for shapes):
 
 | Tab | Calls | Needs permission |
 | --- | --- | --- |
@@ -311,7 +311,7 @@ Caveats:
   handle `403` gracefully anyway (see §6).
 - `GET /v1/orgs/{org_id}/roles` itself requires `org:roles:read` (viewer
   doesn't have it). Fall back to a bundled copy of the built-in role matrix
-  ([paas-api-design.md §3.3](paas-api-design.md)) for role names you can't
+  ([design.md §3.3](design.md)) for role names you can't
   resolve via the API.
 
 ---

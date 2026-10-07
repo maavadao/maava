@@ -1,11 +1,11 @@
 # mawadao-agent-manager
 
 Control plane for hosted [`mawadao-agent-core`](https://github.com/mawadao/mawadao-agent-core)
-instances (PicoClaw launcher + gateway pods on Kubernetes), with org- and instance-scoped
-roles, API keys and an audit log. Design doc: [docs/paas-api-design.md](docs/paas-api-design.md).
-Endpoint reference: [docs/paas-api-endpoints.md](docs/paas-api-endpoints.md). Frontend
+instances (mawaDao Agent core launcher + gateway pods on Kubernetes), with org- and instance-scoped
+roles, API keys and an audit log. Design doc: [docs/design.md](docs/design.md).
+Endpoint reference: [docs/endpoints.md](docs/endpoints.md). Frontend
 integration guide: [docs/frontend-guide.md](docs/frontend-guide.md). Launcher API:
-[docs/api-reference.md](docs/api-reference.md).
+[docs/launcher-api.md](docs/launcher-api.md).
 
 Part of [mawaDao Agent](https://github.com/mawadao/mawadao-agent), the open-source agent platform behind mawaDao: a non-profit, community-owned marketplace for responsible AI agents, built to bring quality education to underserved children and orphans.
 
@@ -21,9 +21,9 @@ Defaults to SQLite (`paas.db`); tables and seed data (permission catalog,
 built-in roles, default plans) are created on startup. For production set:
 
 ```bash
-PAAS_DATABASE_URL=postgresql+psycopg://user:pass@host/paas
-PAAS_JWT_SECRET=<32+ random bytes>
-PAAS_ENCRYPTION_KEY=<Fernet key>   # python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+MANAGER_DATABASE_URL=postgresql+psycopg://user:pass@host/paas
+MANAGER_JWT_SECRET=<32+ random bytes>
+MANAGER_ENCRYPTION_KEY=<Fernet key>   # python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
 
 ## Layout

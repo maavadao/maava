@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     proxy_timeout_seconds: float = 30.0
 
     class Config:
-        env_prefix = "PAAS_"
+        env_prefix = "MANAGER_"
         env_file = ".env"
 
     @property

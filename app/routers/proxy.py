@@ -1,6 +1,6 @@
-"""RBAC-gated reverse proxy onto each instance's PicoClaw launcher API.
+"""RBAC-gated reverse proxy onto each instance's mawaDao Agent core launcher API.
 
-Every rule below maps a PaaS route under /v1/instances/{instance_id}/... to a
+Every rule below maps a manager route under /v1/instances/{instance_id}/... to a
 launcher endpoint plus the permission required to call it (design doc §4.5).
 Anything not listed — notably /api/auth/*, /api/system/*, /api/update — is
 platform-only and returns 404 for tenants.
