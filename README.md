@@ -1,124 +1,43 @@
-# mawaDao Auth Service
+# mawadao-agent-auth
 
-A Golang authentication service using Gin that handles upstream Google/Microsoft sign-in and now exposes an OIDC authorization-code + PKCE surface for the mawaDao frontend.
+The sign-in service. It handles Google and Microsoft OAuth, issues the JWTs the other
+components trust, and acts as an OpenID Connect provider.
 
-## Features
+Part of [mawaDao Agent](https://github.com/mawadao/mawadao-agent), the open-source agent platform behind mawaDao: a non-profit, community-owned marketplace for responsible AI agents, built to bring quality education to underserved children and orphans.
 
-- Google OAuth 2.0 authentication flow
-- Microsoft OAuth 2.0 / OIDC authentication flow
-- OIDC provider endpoints for mawaDao frontends
-- Session management with secure cookies
-- User profile retrieval
-- CSRF protection with state tokens
-- RESTful API endpoints
+## Endpoints
 
-## Prerequisites
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/auth/google`, `/auth/google/callback` | Google sign-in |
+| GET | `/auth/microsoft`, `/auth/microsoft/callback` | Microsoft sign-in |
+| GET | `/auth/profile` | Current user |
+| GET | `/auth/logout` | Sign out |
+| GET | `/.well-known/openid-configuration`, `/oauth2/jwks` | OIDC discovery and keys |
+| GET/POST | `/oauth2/authorize`, `/oauth2/token` | OIDC authorisation code flow |
+| GET | `/health` | Health check |
 
-- Go 1.23 or higher
-- Google Cloud Console project with OAuth 2.0 credentials
+## Run it locally
 
-## Setup
-
-### 1. Google Cloud Console Setup
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable Google+ API
-4. Go to "Credentials" → "Create Credentials" → "OAuth client ID"
-5. Configure OAuth consent screen if prompted
-6. Create OAuth 2.0 Client ID:
-   - Application type: Web application
-   - Authorized redirect URIs: `http://localhost:8080/auth/google/callback`
-   - Copy the Client ID and Client Secret
-
-### 2. Environment Configuration
-
-1. Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Update `.env` with your credentials:
-   ```
-   GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
-   GOOGLE_CLIENT_SECRET=your-client-secret
-   SESSION_SECRET=your-random-secret-key
-   ```
-
-### 3. Install Dependencies
+Requires Go 1.23+ and Postgres with the `mawadao-agent-db` migrations applied.
 
 ```bash
-go mod download
+cp .env.example .env
+go run ./cmd       # http://localhost:8080
 ```
 
-### 4. Run the Application
+Checks: `go vet ./...`, `go test ./...`.
 
-```bash
-go run cmd/main.go
-```
+## Configuration
 
-The server will start on `http://localhost:8080`
+See [`.env.example`](.env.example). `JWT_SECRET` must match every service that verifies tokens.
+`OIDC_PRIVATE_KEY_PEM` and `OIDC_KEY_ID` sign OIDC ID tokens.
 
-## API Endpoints
+## Contributing
 
-- `GET /` - API information and available endpoints
-- `GET /auth/google` - Initiate Google OAuth login
-- `GET /auth/google/callback` - OAuth callback handler
-- `GET /.well-known/openid-configuration` - OIDC discovery document
-- `GET /oauth2/authorize` - OIDC authorization endpoint
-- `POST /oauth2/token` - OIDC token endpoint
-- `GET /oauth2/jwks` - OIDC JWKS endpoint
-- `GET /oauth2/userinfo` - OIDC userinfo endpoint
-- `GET /auth/profile` - Get current user profile (requires authentication)
-- `GET /auth/logout` - Logout and clear session
+Read the [contributing guide](https://github.com/mawadao/mawadao-agent/blob/main/CONTRIBUTING.md) before opening a pull request.
+Work lands on `main`; releases are tagged `vX.Y.Z` as described in [RELEASING.md](https://github.com/mawadao/mawadao-agent/blob/main/RELEASING.md).
 
-## mawaDao Frontend OIDC Flow
+## Licence
 
-1. The frontend redirects to `/oauth2/authorize` with `response_type=code`, `state`, and PKCE parameters.
-2. The auth service completes upstream Google or Microsoft authentication.
-3. The auth service redirects back to the frontend callback with an authorization code.
-4. The frontend exchanges the code at `/oauth2/token` and then establishes its own app session cookie.
-
-This replaces the older pattern of sending a long-lived auth JWT directly through the browser callback URL.
-
-## Usage Example
-
-1. Start the server
-2. Navigate to `http://localhost:8080/auth/google`
-3. You'll be redirected to Google's consent screen
-4. After authentication, you'll be redirected to your frontend URL
-5. Use `/auth/profile` to get user information
-6. Use `/auth/logout` to clear the session
-
-## Docker
-
-Build and run with Docker:
-
-```bash
-docker build -t googleauth .
-docker run -p 8080:8080 --env-file .env googleauth
-```
-
-## Project Structure
-
-```
-.
-├── cmd/
-│   └── main.go          # Application entry point
-├── config/
-│   └── config.go        # Configuration management
-├── handlers/
-│   └── auth.go          # OAuth handlers
-├── .env.example         # Environment variables template
-├── Dockerfile           # Docker configuration
-└── go.mod              # Go dependencies
-```
-
-## Security Notes
-
-- Always use HTTPS in production
-- Set `ENVIRONMENT=production` in production
-- Use a strong `SESSION_SECRET` (at least 32 random characters)
-- Use a persistent `OIDC_PRIVATE_KEY_PEM` in production so discovery/JWKS remain stable across deploys
-- Configure proper CORS settings for your frontend domain
-- Update `GOOGLE_REDIRECT_URL` to match your production domain
+Apache 2.0. See [LICENSE](LICENSE).
