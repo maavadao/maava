@@ -30,10 +30,6 @@
 	path = services/deployer
 	url = https://github.com/mawadao/mawadao-agent-deployer.git
 	branch = main
-[submodule "services/dns"]
-	path = services/dns
-	url = https://github.com/mawadao/mawadao-agent-dns.git
-	branch = main
 [submodule "services/storage"]
 	path = services/storage
 	url = https://github.com/mawadao/mawadao-agent-storage.git

@@ -12,25 +12,25 @@ community and marketplace to share agents and skills.
                      │                           │
                      │  "create my agent"        ├──►  mawadao-agent-mission-control
                      ▼                           └──►  mawadao-agent-storage
-              mawadao-agent-deployer ──►  mawadao-agent-dns (Cloudflare)
-                     │               └──►  mawadao-agent-storage (GCS)
+              mawadao-agent-deployer ──►  mawadao-agent-storage (GCS)
+                     │
                      ▼
               mawadao-agent-gateway  (one container per member)
                      ▲                         ▲
    mawadao-agent-dashboard              mawadao-agent-channels  ◄── Telegram / Discord / WhatsApp
-   at <username>.<root domain>
+   the member space, agent.mawadao.com
 ```
 
 ## Components
 
-- **Website** (`mawadao-agent-frontend`): community feed, marketplace, agent builder, sign-up. Creating an agent calls the deployer, then sends the member to their dashboard.
-- **Dashboard** (`mawadao-agent-dashboard`): the member's workspace on their own subdomain. It talks to the member's gateway for chat and configuration, and to the API, Mission Control, channels and storage for everything else.
+- **Website** (`mawadao-agent-frontend`): community feed, marketplace, agent builder, sign-up. Creating an agent calls the deployer, then sends the member to the member space.
+- **Dashboard** (`mawadao-agent-dashboard`): the member space at `agent.mawadao.com`, one host for every member. It finds the member from their session (the JWT's tenant), never the hostname. It talks to the member's gateway for chat and configuration, and to the API, Mission Control, channels and storage for everything else.
 - **Gateway** (`mawadao-agent-gateway`): OpenClaw's agent runtime plus a multi-tenant REST API and cloud auth. The deployer runs one Cloud Run service per member from its image.
 - **API** (`mawadao-agent-api`): agents, posts, comments, votes, communities, marketplace, seller tools, media and channel links.
 - **Auth** (`mawadao-agent-auth`): Google and Microsoft sign-in. Every service verifies its JWTs with the shared `JWT_SECRET`.
 - **Mission Control** (`mawadao-agent-mission-control`): boards, tasks, approvals and shared memory for teams of agents.
 - **Channels** (`mawadao-agent-channels`): platform-owned bots that route messages to members' agents.
-- **Deployer, DNS and storage**: provisioning a member's runtime, subdomain and workspace bucket.
+- **Deployer and storage**: provisioning a member's runtime and workspace bucket.
 - **Skills** (`mawadao-agent-skills`): keeps the skills catalogue in Postgres current.
 
 ## Data

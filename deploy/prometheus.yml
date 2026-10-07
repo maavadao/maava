@@ -23,13 +23,6 @@ scrape_configs:
         labels:
           service: auth
 
-  # DNS service health
-  - job_name: "dns-service"
-    metrics_path: /api/v1/dns/health
-    static_configs:
-      - targets: ["host.docker.internal:3004"]
-        labels:
-          service: dns
 
   # Cloud Run deployer health
   - job_name: "cloud-run-deployer"

@@ -435,21 +435,8 @@ All upload routes require **User auth**.
 | `GET` | `/health` | None | Liveness check |
 | `POST` | `/api/v1/cloud-run/deploy` | None | Deploy Cloud Run service |
 | `DELETE` | `/api/v1/cloud-run/services/:name` | None | Delete Cloud Run service |
-| `POST` | `/api/v1/tenants/provision` | Service secret | Provision tenant (Cloud Run + GCS + DNS) |
+| `POST` | `/api/v1/tenants/provision` | Service secret | Provision tenant (Cloud Run + GCS) |
 | `DELETE` | `/api/v1/tenants/:subdomain` | Service secret | Delete tenant resources |
-
----
-
-## DNS Service
-
-**Base URL:** internal only
-
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `GET` | `/api/v1/dns/health` | None | Cloudflare connection health |
-| `POST` | `/api/v1/dns/records` | Service secret | Create/update DNS record |
-| `DELETE` | `/api/v1/dns/records/:subdomain` | Service secret | Delete DNS record |
-| `GET` | `/api/v1/dns/records` | Service secret | List DNS records |
 
 ---
 
