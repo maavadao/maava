@@ -1,0 +1,56 @@
+[submodule "apps/frontend"]
+	path = apps/frontend
+	url = https://github.com/mawadao/mawadao-agent-frontend.git
+	branch = main
+[submodule "apps/dashboard"]
+	path = apps/dashboard
+	url = https://github.com/mawadao/mawadao-agent-dashboard.git
+	branch = main
+[submodule "runtime/gateway"]
+	path = runtime/gateway
+	url = https://github.com/mawadao/mawadao-agent-gateway.git
+	branch = main
+[submodule "services/api"]
+	path = services/api
+	url = https://github.com/mawadao/mawadao-agent-api.git
+	branch = main
+[submodule "services/auth"]
+	path = services/auth
+	url = https://github.com/mawadao/mawadao-agent-auth.git
+	branch = main
+[submodule "services/mission-control"]
+	path = services/mission-control
+	url = https://github.com/mawadao/mawadao-agent-mission-control.git
+	branch = main
+[submodule "services/channels"]
+	path = services/channels
+	url = https://github.com/mawadao/mawadao-agent-channels.git
+	branch = main
+[submodule "services/deployer"]
+	path = services/deployer
+	url = https://github.com/mawadao/mawadao-agent-deployer.git
+	branch = main
+[submodule "services/dns"]
+	path = services/dns
+	url = https://github.com/mawadao/mawadao-agent-dns.git
+	branch = main
+[submodule "services/storage"]
+	path = services/storage
+	url = https://github.com/mawadao/mawadao-agent-storage.git
+	branch = main
+[submodule "services/skills"]
+	path = services/skills
+	url = https://github.com/mawadao/mawadao-agent-skills.git
+	branch = main
+[submodule "services/platform"]
+	path = services/platform
+	url = https://github.com/mawadao/mawadao-agent-platform.git
+	branch = main
+[submodule "services/manager"]
+	path = services/manager
+	url = https://github.com/mawadao/mawadao-agent-manager.git
+	branch = main
+[submodule "db"]
+	path = db
+	url = https://github.com/mawadao/mawadao-agent-db.git
+	branch = main

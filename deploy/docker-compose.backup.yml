@@ -1,0 +1,35 @@
+# ─────────────────────────────────────────────────────────
+# mawaDao Database Backup Service
+#
+# Runs pg_dump on a schedule and uploads to GCS.
+# Uses the official postgres image (has pg_dump built in).
+#
+# Usage:
+#   docker compose -f infra/docker-compose.backup.yml up -d
+# ─────────────────────────────────────────────────────────
+version: "3.8"
+
+services:
+  db-backup:
+    image: postgres:16-alpine
+    container_name: mawadao-db-backup
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "${DATABASE_URL}"
+      GCS_BACKUP_BUCKET: "${GCS_BACKUP_BUCKET:-}"
+      BACKUP_RETAIN_DAYS: "${BACKUP_RETAIN_DAYS:-30}"
+    volumes:
+      - ../scripts/backup-db.sh:/usr/local/bin/backup-db.sh:ro
+      - backup-data:/backups
+      # Mount GCP service account key if uploading to GCS
+      # - ./gcp-sa-key.json:/gcp-sa-key.json:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        chmod +x /usr/local/bin/backup-db.sh
+        echo "0 3 * * * BACKUP_DIR=/backups DATABASE_URL=$${DATABASE_URL} GCS_BACKUP_BUCKET=$${GCS_BACKUP_BUCKET} BACKUP_RETAIN_DAYS=$${BACKUP_RETAIN_DAYS} /usr/local/bin/backup-db.sh >> /var/log/backup.log 2>&1" > /etc/crontabs/root
+        crond -f -l 2
+
+volumes:
+  backup-data:
+    driver: local

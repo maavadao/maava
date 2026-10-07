@@ -1,0 +1,15 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  submodules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Every submodule points at a pushed commit
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive

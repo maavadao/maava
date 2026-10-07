@@ -1,0 +1,48 @@
+# Prometheus configuration for mawaDao monitoring.
+# Scrapes metrics from the configuration API and Nginx stub_status.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Configuration API — Prometheus-compatible /metrics endpoint
+  - job_name: "configuration-api"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["host.docker.internal:3003"]
+        labels:
+          service: configuration-api
+          environment: production
+
+  # Auth service health (probe-style — check /health returns 200)
+  - job_name: "auth-service"
+    metrics_path: /health
+    static_configs:
+      - targets: ["host.docker.internal:8080"]
+        labels:
+          service: auth
+
+  # DNS service health
+  - job_name: "dns-service"
+    metrics_path: /api/v1/dns/health
+    static_configs:
+      - targets: ["host.docker.internal:3004"]
+        labels:
+          service: dns
+
+  # Cloud Run deployer health
+  - job_name: "cloud-run-deployer"
+    metrics_path: /health
+    static_configs:
+      - targets: ["host.docker.internal:3002"]
+        labels:
+          service: deployer
+
+  # Nginx metrics (requires ngx_http_stub_status_module)
+  - job_name: "nginx"
+    metrics_path: /nginx_status
+    static_configs:
+      - targets: ["host.docker.internal:9113"]
+        labels:
+          service: nginx-lb
