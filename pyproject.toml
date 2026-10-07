@@ -1,7 +1,7 @@
 [project]
-name = "agentplatform-api"
+name = "mawadao-agent-platform"
 version = "0.1.0"
-description = "Agent Platform API + agent runtime (Cloud Run)"
+description = "mawaDao Agent platform API: custom agents, skills, MCP servers and chat"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",

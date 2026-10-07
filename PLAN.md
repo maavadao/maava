@@ -132,7 +132,7 @@ Note: private resources are invisible even to owners/admins by default (privacy-
 3. **Storage** — tenant-prefixed paths, per-object signed URLs, no client access to bucket paths.
 4. **Runtime allowlist** — at session start the runtime resolves, through RLS-guarded queries, exactly which skills and MCP tools this user+agent may use. That list is frozen for the session. The model cannot invoke anything outside it; any attempt is logged as `status='denied'` in `tool_calls`.
 
-### Leakage rules (implemented as tests in `apps/api/tests/test_rls_leakage.py`)
+### Leakage rules (implemented as tests in `tests/test_rls_leakage.py`)
 
 - User A must never receive skill content, MCP tool schemas, tool outputs, or messages belonging to user B's private resources — asserted via integration tests that run as two tenants.
 - A shared (org-visible) agent referencing the owner's **private** skill/MCP: V1 rule = attachment is only usable if the resource itself is org-visible. Block saving an org-visible agent with private attachments; show a "make attachments org-visible?" prompt. (Avoids the confused-deputy problem entirely in V1.)
@@ -211,9 +211,9 @@ OpenRouter is the multi-provider gateway; we build no gateway of our own. The AP
 ## 10. Build Phases
 
 **Phase 0 — Foundations** ✅ scaffolded
-- Monorepo (`apps/api` Python/FastAPI, `apps/web`, `packages/shared`), CI, Terraform skeleton
+- Python/FastAPI service repo, CI, Terraform skeleton
 - Schema + RLS migrations, app role with least privilege
-- Two-tenant leakage test harness (`apps/api/tests/`)
+- Two-tenant leakage test harness (`tests/`)
 
 **Phase 1 — Agents & Chat**
 - Agents CRUD + builder UI

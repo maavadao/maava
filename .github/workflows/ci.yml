@@ -25,11 +25,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install API package
-        run: pip install -e "apps/api[dev]"
+        run: pip install -e ".[dev]"
       - name: Lint
-        run: ruff check apps/api
+        run: ruff check .
       - name: Run migrations
         run: python db/migrate.py
       - name: Two-tenant RLS leakage suite
-        working-directory: apps/api
         run: python -m pytest -q

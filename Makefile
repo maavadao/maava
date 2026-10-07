@@ -10,16 +10,16 @@ migrate:
 	python db/migrate.py
 
 api:
-	cd apps/api && uvicorn app.main:app --reload --port 8080
+	uvicorn app.main:app --reload --port 8080
 
 test:
-	cd apps/api && python -m pytest -q
+	python -m pytest -q
 
 lint:
-	cd apps/api && ruff check .
+	ruff check .
 
 demo-seed:
-	python demo-frontend-app/seed_demo.py
+	python examples/demo-frontend/seed_demo.py
 
 demo-frontend:
-	cd demo-frontend-app && npm install && npm run dev
+	cd examples/demo-frontend && npm install && npm run dev

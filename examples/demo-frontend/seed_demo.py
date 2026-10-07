@@ -3,7 +3,7 @@
 Dev-only: uses the admin DSN to insert rows and the HS256 dev secret to mint
 the token — mirrors what the real IdP + signup flow will do later.
 
-Usage:  python demo-frontend-app/seed_demo.py
+Usage:  python examples/demo-frontend/seed_demo.py
 """
 import datetime as dt
 import os
