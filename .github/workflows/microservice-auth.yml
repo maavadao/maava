@@ -7,6 +7,10 @@ on:
   pull_request:
     paths: ["microservices/auth/**", ".github/workflows/microservice-auth.yml"]
 
+permissions:
+  contents: read
+  id-token: write
+
 defaults:
   run:
     working-directory: microservices/auth
@@ -22,5 +26,10 @@ jobs:
       - run: go vet ./...
       - run: go build ./...
       - run: go test ./...
-      - name: Build image
-        run: docker build -t ci .
+
+  image:
+    needs: build
+    uses: mawadao/.github/.github/workflows/cloud-run.yml@main
+    with:
+      image: mawadao-agent-auth
+      context: microservices/auth

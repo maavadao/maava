@@ -7,6 +7,10 @@ on:
   pull_request:
     paths: ["microservices/deployer/**", ".github/workflows/microservice-deployer.yml"]
 
+permissions:
+  contents: read
+  id-token: write
+
 defaults:
   run:
     working-directory: microservices/deployer
@@ -24,5 +28,10 @@ jobs:
       - run: npm ci
       - name: Syntax check
         run: for f in $(find src -name '*.js'); do node --check "$f"; done
-      - name: Build image
-        run: docker build -t ci .
+
+  image:
+    needs: build
+    uses: mawadao/.github/.github/workflows/cloud-run.yml@main
+    with:
+      image: mawadao-agent-deployer
+      context: microservices/deployer

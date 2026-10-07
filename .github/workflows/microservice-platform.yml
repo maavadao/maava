@@ -7,6 +7,10 @@ on:
   pull_request:
     paths: ["microservices/platform/**", ".github/workflows/microservice-platform.yml"]
 
+permissions:
+  contents: read
+  id-token: write
+
 defaults:
   run:
     working-directory: microservices/platform
@@ -38,5 +42,10 @@ jobs:
         run: python db/migrate.py
       - name: Two-tenant RLS leakage suite
         run: python -m pytest -q
-      - name: Build image
-        run: docker build -t ci .
+
+  image:
+    needs: build
+    uses: mawadao/.github/.github/workflows/cloud-run.yml@main
+    with:
+      image: mawadao-agent-platform
+      context: microservices/platform
