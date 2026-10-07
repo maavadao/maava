@@ -1,7 +1,7 @@
 /**
  * Cloud Run Deploy Service
  * Loads a base YAML template, applies overrides, validates, and deploys to Google Cloud Run.
- * Before deploying, creates a GCS folder via bucket-manager and mounts it into the container.
+ * Before deploying, creates a GCS folder via mawadao-agent-storage and mounts it into the container.
  */
 
 const fs = require("node:fs");
@@ -36,19 +36,19 @@ function normaliseFolders(raw) {
 }
 
 /**
- * Create one or more folders in GCS via bucket-manager.
+ * Create one or more folders in GCS via mawadao-agent-storage.
  * Throws an ApiError (502) if any folder fails to be created, listing every failure.
  * @param {string[]} folders - Array of folder paths (e.g. ["agents/main", "agents/cron"])
  * @returns {Promise<string[]>} Successfully created folder paths.
  */
 async function createAgentFolders(folders) {
-  const { url, bucket } = config.bucketManager;
+  const { url, bucket } = config.storage;
   if (!bucket) {
     throw new ApiError(
-      "BUCKET_MANAGER_BUCKET is not configured. Cannot create GCS folders.",
+      "STORAGE_BUCKET is not configured. Cannot create GCS folders.",
       502,
-      "BUCKET_MANAGER_NOT_CONFIGURED",
-      "Set the BUCKET_MANAGER_BUCKET environment variable on the cloud-run-deployer."
+      "STORAGE_NOT_CONFIGURED",
+      "Set the STORAGE_BUCKET environment variable on the mawadao-agent-deployer."
     );
   }
   if (!folders.length) return [];
@@ -57,8 +57,8 @@ async function createAgentFolders(folders) {
   const created = [];
   const failed = [];
 
-  const { apiSecret } = config.bucketManager;
-  const authHeaders = apiSecret ? { "X-Bucket-Manager-Secret": apiSecret } : {};
+  const { apiSecret } = config.storage;
+  const authHeaders = apiSecret ? { "X-Storage-Secret": apiSecret } : {};
 
   await Promise.all(
     folders.map(async (folderPath) => {
@@ -71,14 +71,14 @@ async function createAgentFolders(folders) {
         if (!res.ok) {
           const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
           const reason = body?.error ?? body?.message ?? `HTTP ${res.status}`;
-          console.error(`[bucket-manager] Folder "${folderPath}" failed (${res.status}): ${reason}`);
+          console.error(`[mawadao-agent-storage] Folder "${folderPath}" failed (${res.status}): ${reason}`);
           failed.push({ path: folderPath, status: res.status, reason });
         } else {
-          console.log(`[bucket-manager] Folder created: gs://${bucket}/${folderPath}/`);
+          console.log(`[mawadao-agent-storage] Folder created: gs://${bucket}/${folderPath}/`);
           created.push(folderPath);
         }
       } catch (err) {
-        console.error(`[bucket-manager] Network error creating folder "${folderPath}": ${err.message}`);
+        console.error(`[mawadao-agent-storage] Network error creating folder "${folderPath}": ${err.message}`);
         failed.push({ path: folderPath, status: null, reason: err.message });
       }
     })
@@ -90,7 +90,7 @@ async function createAgentFolders(folders) {
       `Failed to create ${failed.length} of ${folders.length} GCS folder(s): ${summary}`,
       502,
       "FOLDER_CREATION_FAILED",
-      "Check that bucket-manager is running, BUCKET_MANAGER_URL is correct, and the service account has storage.objects.create permission."
+      "Check that mawadao-agent-storage is running, STORAGE_URL is correct, and the service account has storage.objects.create permission."
     );
   }
 
@@ -119,7 +119,7 @@ async function createAgentFolders(folders) {
 function injectGCSVolumeMounts(serviceSpec, bucketName, folders) {
   if (!folders.length) return;
 
-  const baseMountPath = config.bucketManager.mountPath;
+  const baseMountPath = config.storage.mountPath;
   const template = serviceSpec.template;
   if (!template) return;
 
@@ -432,7 +432,7 @@ function validateConfig(serviceSpec, serviceId, projectId, region) {
  * @param {string}   [options.description]
  * @param {boolean}  [options.publicAccess]
  * @param {string|string[]|Array<{path:string}>} [options.folders]
- *   GCS folders to create (via bucket-manager) and mount into the container.
+ *   GCS folders to create (via mawadao-agent-storage) and mount into the container.
  *   Examples:
  *     "agents/main"
  *     ["agents/main", "agents/cron"]
@@ -462,8 +462,8 @@ async function deploy(options = {}) {
 
   validateConfig(serviceSpec, serviceId, projectId, region);
 
-  // Create requested GCS folders via bucket-manager, then mount them into the container.
-  const { bucket: bucketName } = config.bucketManager;
+  // Create requested GCS folders via mawadao-agent-storage, then mount them into the container.
+  const { bucket: bucketName } = config.storage;
   const requestedFolders = normaliseFolders(options.folders);
   const createdFolders = await createAgentFolders(requestedFolders);
   if (createdFolders.length && bucketName) {

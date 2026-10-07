@@ -71,13 +71,13 @@ router.use(requireDeployerAuth);
  *   - description     (string, optional)
  *   - publicAccess    (boolean,optional)  Allow unauthenticated access (default false)
  *   - folders         (string | string[] | Array<{path:string}>, optional)
- *       GCS folders to create via bucket-manager and mount into the container.
+ *       GCS folders to create via mawadao-agent-storage and mount into the container.
  *       Examples:
  *         "agents/main"
  *         ["agents/main", "agents/cron"]
  *         [{ "path": "agents/main" }, { "path": "agents/cron" }]
- *       Each folder is created in BUCKET_MANAGER_BUCKET and mounted under
- *       BUCKET_MANAGER_MOUNT_PATH (/home/node/.openclaw by default).
+ *       Each folder is created in STORAGE_BUCKET and mounted under
+ *       STORAGE_MOUNT_PATH (/home/node/.openclaw by default).
  *       The first folder is mounted at the base path; subsequent folders are
  *       mounted at <basePath>/<folderPath>.
  *
@@ -97,9 +97,9 @@ router.post(
     const gatewayToken = findEnv("OPENCLAW_GATEWAY_TOKEN");
     const userId = findEnv("USER_ID");
     const subdomain = findEnv("SUBDOMAIN");
-    const gcsBucket = findEnv("GCS_BUCKET") || config.bucketManager.bucket;
+    const gcsBucket = findEnv("GCS_BUCKET") || config.storage.bucket;
 
-    if (gatewayToken && userId && config.bucketManager.url) {
+    if (gatewayToken && userId && config.storage.url) {
       // Non-blocking — seed failure must not prevent the deploy response
       seedTenantBucketConfig(gcsBucket, userId, gatewayToken, result.serviceUrl, subdomain)
         .catch((err) => console.warn("[cloud-run/deploy] seedTenantBucketConfig failed (non-fatal):", err.message));

@@ -24,12 +24,12 @@ module.exports = {
   },
   // Bucket-manager integration: folder is created before each Cloud Run deploy,
   // then mounted as a GCS volume inside the container at /home/node/.openclaw.
-  bucketManager: {
-    url: process.env.BUCKET_MANAGER_URL || "http://localhost:8090",
-    bucket: process.env.BUCKET_MANAGER_BUCKET || "",
-    mountPath: process.env.BUCKET_MANAGER_MOUNT_PATH || "/home/node/.openclaw",
-    // Shared secret sent as X-Bucket-Manager-Secret on every write request.
-    // Must match BUCKET_MANAGER_API_SECRET on the bucket-manager service.
-    apiSecret: process.env.BUCKET_MANAGER_API_SECRET || "",
+  storage: {
+    url: process.env.STORAGE_URL || "http://localhost:8090",
+    bucket: process.env.STORAGE_BUCKET || "",
+    mountPath: process.env.STORAGE_MOUNT_PATH || "/home/node/.openclaw",
+    // Shared secret sent as X-Storage-Secret on every write request.
+    // Must match STORAGE_API_SECRET on the mawadao-agent-storage service.
+    apiSecret: process.env.STORAGE_API_SECRET || "",
   },
 };

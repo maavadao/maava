@@ -1,7 +1,7 @@
 {
   "name": "mawadao-agent-deployer",
   "version": "0.1.0",
-  "description": "Deploy Cloud Run services from YAML template and overrides",
+  "description": "mawaDao Agent deployer: provisions each member's hosted agent",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

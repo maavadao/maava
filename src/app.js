@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
 
 /**
  * GET /health
- * Deep health check: verifies GCP credentials and bucket-manager reachability.
+ * Deep health check: verifies GCP credentials and mawadao-agent-storage reachability.
  * Returns 200 when all checks pass, 503 when any check fails.
  *
  * Response shape:
@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
  *   uptime: number,
  *   checks: {
  *     gcp:            { ok: boolean, projectId: string, region: string, error?: string },
- *     bucketManager:  { ok: boolean, url: string, bucket: string, error?: string },
+ *     storage:  { ok: boolean, url: string, bucket: string, error?: string },
  *     template:       { ok: boolean, path: string, error?: string }
  *   }
  * }
@@ -68,24 +68,24 @@ app.get("/healthz", async (req, res) => {
   }
 
   // ── 2. Bucket-manager reachability ──────────────────────────────────────────
-  const bmUrl = config.bucketManager.url.replace(/\/+$/, "");
+  const bmUrl = config.storage.url.replace(/\/+$/, "");
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 4000);
     const bmRes = await fetch(`${bmUrl}/health`, { signal: controller.signal });
     clearTimeout(timeout);
     const bmBody = await bmRes.json().catch(() => ({}));
-    checks.bucketManager = {
+    checks.storage = {
       ok: bmRes.ok,
       url: bmUrl,
-      bucket: config.bucketManager.bucket || "(not set)",
+      bucket: config.storage.bucket || "(not set)",
       ...(bmRes.ok ? {} : { error: bmBody?.error ?? `HTTP ${bmRes.status}` }),
     };
   } catch (err) {
-    checks.bucketManager = {
+    checks.storage = {
       ok: false,
       url: bmUrl,
-      bucket: config.bucketManager.bucket || "(not set)",
+      bucket: config.storage.bucket || "(not set)",
       error: err.name === "AbortError" ? "timeout after 4s" : err.message,
     };
   }

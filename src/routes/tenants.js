@@ -20,9 +20,9 @@ const config = require("../config");
 /** The member space (mawadao-agent-dashboard) that talks to every tenant's runtime. */
 const MEMBER_SPACE_URL = (process.env.MEMBER_SPACE_URL || "https://agent.mawadao.com").replace(/\/+$/, "");
 
-/** bucket-manager service URL and secret for creating GCS folders + seeding openclaw.json */
-const BUCKET_MANAGER_URL = process.env.BUCKET_MANAGER_URL || "";
-const BUCKET_MANAGER_API_SECRET = process.env.BUCKET_MANAGER_API_SECRET || "";
+/** mawadao-agent-storage service URL and secret for creating GCS folders + seeding openclaw.json */
+const STORAGE_URL = process.env.STORAGE_URL || "";
+const STORAGE_API_SECRET = process.env.STORAGE_API_SECRET || "";
 
 /**
  * GCP project ID for GCS bucket creation — may differ from the Cloud Run project.
@@ -67,12 +67,12 @@ function getGCSCredentials() {
  * Gateway token and Cloud Run serviceUrl are injected so authentication and proxy trust work
  * correctly from the first container start.
  *
- * @param {string} gatewayToken  - Auth token for the OpenClaw gateway.
+ * @param {string} gatewayToken  - Auth token for the mawaDao Agent gateway.
  * @param {string} [serviceUrl]  - Cloud Run service URL (e.g. https://mawadao-foo-xxxx.run.app).
  *                                 Added to trustedProxies and controlUi.allowedOrigins so the
  *                                 gateway accepts requests routed through Cloud Run's load balancer.
  */
-function buildDefaultOpenclawConfig(gatewayToken, serviceUrl, subdomain) {
+function buildDefaultGatewayConfig(gatewayToken, serviceUrl, subdomain) {
   const now = new Date().toISOString();
 
   // Cloud Run generates two URL formats per service:
@@ -271,7 +271,7 @@ function buildDefaultOpenclawConfig(gatewayToken, serviceUrl, subdomain) {
 }
 
 /**
- * Calls the bucket-manager service to scaffold the per-user folder structure
+ * Calls the mawadao-agent-storage service to scaffold the per-user folder structure
  * inside a tenant bucket and seed openclaw.json on first provisioning.
  *
  * Bucket layout created:
@@ -284,31 +284,31 @@ function buildDefaultOpenclawConfig(gatewayToken, serviceUrl, subdomain) {
  * Non-fatal — logs warnings on failure rather than blocking provisioning.
  */
 async function seedTenantBucketConfig(gcsBucket, userId, gatewayToken, serviceUrl, subdomain) {
-  if (!BUCKET_MANAGER_URL) {
-    console.warn("[bucket-manager] BUCKET_MANAGER_URL not set — skipping folder scaffold and openclaw.json seeding");
+  if (!STORAGE_URL) {
+    console.warn("[mawadao-agent-storage] STORAGE_URL not set — skipping folder scaffold and openclaw.json seeding");
     return;
   }
 
   const headers = { "Content-Type": "application/json" };
-  if (BUCKET_MANAGER_API_SECRET) {
-    headers["X-Bucket-Manager-Secret"] = BUCKET_MANAGER_API_SECRET;
+  if (STORAGE_API_SECRET) {
+    headers["X-Storage-Secret"] = STORAGE_API_SECRET;
   }
 
   const createFolder = async (path) => {
     try {
-      const res = await fetch(`${BUCKET_MANAGER_URL}/api/v1/buckets/${encodeURIComponent(gcsBucket)}/folders`, {
+      const res = await fetch(`${STORAGE_URL}/api/v1/buckets/${encodeURIComponent(gcsBucket)}/folders`, {
         method: "POST",
         headers,
         body: JSON.stringify({ path }),
       });
       if (!res.ok) {
         const body = await res.text();
-        console.warn(`[bucket-manager] CreateFolder failed for ${gcsBucket}/${path} (HTTP ${res.status}): ${body}`);
+        console.warn(`[mawadao-agent-storage] CreateFolder failed for ${gcsBucket}/${path} (HTTP ${res.status}): ${body}`);
       } else {
-        console.log(`[bucket-manager] Created folder ${gcsBucket}/${path}`);
+        console.log(`[mawadao-agent-storage] Created folder ${gcsBucket}/${path}`);
       }
     } catch (err) {
-      console.warn(`[bucket-manager] CreateFolder request failed for ${gcsBucket}/${path}:`, err.message);
+      console.warn(`[mawadao-agent-storage] CreateFolder request failed for ${gcsBucket}/${path}:`, err.message);
     }
   };
 
@@ -320,10 +320,10 @@ async function seedTenantBucketConfig(gcsBucket, userId, gatewayToken, serviceUr
 
   // 2. Seed openclaw.json into {userId}/mountfolder/openclaw.json
   try {
-    const defaultConfig = buildDefaultOpenclawConfig(gatewayToken, serviceUrl, subdomain);
+    const defaultConfig = buildDefaultGatewayConfig(gatewayToken, serviceUrl, subdomain);
     const filePath = `${userId}/mountfolder/openclaw.json`;
     const fileRes = await fetch(
-      `${BUCKET_MANAGER_URL}/api/v1/buckets/${encodeURIComponent(gcsBucket)}/files/${filePath}`,
+      `${STORAGE_URL}/api/v1/buckets/${encodeURIComponent(gcsBucket)}/files/${filePath}`,
       {
         method: "PUT",
         headers,
@@ -332,16 +332,16 @@ async function seedTenantBucketConfig(gcsBucket, userId, gatewayToken, serviceUr
     );
     if (!fileRes.ok) {
       const body = await fileRes.text();
-      console.warn(`[bucket-manager] WriteFile failed for ${gcsBucket}/${filePath} (HTTP ${fileRes.status}): ${body}`);
+      console.warn(`[mawadao-agent-storage] WriteFile failed for ${gcsBucket}/${filePath} (HTTP ${fileRes.status}): ${body}`);
     } else {
-      console.log(`[bucket-manager] Seeded openclaw.json in ${gcsBucket}/${filePath}`);
+      console.log(`[mawadao-agent-storage] Seeded openclaw.json in ${gcsBucket}/${filePath}`);
     }
   } catch (err) {
-    console.warn(`[bucket-manager] WriteFile request failed for ${gcsBucket}/${userId}/mountfolder/openclaw.json:`, err.message);
+    console.warn(`[mawadao-agent-storage] WriteFile request failed for ${gcsBucket}/${userId}/mountfolder/openclaw.json:`, err.message);
   }
 
   // 3. Seed auth-profiles.json with actual API key credentials
-  //    OpenClaw resolves keys in order: auth-profiles.json → env var → models.json apiKey.
+  //    mawaDao Agent resolves keys in order: auth-profiles.json → env var → models.json apiKey.
   //    We must seed this file so that even if the container MOONSHOT_API_KEY env var is
   //    empty (e.g. when the deployer itself doesn't have the key set), the agent still
   //    authenticates correctly on first boot.
@@ -363,7 +363,7 @@ async function seedTenantBucketConfig(gcsBucket, userId, gatewayToken, serviceUr
       const authProfileStore = { version: 1, profiles: authProfiles };
       const authPath = `${userId}/mountfolder/agents/main/agent/auth-profiles.json`;
       const authRes = await fetch(
-        `${BUCKET_MANAGER_URL}/api/v1/buckets/${encodeURIComponent(gcsBucket)}/files/${authPath}`,
+        `${STORAGE_URL}/api/v1/buckets/${encodeURIComponent(gcsBucket)}/files/${authPath}`,
         {
           method: "PUT",
           headers,
@@ -372,24 +372,24 @@ async function seedTenantBucketConfig(gcsBucket, userId, gatewayToken, serviceUr
       );
       if (!authRes.ok) {
         const body = await authRes.text();
-        console.warn(`[bucket-manager] WriteFile failed for ${gcsBucket}/${authPath} (HTTP ${authRes.status}): ${body}`);
+        console.warn(`[mawadao-agent-storage] WriteFile failed for ${gcsBucket}/${authPath} (HTTP ${authRes.status}): ${body}`);
       } else {
         const keys = Object.keys(authProfiles).join(", ");
-        console.log(`[bucket-manager] Seeded auth-profiles.json (${keys}) in ${gcsBucket}/${authPath}`);
+        console.log(`[mawadao-agent-storage] Seeded auth-profiles.json (${keys}) in ${gcsBucket}/${authPath}`);
       }
     } catch (err) {
-      console.warn(`[bucket-manager] WriteFile request failed for auth-profiles.json:`, err.message);
+      console.warn(`[mawadao-agent-storage] WriteFile request failed for auth-profiles.json:`, err.message);
     }
   } else {
     console.warn(
-      "[bucket-manager] MOONSHOT_API_KEY is not set in the deployer environment — " +
+      "[mawadao-agent-storage] MOONSHOT_API_KEY is not set in the deployer environment — " +
       "auth-profiles.json not seeded. Set this env var in the deployer Cloud Run service to fix new tenant provisioning."
     );
   }
 
   // 4. Seed models.json at agents/main/agent/models.json
   //    This is the per-agent provider config. Mirror Alien's working Moonshot-first setup.
-  //    OpenClaw checks this as a fallback when auth-profiles.json and env vars don't resolve.
+  //    mawaDao Agent checks this as a fallback when auth-profiles.json and env vars don't resolve.
   try {
     const agentModels = {
       providers: {
@@ -429,7 +429,7 @@ async function seedTenantBucketConfig(gcsBucket, userId, gatewayToken, serviceUr
     };
     const modelsPath = `${userId}/mountfolder/agents/main/agent/models.json`;
     const modelsRes = await fetch(
-      `${BUCKET_MANAGER_URL}/api/v1/buckets/${encodeURIComponent(gcsBucket)}/files/${modelsPath}`,
+      `${STORAGE_URL}/api/v1/buckets/${encodeURIComponent(gcsBucket)}/files/${modelsPath}`,
       {
         method: "PUT",
         headers,
@@ -438,12 +438,12 @@ async function seedTenantBucketConfig(gcsBucket, userId, gatewayToken, serviceUr
     );
     if (!modelsRes.ok) {
       const body = await modelsRes.text();
-      console.warn(`[bucket-manager] WriteFile failed for ${gcsBucket}/${modelsPath} (HTTP ${modelsRes.status}): ${body}`);
+      console.warn(`[mawadao-agent-storage] WriteFile failed for ${gcsBucket}/${modelsPath} (HTTP ${modelsRes.status}): ${body}`);
     } else {
-      console.log(`[bucket-manager] Seeded models.json in ${gcsBucket}/${modelsPath}`);
+      console.log(`[mawadao-agent-storage] Seeded models.json in ${gcsBucket}/${modelsPath}`);
     }
   } catch (err) {
-    console.warn(`[bucket-manager] WriteFile request failed for models.json:`, err.message);
+    console.warn(`[mawadao-agent-storage] WriteFile request failed for models.json:`, err.message);
   }
 }
 
@@ -555,7 +555,7 @@ router.post(
       typeof containerImage === "string" && containerImage.trim()
         ? containerImage.trim()
         : CLOUD_BACKEND_IMAGE;
-    // All tenants share a single pre-existing bucket; bucket-manager SA already has objectAdmin on it.
+    // All tenants share a single pre-existing bucket; mawadao-agent-storage SA already has objectAdmin on it.
     const gcsBucket = process.env.GCS_BUCKET_NAME || "mawadao-agent-data";
     const deployRegion = region || config.cloudRun.region || "europe-west1";
 
@@ -669,24 +669,24 @@ router.delete(
 
     // Delete the user's GCS folder from the shared bucket (best-effort)
     let gcsFolderDeleted = false;
-    if (userId && BUCKET_MANAGER_URL) {
+    if (userId && STORAGE_URL) {
       const gcsBucket = process.env.GCS_BUCKET_NAME || "mawadao-agent-data";
       const headers = {};
-      if (BUCKET_MANAGER_API_SECRET) headers["X-Bucket-Manager-Secret"] = BUCKET_MANAGER_API_SECRET;
+      if (STORAGE_API_SECRET) headers["X-Storage-Secret"] = STORAGE_API_SECRET;
       try {
         const gcsRes = await fetch(
-          `${BUCKET_MANAGER_URL}/api/v1/buckets/${encodeURIComponent(gcsBucket)}/folders/${userId}`,
+          `${STORAGE_URL}/api/v1/buckets/${encodeURIComponent(gcsBucket)}/folders/${userId}`,
           { method: "DELETE", headers }
         );
         if (gcsRes.ok) {
           gcsFolderDeleted = true;
-          console.log(`[bucket-manager] Deleted GCS folder for user ${userId}`);
+          console.log(`[mawadao-agent-storage] Deleted GCS folder for user ${userId}`);
         } else {
           const body = await gcsRes.text();
-          console.warn(`[bucket-manager] GCS folder delete failed for ${userId} (HTTP ${gcsRes.status}): ${body}`);
+          console.warn(`[mawadao-agent-storage] GCS folder delete failed for ${userId} (HTTP ${gcsRes.status}): ${body}`);
         }
       } catch (gcsErr) {
-        console.warn(`[bucket-manager] GCS folder delete error for ${userId}:`, gcsErr.message);
+        console.warn(`[mawadao-agent-storage] GCS folder delete error for ${userId}:`, gcsErr.message);
       }
     }
 

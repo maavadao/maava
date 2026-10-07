@@ -1,4 +1,4 @@
-description: "OpenClaw Gateway"
+description: "mawaDao Agent Gateway"
 
 # Service-level scaling (Cloud Run v2)
 # MANUAL mode with exactly 1 instance.
@@ -55,7 +55,7 @@ template:
       env: []
 
       # volumeMounts is injected at deploy time by CloudRunDeployService
-      # when BUCKET_MANAGER_BUCKET is configured:
+      # when STORAGE_BUCKET is configured:
       #
       # volumeMounts:
       #   - name: agent-workspace
@@ -66,6 +66,6 @@ template:
   # volumes:
   #   - name: agent-workspace
   #     gcs:
-  #       bucket: <BUCKET_MANAGER_BUCKET>
+  #       bucket: <STORAGE_BUCKET>
   #       mountOptions:
   #         - only-dir=<serviceName>
