@@ -54,3 +54,7 @@
 	path = db
 	url = https://github.com/mawadao/mawadao-agent-db.git
 	branch = main
+[submodule "runtime/core"]
+	path = runtime/core
+	url = https://github.com/mawadao/mawadao-agent-core.git
+	branch = main
