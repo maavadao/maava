@@ -1,5 +1,5 @@
 /**
- * Discord Handler — A single Barrsa-owned Discord bot that lives in
+ * Discord Handler — A single mawaDao-owned Discord bot that lives in
  * users' servers. Routes DMs and mentions to their OpenClaw instance.
  *
  * Two parts:
@@ -62,7 +62,7 @@ async function startDiscordBot() {
       if (!user) {
         await message.reply(
           `I don't recognize your Discord account yet.\n` +
-          `Link it at: https://barrsa.com/channels/discord`,
+          `Link it at: https://mawadao.com/channels/discord`,
         );
         return;
       }
@@ -131,9 +131,9 @@ router.get('/oauth/callback', async (req, res) => {
     });
     const discordUser = await userRes.json();
 
-    // The `state` param contains the Barrsa user_id (set by the frontend)
-    const barrsaUserId = state;
-    if (!barrsaUserId) {
+    // The `state` param contains the mawaDao user_id (set by the frontend)
+    const mawadaoUserId = state;
+    if (!mawadaoUserId) {
       return res.status(400).send('Missing state (user ID)');
     }
 
@@ -150,7 +150,7 @@ router.get('/oauth/callback', async (req, res) => {
          linked_at     = NOW(),
          updated_at    = NOW()`,
       [
-        barrsaUserId,
+        mawadaoUserId,
         discordUser.id,
         JSON.stringify({
           username: discordUser.username,
@@ -162,7 +162,7 @@ router.get('/oauth/callback', async (req, res) => {
     );
 
     // Redirect back to dashboard
-    res.redirect('https://barrsa.com/channels/discord?linked=true');
+    res.redirect('https://mawadao.com/channels/discord?linked=true');
   } catch (err) {
     console.error('[discord] OAuth callback error:', err);
     res.status(500).send('Internal error');

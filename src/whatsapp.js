@@ -2,7 +2,7 @@
  * WhatsApp Handler — Receives webhook events from Meta Cloud API.
  *
  * Option A (implemented here): Shared Platform Number
- *   - Barrsa registers ONE WhatsApp Business number via Meta Cloud API
+ *   - mawaDao registers ONE WhatsApp Business number via Meta Cloud API
  *   - All users message this number
  *   - Routing: phone_number → platform_channel_links → user's OpenClaw instance
  *
@@ -89,9 +89,9 @@ router.post('/webhook', async (req, res) => {
       if (!user) {
         await sendWhatsAppMessage(
           from,
-          `Welcome to Barrsa! 🤖\n\n` +
+          `Welcome to mawaDao! 🤖\n\n` +
           `I don't recognize your phone number yet.\n` +
-          `Please link it at: https://barrsa.com/channels/whatsapp`,
+          `Please link it at: https://mawadao.com/channels/whatsapp`,
         );
         continue;
       }

@@ -1,7 +1,7 @@
 /**
  * Message Router — Core routing logic.
  *
- * Given a platform + platform_user_id, finds the user's Barrsa account
+ * Given a platform + platform_user_id, finds the user's mawaDao account
  * and routes messages through the platform dashboard API.
  *
  * Manages per-user session state: conversation history, selected agent.
@@ -67,7 +67,7 @@ function setSelectedAgent(platform, platformUserId, agentId) {
 // ---------------------------------------------------------------------------
 
 /**
- * Look up a Barrsa user by their platform identity.
+ * Look up a mawaDao user by their platform identity.
  * For Telegram: uses telegram_channel_links first (with fallback).
  * For other platforms: uses generic platform_channel_links.
  * Returns user info needed for dashboard API routing, or null.
@@ -170,7 +170,7 @@ async function findChatIdByUserId(userId, platform) {
 // ---------------------------------------------------------------------------
 
 /**
- * Route a message through the Barrsa dashboard API.
+ * Route a message through the mawaDao dashboard API.
  * The dashboard handles AI provider selection, agent injection, DB persistence.
  * Channel-router is a thin adapter — no direct AI calls.
  */
@@ -192,7 +192,7 @@ async function routeMessage(user, messageText, platform, platformUserId) {
       tenantId: user.tenantId || '',
     },
     config.jwtSecret,
-    { algorithm: 'HS256', expiresIn: '1h', issuer: 'barrsa-auth', subject: user.userId },
+    { algorithm: 'HS256', expiresIn: '1h', issuer: 'mawadao-auth', subject: user.userId },
   );
 
   const dashboardUrl = `${config.dashboardBaseUrl}/api/ai-chat`;

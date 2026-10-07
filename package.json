@@ -1,7 +1,7 @@
 {
-  "name": "channel-router",
-  "version": "1.0.0",
-  "description": "Barrsa SaaS channel routing service — platform-owned bots that route messages to user OpenClaw instances",
+  "name": "mawadao-agent-channels",
+  "version": "0.1.0",
+  "description": "mawaDao SaaS channel routing service — platform-owned bots that route messages to user OpenClaw instances",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
