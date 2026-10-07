@@ -1,42 +1,37 @@
-# bucket-manager microservice
+# mawadao-agent-storage
 
-Lightweight Go/Gin microservice responsible for bucket metadata management.
+A small REST service over Google Cloud Storage for members' workspace files and folders.
 
-## Structure
+Part of [mawaDao Agent](https://github.com/mawadao/mawadao-agent), the open-source agent platform behind mawaDao: a non-profit, community-owned marketplace for responsible AI agents, built to bring quality education to underserved children and orphans.
 
-- `cmd/main.go` – service entrypoint, HTTP server & routing
-- `config/config.go` – environment-based configuration loader
-- `handlers/buckets.go` – HTTP handlers for `/api/v1/buckets` endpoints
-- `.env.example` – example configuration for local development
-- `go.mod` – Go module definition and dependencies
+## Endpoints
 
-The layout mirrors the `auth` microservice for consistency.
+Routes need the `BUCKET_MANAGER_API_SECRET` bearer token, except health.
 
-## Running locally
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/buckets`, `/buckets/:bucket` | List buckets, bucket details |
+| GET/POST | `/buckets/:bucket/folders` | List or create folders |
+| DELETE | `/buckets/:bucket/folders/*path` | Delete a folder |
+| GET/POST/PUT/DELETE | `/buckets/:bucket/files/*path` | Read, upload, replace or delete a file |
+| GET | `/health` | Health check |
+
+## Run it locally
+
+Requires Go 1.24+ and Google Cloud application default credentials.
 
 ```bash
-cd apps/microservices/bucket-manager
-cp .env.example .env  # then edit as needed
-go run ./cmd
+cp .env.example .env
+go run ./cmd       # http://localhost:8090
 ```
 
-By default the service listens on `:8090` and exposes:
+Checks: `go vet ./...`, `go test ./...`.
 
-- `GET /` – basic service info
-- `GET /health` – simple health check
-- `GET /api/v1/buckets` – list buckets
-- `GET /api/v1/buckets/:name` – metadata for a single bucket
+## Contributing
 
-**Folders**
+Read the [contributing guide](https://github.com/mawadao/mawadao-agent/blob/main/CONTRIBUTING.md) before opening a pull request.
+Work lands on `main`; releases are tagged `vX.Y.Z` as described in [RELEASING.md](https://github.com/mawadao/mawadao-agent/blob/main/RELEASING.md).
 
-- `POST /api/v1/buckets/:bucket/folders` – create folder. Body: `{"path": "folder/sub"}`
-- `GET /api/v1/buckets/:bucket/folders?path=...` – list folder contents (path optional, empty = root)
+## Licence
 
-**Files**
-
-- `POST /api/v1/buckets/:bucket/files` – upload file. Form: `path` (object key), `file` (multipart file)
-- `PUT /api/v1/buckets/:bucket/files/*path` – modify file (full replace). Body = new content
-- `DELETE /api/v1/buckets/:bucket/files/*path` – delete file
-
-Handlers are stubs; wire them to your storage backend (e.g. GCS, S3) as needed.
-
+Apache 2.0. See [LICENSE](LICENSE).
