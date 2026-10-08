@@ -3,7 +3,7 @@
 Platform-owned Telegram, Discord and WhatsApp bots. They route incoming messages to the
 right member's agent and expose an outbound API for sending replies.
 
-Part of [mawa](https://github.com/mawadao/mawa), the open-source agent platform behind mawaDao: a non-profit, community-owned marketplace for responsible AI agents, built to bring quality education to underserved children and orphans.
+Part of [mawa](https://github.com/mawadao/mawa), the open-source agent platform behind mawaDao: a community-owned ecosystem of agentic AI for education, where developers build and list agents for free and the community shares in what they earn.
 
 ## Endpoints
 

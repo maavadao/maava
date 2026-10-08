@@ -1,9 +1,10 @@
 # mawa
 
-The open-source agent platform behind mawaDao: a non-profit, community-owned marketplace for
-responsible AI agents, built to bring quality education to underserved children and orphans.
-Developers build and list agents; schools, orphanages, community educators and small
-businesses use them free of charge.
+The open-source agent platform behind mawaDao: a community-owned ecosystem of agentic AI and
+blockchain technologies for education. Developers build and list agents on the mawa
+Marketplace, free; educators, students and content creators use them to teach, learn, research
+and inform. When a product earns money, 75% goes to the community who built it and 25% funds
+education for deserving children, orphans and street children.
 
 This repository ties the platform together. Larger components live in their own repositories
 and are included here as Git submodules; small microservices live directly in this repository
