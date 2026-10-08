@@ -1,9 +1,9 @@
 /**
  * Telegram Handler — Receives webhook updates from Telegram Bot API,
- * routes messages to the user's mawaDao Agent instance, and sends replies.
+ * routes messages to the user's mawa instance, and sends replies.
  *
  * mawaDao owns ONE bot (@MawadaoBot). All users talk to it.
- * Routing: telegram_user_id → telegram_channel_links → user's mawaDao Agent URL → reply.
+ * Routing: telegram_user_id → telegram_channel_links → user's mawa URL → reply.
  *
  * Account linking:
  *   1. Deep-link: Dashboard generates token → t.me/mawadao_bot?start=TOKEN → bot validates → link.
@@ -271,7 +271,7 @@ router.post('/webhook', async (req, res) => {
         await sendAndLog(
           chatId,
           `Welcome to *mawaDao*! 🤖\n\n` +
-          `To connect this Telegram account to your mawaDao agent, ` +
+          `To connect this Telegram account to your mawa, ` +
           `go to your dashboard and open *Channels → Telegram*, then click "Link Telegram".\n\n` +
           `Once linked, just message me and I'll route it to your AI assistant.`,
           null,

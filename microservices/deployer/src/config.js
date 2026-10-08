@@ -29,7 +29,7 @@ module.exports = {
     bucket: process.env.STORAGE_BUCKET || "",
     mountPath: process.env.STORAGE_MOUNT_PATH || "/home/node/.openclaw",
     // Shared secret sent as X-Storage-Secret on every write request.
-    // Must match STORAGE_API_SECRET on the mawadao-agent-storage service.
+    // Must match STORAGE_API_SECRET on the mawa-storage service.
     apiSecret: process.env.STORAGE_API_SECRET || "",
   },
 };

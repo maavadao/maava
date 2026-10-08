@@ -10,8 +10,8 @@ import (
 	gcs "cloud.google.com/go/storage"
 	"github.com/gin-gonic/gin"
 
-	"github.com/mawadao/mawadao-agent/microservices/storage/config"
-	"github.com/mawadao/mawadao-agent/microservices/storage/storage"
+	"github.com/mawadao/mawa/microservices/storage/config"
+	"github.com/mawadao/mawa/microservices/storage/storage"
 )
 
 // BucketHandler defines HTTP handlers for bucket, folder, and file operations.
@@ -36,7 +36,7 @@ func (h *BucketHandler) ListBuckets(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"service": "mawadao-agent-storage",
+		"service": "mawa-storage",
 		"buckets": buckets,
 	})
 }
@@ -279,7 +279,7 @@ func (h *BucketHandler) DeleteFile(c *gin.Context) {
 	}
 
 	if err := storage.DeleteObject(c.Request.Context(), h.client, bucket, objectPath); err != nil {
-		log.Printf("[mawadao-agent-storage] DeleteFile %s/%s error: %v", bucket, objectPath, err)
+		log.Printf("[mawa-storage] DeleteFile %s/%s error: %v", bucket, objectPath, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete file", "details": err.Error()})
 		return
 	}
@@ -314,7 +314,7 @@ func (h *BucketHandler) DeleteFolder(c *gin.Context) {
 	}
 
 	if err := storage.DeleteAllByPrefix(c.Request.Context(), h.client, bucket, folderPath); err != nil {
-		log.Printf("[mawadao-agent-storage] DeleteFolder %s/%s error: %v", bucket, folderPath, err)
+		log.Printf("[mawa-storage] DeleteFolder %s/%s error: %v", bucket, folderPath, err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete folder", "details": err.Error()})
 		return
 	}

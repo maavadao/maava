@@ -1,7 +1,7 @@
 {
-  "name": "mawadao-agent-deployer",
+  "name": "mawa-deployer",
   "version": "0.1.0",
-  "description": "mawaDao Agent deployer: provisions each member's hosted agent",
+  "description": "mawa deployer: provisions each member's hosted agent",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

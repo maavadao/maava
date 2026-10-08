@@ -1,28 +1,28 @@
 [submodule "apps/frontend"]
 	path = apps/frontend
-	url = https://github.com/mawadao/mawadao-agent-frontend.git
+	url = https://github.com/mawadao/mawa-frontend.git
 	branch = main
 [submodule "apps/dashboard"]
 	path = apps/dashboard
-	url = https://github.com/mawadao/mawadao-agent-dashboard.git
+	url = https://github.com/mawadao/mawa-dashboard.git
 	branch = main
 [submodule "runtime/gateway"]
 	path = runtime/gateway
-	url = https://github.com/mawadao/mawadao-agent-gateway.git
+	url = https://github.com/mawadao/mawa-gateway.git
 	branch = main
 [submodule "microservices/api"]
 	path = microservices/api
-	url = https://github.com/mawadao/mawadao-agent-api.git
+	url = https://github.com/mawadao/mawa-api.git
 	branch = main
 [submodule "microservices/mission-control"]
 	path = microservices/mission-control
-	url = https://github.com/mawadao/mawadao-agent-mission-control.git
+	url = https://github.com/mawadao/mawa-mission-control.git
 	branch = main
 [submodule "db"]
 	path = db
-	url = https://github.com/mawadao/mawadao-agent-db.git
+	url = https://github.com/mawadao/mawa-db.git
 	branch = main
 [submodule "runtime/core"]
 	path = runtime/core
-	url = https://github.com/mawadao/mawadao-agent-core.git
+	url = https://github.com/mawadao/mawa-core.git
 	branch = main

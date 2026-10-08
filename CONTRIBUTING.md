@@ -1,6 +1,6 @@
-# Contributing to mawaDao Agent
+# Contributing to mawa
 
-Thank you for helping. mawaDao Agent's larger components have their own repositories, tied
+Thank you for helping. mawa's larger components have their own repositories, tied
 together by this repository with Git submodules; small microservices live in this repository under
 `microservices/`. This guide covers all of them.
 
@@ -14,13 +14,13 @@ will move it.
 
 | You want to change | Repository |
 | --- | --- |
-| A page on the public website | `mawadao-agent-frontend` |
-| A member's workspace (chat, channels, inbox, boards) | `mawadao-agent-dashboard` |
-| How an agent runs, its tools or skills | `mawadao-agent-gateway` or `mawadao-agent-core` |
-| An API endpoint | the service that owns it: `mawadao-agent-api`, `mawadao-agent-mission-control`, or a folder in `microservices/` here |
-| A table, column or index | `mawadao-agent-db` (a new migration) |
-| A small microservice (auth, channels, deployer, storage, skills, platform, manager) | `mawadao-agent`, in `microservices/<name>` |
-| How components are wired together, or the docs here | `mawadao-agent` |
+| A page on the public website | `mawa-frontend` |
+| A member's workspace (chat, channels, inbox, boards) | `mawa-dashboard` |
+| How an agent runs, its tools or skills | `mawa-gateway` or `mawa-core` |
+| An API endpoint | the service that owns it: `mawa-api`, `mawa-mission-control`, or a folder in `microservices/` here |
+| A table, column or index | `mawa-db` (a new migration) |
+| A small microservice (auth, channels, deployer, storage, skills, platform, manager) | `mawa`, in `microservices/<name>` |
+| How components are wired together, or the docs here | `mawa` |
 
 ## Workflow
 
@@ -45,7 +45,7 @@ the page that shows it.
 
 ## Database changes
 
-All shared schema changes are new files in `mawadao-agent-db/migrations/`. Never edit a
+All shared schema changes are new files in `mawa-db/migrations/`. Never edit a
 migration that has already been released. CI applies every migration to an empty database, so
 run `scripts/migrate.sh` locally first. Mission Control and the platform service manage their
 own schemas in their own repositories.
@@ -65,4 +65,4 @@ Do not open public issues for vulnerabilities. Use GitHub's private vulnerabilit
 ## Licence
 
 By contributing you agree that your work is released under the Apache License 2.0, the licence
-of every mawaDao Agent repository.
+of every mawa repository.

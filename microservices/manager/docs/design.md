@@ -1,6 +1,6 @@
-# mawaDao Agent Manager API — Design (RBAC + Instance Management)
+# mawa Manager API — Design (RBAC + Instance Management)
 
-> Multi-tenant control plane that manages customer mawaDao Agent core instances running on
+> Multi-tenant control plane that manages customer mawa core instances running on
 > Kubernetes. Each **instance** = one launcher (`:18800`) + managed gateway
 > (`:18790`) pod, isolated per customer namespace. The control plane never
 > exposes the launcher/gateway directly — every instance operation goes through
@@ -180,7 +180,7 @@ allow iff required_permission ∈ perms
 | PUT | `/v1/instances/{instance_id}/role-bindings/{user_id}` | `org:members:manage` | `{role}` — instance-scoped override. |
 | DELETE | `/v1/instances/{instance_id}/role-bindings/{user_id}` | `org:members:manage` | |
 
-### 4.5 Instance proxy (mapped to the mawaDao Agent core launcher API)
+### 4.5 Instance proxy (mapped to the mawa core launcher API)
 
 All under `/v1/instances/{instance_id}/…`; the control plane injects the
 launcher session and forwards. Response bodies are the launcher's, unchanged
@@ -352,7 +352,7 @@ CREATE TABLE api_keys (
 CREATE INDEX ON api_keys (org_id) WHERE revoked_at IS NULL;
 
 -- ===================================================================
--- Instances (the managed mawaDao Agent core launcher+gateway units)
+-- Instances (the managed mawa core launcher+gateway units)
 -- ===================================================================
 CREATE TABLE plans (
     id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),

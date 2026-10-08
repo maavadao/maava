@@ -1,9 +1,9 @@
-# mawadao-agent-platform
+# mawa-platform
 
 Multi-tenant service for custom agents, skills, MCP servers and chat.
 Serverless architecture (Cloud Run + Cloud SQL + GCS + Secret Manager); see `PLAN.md` for the full spec.
 
-Part of [mawaDao Agent](https://github.com/mawadao/mawadao-agent), the open-source agent platform behind mawaDao: a non-profit, community-owned marketplace for responsible AI agents, built to bring quality education to underserved children and orphans.
+Part of [mawa](https://github.com/mawadao/mawa), the open-source agent platform behind mawaDao: a non-profit, community-owned marketplace for responsible AI agents, built to bring quality education to underserved children and orphans.
 
 ## Repo layout
 
@@ -77,9 +77,9 @@ make lint         # ruff
 
 ## Contributing
 
-Read the [contributing guide](https://github.com/mawadao/mawadao-agent/blob/main/CONTRIBUTING.md) before opening a pull request.
-This service lives in the `mawadao-agent` repository; pull requests go there. Releases are tagged
-`platform-vX.Y.Z` as described in [RELEASING.md](https://github.com/mawadao/mawadao-agent/blob/main/RELEASING.md).
+Read the [contributing guide](https://github.com/mawadao/mawa/blob/main/CONTRIBUTING.md) before opening a pull request.
+This service lives in the `mawa` repository; pull requests go there. Releases are tagged
+`platform-vX.Y.Z` as described in [RELEASING.md](https://github.com/mawadao/mawa/blob/main/RELEASING.md).
 
 ## Licence
 

@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
 
 /**
  * GET /health
- * Deep health check: verifies GCP credentials and mawadao-agent-storage reachability.
+ * Deep health check: verifies GCP credentials and mawa-storage reachability.
  * Returns 200 when all checks pass, 503 when any check fails.
  *
  * Response shape:

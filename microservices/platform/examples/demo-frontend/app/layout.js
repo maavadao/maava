@@ -1,6 +1,6 @@
 import "./globals.css";
 
-export const metadata = { title: "mawaDao Agent Platform — Demo" };
+export const metadata = { title: "mawa Platform — Demo" };
 
 export default function RootLayout({ children }) {
   return (

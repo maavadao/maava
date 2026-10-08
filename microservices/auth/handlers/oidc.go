@@ -19,8 +19,8 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/mawadao/mawadao-agent/microservices/auth/config"
-	"github.com/mawadao/mawadao-agent/microservices/auth/middleware"
+	"github.com/mawadao/mawa/microservices/auth/config"
+	"github.com/mawadao/mawa/microservices/auth/middleware"
 )
 
 type oidcSigner struct {

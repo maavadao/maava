@@ -1,5 +1,5 @@
 /**
- * Database connection pool shared across the mawadao-agent-channels service.
+ * Database connection pool shared across the mawa-channels service.
  */
 const { Pool } = require('pg');
 const config = require('./config');

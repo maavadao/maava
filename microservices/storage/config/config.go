@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Config holds runtime configuration for the mawadao-agent-storage service.
+// Config holds runtime configuration for the mawa-storage service.
 type Config struct {
 	Port        string
 	Environment string
@@ -39,7 +39,7 @@ func Load() (*Config, error) {
 		APISecret:     getEnv("STORAGE_API_SECRET", ""),
 	}
 
-	log.Printf("mawadao-agent-storage starting with ENVIRONMENT=%s PORT=%s", cfg.Environment, cfg.Port)
+	log.Printf("mawa-storage starting with ENVIRONMENT=%s PORT=%s", cfg.Environment, cfg.Port)
 	return cfg, nil
 }
 

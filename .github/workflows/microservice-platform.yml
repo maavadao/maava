@@ -24,10 +24,10 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: mawadao_agent_platform
+          POSTGRES_DB: mawa_platform
         ports: ["5432:5432"]
         options: >-
-          --health-cmd "pg_isready -U postgres -d mawadao_agent_platform"
+          --health-cmd "pg_isready -U postgres -d mawa_platform"
           --health-interval 2s --health-timeout 2s --health-retries 15
     steps:
       - uses: actions/checkout@v4
@@ -47,5 +47,5 @@ jobs:
     needs: build
     uses: mawadao/.github/.github/workflows/cloud-run.yml@main
     with:
-      image: mawadao-agent-platform
+      image: mawa-platform
       context: microservices/platform

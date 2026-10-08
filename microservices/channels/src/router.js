@@ -182,7 +182,7 @@ async function routeMessage(user, messageText, platform, platformUserId) {
 
   // Generate JWT for dashboard authentication
   if (!config.jwtSecret) {
-    throw new Error('JWT_SECRET not configured on mawadao-agent-channels');
+    throw new Error('JWT_SECRET not configured on mawa-channels');
   }
   const token = jwt.sign(
     {

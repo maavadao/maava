@@ -1,4 +1,4 @@
-# mawaDao Agent
+# mawa
 
 The open-source agent platform behind mawaDao: a non-profit, community-owned marketplace for
 responsible AI agents, built to bring quality education to underserved children and orphans.
@@ -15,15 +15,15 @@ under `microservices/<service-name>`.
 
 | Folder | Repository | What it is | Stack |
 | --- | --- | --- | --- |
-| `apps/frontend` | [mawadao-agent-frontend](https://github.com/mawadao/mawadao-agent-frontend) | Public website: community, marketplace, agent builder, sign-up and provisioning | Next.js 14 |
-| `apps/dashboard` | [mawadao-agent-dashboard](https://github.com/mawadao/mawadao-agent-dashboard) | The member space at `agent.mawadao.com/<username>`: chat, channels, skills, inbox, Mission Control | Next.js 14 |
-| `runtime/gateway` | [mawadao-agent-gateway](https://github.com/mawadao/mawadao-agent-gateway) | Per-member agent runtime (OpenClaw-based) with a multi-tenant REST API | TypeScript |
-| `runtime/core` | [mawadao-agent-core](https://github.com/mawadao/mawadao-agent-core) | Lightweight agent runtime (PicoClaw-based) | Go |
-| `microservices/api` | [mawadao-agent-api](https://github.com/mawadao/mawadao-agent-api) | Main REST API: agents, communities, marketplace, media, channels | Express |
-| `microservices/mission-control` | [mawadao-agent-mission-control](https://github.com/mawadao/mawadao-agent-mission-control) | Boards, tasks and approvals for teams of agents | FastAPI |
-| `db` | [mawadao-agent-db](https://github.com/mawadao/mawadao-agent-db) | Shared Postgres schema and migrations | SQL |
+| `apps/frontend` | [mawa-frontend](https://github.com/mawadao/mawa-frontend) | Public website: community, marketplace, agent builder, sign-up and provisioning | Next.js 14 |
+| `apps/dashboard` | [mawa-dashboard](https://github.com/mawadao/mawa-dashboard) | The member space at `agent.mawadao.com/<username>`: chat, channels, skills, inbox, Mission Control | Next.js 14 |
+| `runtime/gateway` | [mawa-gateway](https://github.com/mawadao/mawa-gateway) | Per-member agent runtime (OpenClaw-based) with a multi-tenant REST API | TypeScript |
+| `runtime/core` | [mawa-core](https://github.com/mawadao/mawa-core) | Lightweight agent runtime (PicoClaw-based) | Go |
+| `microservices/api` | [mawa-api](https://github.com/mawadao/mawa-api) | Main REST API: agents, communities, marketplace, media, channels | Express |
+| `microservices/mission-control` | [mawa-mission-control](https://github.com/mawadao/mawa-mission-control) | Boards, tasks and approvals for teams of agents | FastAPI |
+| `db` | [mawa-db](https://github.com/mawadao/mawa-db) | Shared Postgres schema and migrations | SQL |
 
-**Microservices in this repository** (each published as its own image, `ghcr.io/mawadao/mawadao-agent-<name>`):
+**Microservices in this repository** (each published as its own image, `ghcr.io/mawadao/mawa-<name>`):
 
 | Folder | What it is | Stack |
 | --- | --- | --- |
@@ -33,15 +33,15 @@ under `microservices/<service-name>`.
 | [`microservices/storage`](microservices/storage) | Workspace files on Google Cloud Storage | Go |
 | [`microservices/skills`](microservices/skills) | Scheduled scraper that keeps the skills catalogue current | FastAPI |
 | [`microservices/platform`](microservices/platform) | Next-generation agent builder: custom agents, skills, MCP servers, chat | FastAPI |
-| [`microservices/manager`](microservices/manager) | Control plane for hosted `mawadao-agent-core` instances on Kubernetes | FastAPI |
+| [`microservices/manager`](microservices/manager) | Control plane for hosted `mawa-core` instances on Kubernetes | FastAPI |
 
 See [docs/architecture.md](docs/architecture.md) for how they fit together.
 
 ## Get the code
 
 ```bash
-git clone --recurse-submodules https://github.com/mawadao/mawadao-agent.git
-cd mawadao-agent
+git clone --recurse-submodules https://github.com/mawadao/mawa.git
+cd mawa
 ```
 
 Already cloned without submodules? Run `git submodule update --init --recursive`.

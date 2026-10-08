@@ -9,7 +9,7 @@ terraform {
       version = "~> 5.0"
     }
   }
-  # backend "gcs" { bucket = "mawadao-agent-platform-tfstate" prefix = "prod" }
+  # backend "gcs" { bucket = "mawa-platform-tfstate" prefix = "prod" }
 }
 
 provider "google" {
@@ -19,7 +19,7 @@ provider "google" {
 
 # ---------- Cloud SQL (Postgres) ----------
 resource "google_sql_database_instance" "main" {
-  name             = "mawadao-agent-platform-${var.env}"
+  name             = "mawa-platform-${var.env}"
   database_version = "POSTGRES_16"
   settings {
     tier = var.db_tier
@@ -34,13 +34,13 @@ resource "google_sql_database_instance" "main" {
 }
 
 resource "google_sql_database" "app" {
-  name     = "mawadao_agent_platform"
+  name     = "mawa_platform"
   instance = google_sql_database_instance.main.name
 }
 
 # ---------- Artifacts bucket ----------
 resource "google_storage_bucket" "artifacts" {
-  name                        = "mawadao-agent-platform-${var.env}-artifacts"
+  name                        = "mawa-platform-${var.env}-artifacts"
   location                    = var.region
   uniform_bucket_level_access = true
   public_access_prevention    = "enforced"
@@ -53,7 +53,7 @@ resource "google_storage_bucket" "artifacts" {
 # ---------- Service accounts ----------
 resource "google_service_account" "api" {
   account_id   = "ap-api-${var.env}"
-  display_name = "mawaDao Agent Platform API"
+  display_name = "mawa Platform API"
 }
 
 resource "google_service_account" "scan" {

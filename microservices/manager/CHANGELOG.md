@@ -8,4 +8,4 @@ All notable changes to this component are recorded here. The format follows
 
 ### Added
 
-- First release as part of mawaDao Agent.
+- First release as part of mawa.

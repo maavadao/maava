@@ -1,4 +1,4 @@
-"""RBAC-gated reverse proxy onto each instance's mawaDao Agent core launcher API.
+"""RBAC-gated reverse proxy onto each instance's mawa core launcher API.
 
 Every rule below maps a manager route under /v1/instances/{instance_id}/... to a
 launcher endpoint plus the permission required to call it (design doc §4.5).

@@ -31,5 +31,5 @@ jobs:
     needs: build
     uses: mawadao/.github/.github/workflows/cloud-run.yml@main
     with:
-      image: mawadao-agent-storage
+      image: mawa-storage
       context: microservices/storage

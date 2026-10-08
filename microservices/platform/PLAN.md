@@ -1,4 +1,4 @@
-# mawaDao Agent Platform — Implementation Plan v1.1 (Serverless)
+# mawa Platform — Implementation Plan v1.1 (Serverless)
 
 A multi-tenant web platform where users create custom agents, upload skills, register MCP servers, and chat. This document is the working spec for the engineering team and Claude Code.
 
@@ -86,10 +86,10 @@ Policies live in `0004_rls.sql`. Admin/owner escalation uses `app_current_role()
 
 ## 4. Bucket Layout (GCS)
 
-Single bucket per environment (`mawadao-agent-platform-prod-artifacts`), uniform bucket-level access, no public access, CMEK optional later. All objects immutable once written.
+Single bucket per environment (`mawa-platform-prod-artifacts`), uniform bucket-level access, no public access, CMEK optional later. All objects immutable once written.
 
 ```
-gs://mawadao-agent-platform-prod-artifacts/
+gs://mawa-platform-prod-artifacts/
 ├── tenants/
 │   └── {org_id}/
 │       ├── skills/{skill_id}/v{version}/

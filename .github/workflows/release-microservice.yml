@@ -1,7 +1,7 @@
 name: Release microservice
 
 # Tag <service>-vX.Y.Z (for example auth-v0.2.0) to publish
-# ghcr.io/mawadao/mawadao-agent-<service>:X.Y.Z and a GitHub release.
+# ghcr.io/mawadao/mawa-<service>:X.Y.Z and a GitHub release.
 on:
   push:
     tags:
@@ -37,9 +37,9 @@ jobs:
           context: microservices/${{ steps.tag.outputs.service }}
           push: true
           tags: |
-            ghcr.io/mawadao/mawadao-agent-${{ steps.tag.outputs.service }}:${{ steps.tag.outputs.version }}
-            ghcr.io/mawadao/mawadao-agent-${{ steps.tag.outputs.service }}:latest
+            ghcr.io/mawadao/mawa-${{ steps.tag.outputs.service }}:${{ steps.tag.outputs.version }}
+            ghcr.io/mawadao/mawa-${{ steps.tag.outputs.service }}:latest
       - uses: softprops/action-gh-release@v2
         with:
-          name: mawadao-agent-${{ steps.tag.outputs.service }} ${{ steps.tag.outputs.version }}
+          name: mawa-${{ steps.tag.outputs.service }} ${{ steps.tag.outputs.version }}
           generate_release_notes: true

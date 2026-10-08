@@ -4,13 +4,13 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: mawadao_agent_platform
+      POSTGRES_DB: mawa_platform
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d mawadao_agent_platform"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mawa_platform"]
       interval: 2s
       timeout: 2s
       retries: 15

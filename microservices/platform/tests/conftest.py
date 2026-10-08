@@ -18,10 +18,10 @@ import psycopg
 import pytest
 
 ADMIN_DSN = os.environ.get(
-    "ADMIN_DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/mawadao_agent_platform"
+    "ADMIN_DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/mawa_platform"
 )
 APP_DSN = os.environ.get(
-    "APP_DATABASE_URL", "postgresql://app_api:app_api_dev_only@localhost:5432/mawadao_agent_platform"
+    "APP_DATABASE_URL", "postgresql://app_api:app_api_dev_only@localhost:5432/mawa_platform"
 )
 
 TABLES = [

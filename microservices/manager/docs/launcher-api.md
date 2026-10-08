@@ -1,6 +1,6 @@
-# mawaDao Agent core HTTP API Reference
+# mawa core HTTP API Reference
 
-> OpenAPI-style reference for the two HTTP services shipped with the mawaDao Agent core
+> OpenAPI-style reference for the two HTTP services shipped with the mawa core
 > launcher image. The launcher binary (`picoclaw-launcher`) embeds the Vue
 > dashboard and proxies browser traffic to a managed `picoclaw gateway`
 > subprocess.

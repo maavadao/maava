@@ -1,4 +1,4 @@
-description: "mawaDao Agent Gateway"
+description: "mawa Gateway"
 
 # Service-level scaling (Cloud Run v2)
 # MANUAL mode with exactly 1 instance.
@@ -28,7 +28,7 @@ template:
   volumes: []
 
   containers:
-    - image: "ghcr.io/mawadao/mawadao-agent-gateway:latest"
+    - image: "ghcr.io/mawadao/mawa-gateway:latest"
 
       command:
         - node

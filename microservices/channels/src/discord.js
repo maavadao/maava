@@ -1,6 +1,6 @@
 /**
  * Discord Handler — A single mawaDao-owned Discord bot that lives in
- * users' servers. Routes DMs and mentions to their mawaDao Agent instance.
+ * users' servers. Routes DMs and mentions to their mawa instance.
  *
  * Two parts:
  *   1. discord.js Client (long-running) — listens for messages
@@ -67,7 +67,7 @@ async function startDiscordBot() {
         return;
       }
 
-      // Route to mawaDao Agent
+      // Route to mawa
       await message.channel.sendTyping();
       const reply = await routeMessage(user.runtimeEndpoint, user.gatewayToken, text);
 

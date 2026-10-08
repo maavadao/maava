@@ -33,5 +33,5 @@ jobs:
     needs: build
     uses: mawadao/.github/.github/workflows/cloud-run.yml@main
     with:
-      image: mawadao-agent-channels
+      image: mawa-channels
       context: microservices/channels
