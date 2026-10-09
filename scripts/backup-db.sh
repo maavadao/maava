@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────
-# mawaDao DB Backup Script
+# maavaDao DB Backup Script
 #
 # Takes a pg_dump of the Supabase PostgreSQL database,
 # compresses it with gzip, and optionally uploads to GCS.
@@ -20,7 +20,7 @@ set -euo pipefail
 BACKUP_DIR="${BACKUP_DIR:-./backups}"
 BACKUP_RETAIN_DAYS="${BACKUP_RETAIN_DAYS:-30}"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-BACKUP_FILE="${BACKUP_DIR}/mawadao_${TIMESTAMP}.sql.gz"
+BACKUP_FILE="${BACKUP_DIR}/maavadao_${TIMESTAMP}.sql.gz"
 
 # Ensure backup directory exists
 mkdir -p "${BACKUP_DIR}"
@@ -48,14 +48,14 @@ echo "[$(date -Iseconds)] Backup complete: ${FILE_SIZE}"
 
 # Upload to GCS if bucket is configured
 if [ -n "${GCS_BACKUP_BUCKET:-}" ]; then
-  GCS_PATH="gs://${GCS_BACKUP_BUCKET}/db-backups/mawadao_${TIMESTAMP}.sql.gz"
+  GCS_PATH="gs://${GCS_BACKUP_BUCKET}/db-backups/maavadao_${TIMESTAMP}.sql.gz"
   echo "[$(date -Iseconds)] Uploading to ${GCS_PATH}"
   gsutil cp "${BACKUP_FILE}" "${GCS_PATH}"
   echo "[$(date -Iseconds)] Upload complete"
 fi
 
 # Prune old local backups
-PRUNED=$(find "${BACKUP_DIR}" -name "mawadao_*.sql.gz" -mtime +"${BACKUP_RETAIN_DAYS}" -print -delete | wc -l)
+PRUNED=$(find "${BACKUP_DIR}" -name "maavadao_*.sql.gz" -mtime +"${BACKUP_RETAIN_DAYS}" -print -delete | wc -l)
 if [ "${PRUNED}" -gt 0 ]; then
   echo "[$(date -Iseconds)] Pruned ${PRUNED} backup(s) older than ${BACKUP_RETAIN_DAYS} days"
 fi

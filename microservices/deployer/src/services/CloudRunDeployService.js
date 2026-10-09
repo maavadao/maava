@@ -1,7 +1,7 @@
 /**
  * Cloud Run Deploy Service
  * Loads a base YAML template, applies overrides, validates, and deploys to Google Cloud Run.
- * Before deploying, creates a GCS folder via mawa-storage and mounts it into the container.
+ * Before deploying, creates a GCS folder via maava-storage and mounts it into the container.
  */
 
 const fs = require("node:fs");
@@ -36,7 +36,7 @@ function normaliseFolders(raw) {
 }
 
 /**
- * Create one or more folders in GCS via mawa-storage.
+ * Create one or more folders in GCS via maava-storage.
  * Throws an ApiError (502) if any folder fails to be created, listing every failure.
  * @param {string[]} folders - Array of folder paths (e.g. ["agents/main", "agents/cron"])
  * @returns {Promise<string[]>} Successfully created folder paths.
@@ -48,7 +48,7 @@ async function createAgentFolders(folders) {
       "STORAGE_BUCKET is not configured. Cannot create GCS folders.",
       502,
       "STORAGE_NOT_CONFIGURED",
-      "Set the STORAGE_BUCKET environment variable on the mawa-deployer."
+      "Set the STORAGE_BUCKET environment variable on the maava-deployer."
     );
   }
   if (!folders.length) return [];
@@ -71,14 +71,14 @@ async function createAgentFolders(folders) {
         if (!res.ok) {
           const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
           const reason = body?.error ?? body?.message ?? `HTTP ${res.status}`;
-          console.error(`[mawa-storage] Folder "${folderPath}" failed (${res.status}): ${reason}`);
+          console.error(`[maava-storage] Folder "${folderPath}" failed (${res.status}): ${reason}`);
           failed.push({ path: folderPath, status: res.status, reason });
         } else {
-          console.log(`[mawa-storage] Folder created: gs://${bucket}/${folderPath}/`);
+          console.log(`[maava-storage] Folder created: gs://${bucket}/${folderPath}/`);
           created.push(folderPath);
         }
       } catch (err) {
-        console.error(`[mawa-storage] Network error creating folder "${folderPath}": ${err.message}`);
+        console.error(`[maava-storage] Network error creating folder "${folderPath}": ${err.message}`);
         failed.push({ path: folderPath, status: null, reason: err.message });
       }
     })
@@ -90,7 +90,7 @@ async function createAgentFolders(folders) {
       `Failed to create ${failed.length} of ${folders.length} GCS folder(s): ${summary}`,
       502,
       "FOLDER_CREATION_FAILED",
-      "Check that mawa-storage is running, STORAGE_URL is correct, and the service account has storage.objects.create permission."
+      "Check that maava-storage is running, STORAGE_URL is correct, and the service account has storage.objects.create permission."
     );
   }
 
@@ -432,7 +432,7 @@ function validateConfig(serviceSpec, serviceId, projectId, region) {
  * @param {string}   [options.description]
  * @param {boolean}  [options.publicAccess]
  * @param {string|string[]|Array<{path:string}>} [options.folders]
- *   GCS folders to create (via mawa-storage) and mount into the container.
+ *   GCS folders to create (via maava-storage) and mount into the container.
  *   Examples:
  *     "agents/main"
  *     ["agents/main", "agents/cron"]
@@ -462,7 +462,7 @@ async function deploy(options = {}) {
 
   validateConfig(serviceSpec, serviceId, projectId, region);
 
-  // Create requested GCS folders via mawa-storage, then mount them into the container.
+  // Create requested GCS folders via maava-storage, then mount them into the container.
   const { bucket: bucketName } = config.storage;
   const requestedFolders = normaliseFolders(options.folders);
   const createdFolders = await createAgentFolders(requestedFolders);

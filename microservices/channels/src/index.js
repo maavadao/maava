@@ -2,10 +2,10 @@
  * Channel Router — Entry point.
  *
  * A lightweight microservice that owns the platform bots (Telegram, Discord, WhatsApp)
- * and routes incoming messages to each user's mawa instance via REST API.
+ * and routes incoming messages to each user's maava instance via REST API.
  *
  * Architecture:
- *   Platform Webhook → Channel Router → DB lookup → mawa REST → Reply
+ *   Platform Webhook → Channel Router → DB lookup → maava REST → Reply
  */
 const express = require('express');
 const cors = require('cors');
@@ -25,7 +25,7 @@ app.use(express.json());
 
 // Health check
 app.get('/', (req, res) => {
-  res.json({ service: 'mawa-channels', status: 'ok' });
+  res.json({ service: 'maava-channels', status: 'ok' });
 });
 app.get('/health', (req, res) => {
   res.json({ healthy: true });
@@ -39,30 +39,30 @@ app.use('/api/outbound', outboundRouter);
 
 // Start
 app.listen(config.port, async () => {
-  console.log(`[mawa-channels] Listening on port ${config.port}`);
-  console.log(`[mawa-channels] DATABASE_URL set: ${!!config.database.url}`);
-  console.log(`[mawa-channels] DATABASE_URL host: ${config.database.url ? new URL(config.database.url).hostname : 'N/A'}`);
-  console.log(`[mawa-channels] TELEGRAM_BOT_TOKEN set: ${!!config.telegram.botToken}`);
-  console.log(`[mawa-channels] PUBLIC_BASE_URL: ${config.publicBaseUrl}`);
+  console.log(`[maava-channels] Listening on port ${config.port}`);
+  console.log(`[maava-channels] DATABASE_URL set: ${!!config.database.url}`);
+  console.log(`[maava-channels] DATABASE_URL host: ${config.database.url ? new URL(config.database.url).hostname : 'N/A'}`);
+  console.log(`[maava-channels] TELEGRAM_BOT_TOKEN set: ${!!config.telegram.botToken}`);
+  console.log(`[maava-channels] PUBLIC_BASE_URL: ${config.publicBaseUrl}`);
 
   // Test DB connectivity
   const pool = require('./db');
   try {
     const dbTest = await pool.query('SELECT NOW() AS now');
-    console.log(`[mawa-channels] ✅ DB connected — server time: ${dbTest.rows[0].now}`);
+    console.log(`[maava-channels] ✅ DB connected — server time: ${dbTest.rows[0].now}`);
   } catch (dbErr) {
-    console.error(`[mawa-channels] ❌ DB connection FAILED:`, dbErr.message);
+    console.error(`[maava-channels] ❌ DB connection FAILED:`, dbErr.message);
   }
 
   // Set up Telegram webhook (non-blocking)
   setupTelegramWebhook().catch((err) =>
-    console.error('[mawa-channels] Telegram webhook setup failed:', err),
+    console.error('[maava-channels] Telegram webhook setup failed:', err),
   );
 
   // Start Discord bot (long-running WebSocket)
   startDiscordBot().catch((err) =>
-    console.error('[mawa-channels] Discord bot startup failed:', err),
+    console.error('[maava-channels] Discord bot startup failed:', err),
   );
 
-  console.log('[mawa-channels] All handlers initialized');
+  console.log('[maava-channels] All handlers initialized');
 });

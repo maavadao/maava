@@ -1,17 +1,17 @@
 # TLS Setup — Cloudflare Origin Certificates
 
-mawaDao uses **Cloudflare Origin Certificates** with **Full (Strict) SSL** mode.
+maavaDao uses **Cloudflare Origin Certificates** with **Full (Strict) SSL** mode.
 Cloudflare terminates public TLS; the origin certificate secures traffic between
 Cloudflare's edge and the Nginx reverse proxy.
 
 ## 1. Generate the Origin Certificate
 
 1. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com)
-2. Select the **mawadao.com** zone → **SSL/TLS** → **Origin Server**
+2. Select the **maavadao.com** zone → **SSL/TLS** → **Origin Server**
 3. Click **Create Certificate**
 4. Settings:
    - Key type: **ECDSA** (recommended) or RSA 2048
-   - Hostnames: `*.mawadao.com, mawadao.com`
+   - Hostnames: `*.maavadao.com, maavadao.com`
    - Validity: 15 years (default)
 5. Click **Create** and save both files:
    - **Origin Certificate** → `infra/ssl/origin.pem`
@@ -55,11 +55,11 @@ Nginx will:
 
 ```bash
 # From a machine with Cloudflare DNS pointing to this host:
-curl -I https://mawadao.com/healthz
+curl -I https://maavadao.com/healthz
 # Should return 200 OK
 
 # Check the certificate chain:
-openssl s_client -connect mawadao.com:443 -servername mawadao.com < /dev/null 2>/dev/null | openssl x509 -noout -subject -issuer
+openssl s_client -connect maavadao.com:443 -servername maavadao.com < /dev/null 2>/dev/null | openssl x509 -noout -subject -issuer
 ```
 
 ## Local Development
@@ -71,14 +71,14 @@ runs services on localhost without Nginx. If you want to test TLS locally:
    ```bash
    openssl req -x509 -nodes -days 365 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 \
      -keyout infra/ssl/origin-key.pem -out infra/ssl/origin.pem \
-     -subj "/CN=*.mawadao.com"
+     -subj "/CN=*.maavadao.com"
    ```
 2. Run the LB via Docker Compose (above)
-3. Add `127.0.0.1 mawadao.com auth.mawadao.com` to your hosts file
+3. Add `127.0.0.1 maavadao.com auth.maavadao.com` to your hosts file
 
 ## Certificate Rotation
 
 Cloudflare Origin Certificates are valid for 15 years. When rotation is needed:
 1. Generate a new certificate in Cloudflare Dashboard
 2. Replace `origin.pem` and `origin-key.pem`
-3. Reload Nginx: `docker exec mawadao-lb nginx -s reload`
+3. Reload Nginx: `docker exec maavadao-lb nginx -s reload`

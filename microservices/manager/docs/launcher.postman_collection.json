@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "mawa core Launcher & Gateway",
-    "description": "OpenAPI-style import for the two HTTP services shipped with the mawa core launcher image. The `picoclaw-launcher` binary (default port 18800) proxies browser traffic to a managed `picoclaw gateway` subprocess (default port 18790). All launcher endpoints except the public auth + static assets require a session cookie set by POST /api/auth/login. The gateway exposes /health, /ready, /reload (bearer-token), and channel-specific webhook mounts (LINE, Pico). See docs/reference/launcher-api.md for the full reference.",
+    "name": "maava core Launcher & Gateway",
+    "description": "OpenAPI-style import for the two HTTP services shipped with the maava core launcher image. The `picoclaw-launcher` binary (default port 18800) proxies browser traffic to a managed `picoclaw gateway` subprocess (default port 18790). All launcher endpoints except the public auth + static assets require a session cookie set by POST /api/auth/login. The gateway exposes /health, /ready, /reload (bearer-token), and channel-specific webhook mounts (LINE, Pico). See docs/reference/launcher-api.md for the full reference.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "version": "1.0.0"
   },

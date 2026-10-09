@@ -62,7 +62,7 @@ func Load() (*Config, error) {
 		SessionSecret:         os.Getenv("SESSION_SECRET"),
 		FrontendURL:           getEnv("FRONTEND_URL", "http://localhost:3000"),
 		JWTSecret:             os.Getenv("JWT_SECRET"),
-		OIDCClientID:          getEnv("OIDC_CLIENT_ID", "mawadao-web"),
+		OIDCClientID:          getEnv("OIDC_CLIENT_ID", "maavadao-web"),
 		OIDCIssuer:            getEnv("OIDC_ISSUER", ""),
 		OIDCPrivateKeyPEM:     getEnv("OIDC_PRIVATE_KEY_PEM", ""),
 		OIDCKeyID:             getEnv("OIDC_KEY_ID", ""),

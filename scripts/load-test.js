@@ -1,5 +1,5 @@
 /**
- * mawaDao Load Test Suite
+ * maavaDao Load Test Suite
  *
  * Uses k6 (https://k6.io) for load testing.
  *

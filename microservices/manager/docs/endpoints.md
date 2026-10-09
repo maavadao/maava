@@ -1,4 +1,4 @@
-# mawa Manager — Endpoint Reference
+# maava Manager — Endpoint Reference
 
 > HTTP reference for the control-plane API implemented in [app/](app/)
 > (FastAPI, `app.main:app`). Design rationale: [design.md](design.md).
@@ -6,7 +6,7 @@
 
 | Service | Default listen | Purpose |
 | --- | --- | --- |
-| manager Control Plane | `:8000` (uvicorn default) | Tenant auth, orgs, RBAC, instance management, RBAC-gated proxy to each instance's mawa core launcher |
+| manager Control Plane | `:8000` (uvicorn default) | Tenant auth, orgs, RBAC, instance management, RBAC-gated proxy to each instance's maava core launcher |
 
 ---
 
@@ -410,7 +410,7 @@ POST/GET /v1/orgs/{org}/instances
 GET/PATCH/DELETE /v1/instances/{id}     POST /v1/instances/{id}/{suspend,resume}
 GET /v1/instances/{id}/role-bindings    PUT/DELETE /v1/instances/{id}/role-bindings/{user}
 
-# proxied to the instance's mawa core launcher (RBAC-gated, see §9):
+# proxied to the instance's maava core launcher (RBAC-gated, see §9):
 GET/POST /v1/instances/{id}/gateway/{status,start,stop,restart,logs,logs/clear}
 GET/PUT/PATCH/POST /v1/instances/{id}/config[/reset|/test-command-patterns]
 GET/POST/PUT/DELETE /v1/instances/{id}/models[...]

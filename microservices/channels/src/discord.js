@@ -1,6 +1,6 @@
 /**
- * Discord Handler — A single mawaDao-owned Discord bot that lives in
- * users' servers. Routes DMs and mentions to their mawa instance.
+ * Discord Handler — A single maavaDao-owned Discord bot that lives in
+ * users' servers. Routes DMs and mentions to their maava instance.
  *
  * Two parts:
  *   1. discord.js Client (long-running) — listens for messages
@@ -67,7 +67,7 @@ async function startDiscordBot() {
         return;
       }
 
-      // Route to mawa
+      // Route to maava
       await message.channel.sendTyping();
       const reply = await routeMessage(user.runtimeEndpoint, user.gatewayToken, text);
 
@@ -131,9 +131,9 @@ router.get('/oauth/callback', async (req, res) => {
     });
     const discordUser = await userRes.json();
 
-    // The `state` param contains the mawaDao user_id (set by the frontend)
-    const mawadaoUserId = state;
-    if (!mawadaoUserId) {
+    // The `state` param contains the maavaDao user_id (set by the frontend)
+    const maavadaoUserId = state;
+    if (!maavadaoUserId) {
       return res.status(400).send('Missing state (user ID)');
     }
 
@@ -150,7 +150,7 @@ router.get('/oauth/callback', async (req, res) => {
          linked_at     = NOW(),
          updated_at    = NOW()`,
       [
-        mawadaoUserId,
+        maavadaoUserId,
         discordUser.id,
         JSON.stringify({
           username: discordUser.username,

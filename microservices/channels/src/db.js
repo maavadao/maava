@@ -1,5 +1,5 @@
 /**
- * Database connection pool shared across the mawa-channels service.
+ * Database connection pool shared across the maava-channels service.
  */
 const { Pool } = require('pg');
 const config = require('./config');

@@ -1,6 +1,6 @@
-# mawa core HTTP API Reference
+# maava core HTTP API Reference
 
-> OpenAPI-style reference for the two HTTP services shipped with the mawa core
+> OpenAPI-style reference for the two HTTP services shipped with the maava core
 > launcher image. The launcher binary (`picoclaw-launcher`) embeds the Vue
 > dashboard and proxies browser traffic to a managed `picoclaw gateway`
 > subprocess.

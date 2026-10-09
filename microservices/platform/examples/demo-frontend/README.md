@@ -1,7 +1,7 @@
 # Demo frontend
 
-Minimal Next.js client for the mawa Platform API. Intended for local demos
-only — the product UI lives in mawa-dashboard.
+Minimal Next.js client for the maava Platform API. Intended for local demos
+only — the product UI lives in maava-dashboard.
 
 Features: connect with a dev token, view your user/org, create and list
 agents, and chat with an agent (SSE streaming via OpenRouter).

@@ -9,12 +9,12 @@
 - User profile endpoints (get, update, username check)
 - CORS middleware for frontend integration
 
-✅ **Platform** (`mawadao/apps/platform/`)
-- mawa Gateway + REST API backend
+✅ **Platform** (`maavadao/apps/platform/`)
+- maava Gateway + REST API backend
 - REST API at `/api/v1` with 76+ endpoints
 - WebSocket Gateway for real-time agent sessions
 
-✅ **Frontend** (`mawadao/apps/frontend/`)
+✅ **Frontend** (`maavadao/apps/frontend/`)
 - Created OAuth callback page (`src/app/auth/callback/page.tsx`)
 - Auth store supports OAuth JWT tokens
 - Login page redirects to auth service OAuth endpoint
@@ -57,7 +57,7 @@ FRONTEND_URL=http://localhost:3000
 ### 3. Configure Frontend Environment
 
 ```powershell
-cd mawadao/apps/frontend
+cd maavadao/apps/frontend
 Copy-Item .env.example .env.local
 notepad .env.local
 ```
@@ -78,7 +78,7 @@ node dev-start.mjs
 Or manually:
 ```powershell
 # Terminal 1 - Platform (Backend)
-cd mawadao/apps/platform
+cd maavadao/apps/platform
 $env:OPENCLAW_REST_API=1; pnpm run dev
 
 # Terminal 2 - Auth (Go)
@@ -86,11 +86,11 @@ cd microservices/auth
 go run ./cmd/
 
 # Terminal 3 - Configuration API
-cd mawadao/apps/microservices/mawa-api
+cd maavadao/apps/microservices/maava-api
 node src/index.js
 
 # Terminal 4 - Frontend
-cd mawadao/apps/frontend
+cd maavadao/apps/frontend
 npm run dev
 ```
 
@@ -124,14 +124,14 @@ The Go auth service creates/links users via the `users` table with `google_id` c
 ## Monorepo Structure
 
 ```
-mawadao/
+maavadao/
 ├── apps/
 │   ├── frontend/                    # Next.js 14 web client
 │   ├── microservices/
 │   │   ├── auth/                    # Go Google OAuth service
-│   │   ├── mawa-api/           # Express REST API for social features
-│   │   └── mawa-deployer/      # GCP Cloud Run deployment service
-│   └── platform/                    # mawa Gateway + REST API
+│   │   ├── maava-api/           # Express REST API for social features
+│   │   └── maava-deployer/      # GCP Cloud Run deployment service
+│   └── platform/                    # maava Gateway + REST API
 ├── db/
 │   └── migrations/                  # Centralized SQL schema & migrations
 ├── docs/                            # Project documentation

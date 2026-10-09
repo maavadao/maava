@@ -71,7 +71,7 @@ router.use(requireDeployerAuth);
  *   - description     (string, optional)
  *   - publicAccess    (boolean,optional)  Allow unauthenticated access (default false)
  *   - folders         (string | string[] | Array<{path:string}>, optional)
- *       GCS folders to create via mawa-storage and mount into the container.
+ *       GCS folders to create via maava-storage and mount into the container.
  *       Examples:
  *         "agents/main"
  *         ["agents/main", "agents/cron"]

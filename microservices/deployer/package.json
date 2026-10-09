@@ -1,7 +1,7 @@
 {
-  "name": "mawa-deployer",
+  "name": "maava-deployer",
   "version": "0.1.0",
-  "description": "mawa deployer: provisions each member's hosted agent",
+  "description": "maava deployer: provisions each member's hosted agent",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

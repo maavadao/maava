@@ -1,6 +1,6 @@
-# Google OAuth Setup Guide for mawaDao
+# Google OAuth Setup Guide for maavaDao
 
-This guide will walk you through setting up Google OAuth 2.0 authentication for your mawaDao application.
+This guide will walk you through setting up Google OAuth 2.0 authentication for your maavaDao application.
 
 ## Overview
 
@@ -19,7 +19,7 @@ Google OAuth allows users to sign in using their Google accounts. The authentica
 
 2. Click **Select a project** dropdown at the top
    - Click **NEW PROJECT**
-   - Enter project name: `mawaDao` (or your app name)
+   - Enter project name: `maavaDao` (or your app name)
    - Click **CREATE**
 
 3. Wait for the project to be created, then select it from the dropdown
@@ -43,7 +43,7 @@ Google OAuth allows users to sign in using their Google accounts. The authentica
 3. Click **CREATE**
 
 4. Fill in the App information:
-   - **App name**: `mawaDao` (or your app name)
+   - **App name**: `maavaDao` (or your app name)
    - **User support email**: Your email address
    - **App logo**: (Optional) Upload your app logo
    - **Application home page**: `http://localhost:3000` (for development)
@@ -77,7 +77,7 @@ Google OAuth allows users to sign in using their Google accounts. The authentica
 
 4. Configure the OAuth client:
    - **Application type**: Select **Web application**
-   - **Name**: `mawaDao Web Client` (or any name you prefer)
+   - **Name**: `maavaDao Web Client` (or any name you prefer)
    
 5. **Authorized JavaScript origins** (Optional for this flow):
    - Click **+ ADD URI**
@@ -100,7 +100,7 @@ Google OAuth allows users to sign in using their Google accounts. The authentica
 
 1. Navigate to the platform directory:
    ```powershell
-   cd mawadao/apps/platform
+   cd maavadao/apps/platform
    ```
 
 2. Create `.env` file (if it doesn't exist):
@@ -125,7 +125,7 @@ Google OAuth allows users to sign in using their Google accounts. The authentica
 
 1. Navigate to the frontend directory:
    ```powershell
-   cd mawadao/apps/frontend
+   cd maavadao/apps/frontend
    ```
 
 2. Create `.env.local` file (if it doesn't exist):
@@ -150,7 +150,7 @@ node dev-start.mjs
 Or manually:
 ```powershell
 # Terminal 1 - Platform (Backend)
-cd mawadao/apps/platform
+cd maavadao/apps/platform
 $env:OPENCLAW_REST_API=1; pnpm run dev
 
 # Terminal 2 - Auth (Go)
@@ -158,7 +158,7 @@ cd microservices/auth
 go run ./cmd/
 
 # Terminal 3 - Frontend
-cd mawadao/apps/frontend
+cd maavadao/apps/frontend
 npm run dev
 ```
 
@@ -207,7 +207,7 @@ For production, update:
 ### "Not found: GET /api/v1/auth/google"
 - Ensure backend is running with `OPENCLAW_REST_API=1`
 - Check backend logs for startup errors
-- Verify `.env` is in `mawadao/apps/platform/` directory
+- Verify `.env` is in `maavadao/apps/platform/` directory
 
 ### "redirect_uri_mismatch" error from Google
 - Go to Google Cloud Console > Credentials
@@ -219,7 +219,7 @@ For production, update:
 - Check backend terminal for errors
 - Verify `FRONTEND_URL` in backend `.env`
 - Check browser console for errors
-- Verify callback page exists at `mawadao/apps/frontend/src/app/auth/callback/page.tsx`
+- Verify callback page exists at `maavadao/apps/frontend/src/app/auth/callback/page.tsx`
 
 ### "Google OAuth not configured" error
 - Ensure `GOOGLE_CLIENT_ID` is set in backend `.env`

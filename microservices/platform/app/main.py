@@ -15,7 +15,7 @@ async def lifespan(app: FastAPI):
     await db.close_pool()
 
 
-app = FastAPI(title="mawa Platform API", lifespan=lifespan)
+app = FastAPI(title="maava Platform API", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_settings().cors_origins,

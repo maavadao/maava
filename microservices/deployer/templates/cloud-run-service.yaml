@@ -1,4 +1,4 @@
-description: "mawa Gateway"
+description: "maava Gateway"
 
 # Service-level scaling (Cloud Run v2)
 # MANUAL mode with exactly 1 instance.
@@ -14,7 +14,7 @@ template:
   vpcAccess:
     egress: PRIVATE_RANGES_ONLY
     networkInterfaces:
-      - network: mawadao-tenants-prod-vpc
+      - network: maavadao-tenants-prod-vpc
         subnetwork: prod-euw1-tenants
 
   # Revision-level scaling (ignored when service.scaling.scalingMode=MANUAL)
@@ -28,7 +28,7 @@ template:
   volumes: []
 
   containers:
-    - image: "ghcr.io/mawadao/mawa-gateway:latest"
+    - image: "ghcr.io/maavadao/maava-gateway:latest"
 
       command:
         - node

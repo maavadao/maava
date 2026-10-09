@@ -5,7 +5,7 @@
  *
  * POST /api/outbound/send
  *   Body: { user_id, platform?, text, secret }
- *   - user_id: UUID of the mawaDao user
+ *   - user_id: UUID of the maavaDao user
  *   - platform: "telegram" | "discord" | "whatsapp" (optional — sends to all linked if omitted)
  *   - text: message content
  *   - secret: shared secret for authentication

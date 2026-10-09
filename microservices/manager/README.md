@@ -1,13 +1,13 @@
-# mawa-manager
+# maava-manager
 
-Control plane for hosted [`mawa-core`](https://github.com/mawadao/mawa-core)
-instances (mawa core launcher + gateway pods on Kubernetes), with org- and instance-scoped
+Control plane for hosted [`maava-core`](https://github.com/maavadao/maava-core)
+instances (maava core launcher + gateway pods on Kubernetes), with org- and instance-scoped
 roles, API keys and an audit log. Design doc: [docs/design.md](docs/design.md).
 Endpoint reference: [docs/endpoints.md](docs/endpoints.md). Frontend
 integration guide: [docs/frontend-guide.md](docs/frontend-guide.md). Launcher API:
 [docs/launcher-api.md](docs/launcher-api.md).
 
-Part of [mawa](https://github.com/mawadao/mawa), the open-source agent platform behind mawaDao: a community-owned ecosystem of agentic AI for education, where developers build and list agents for free and the community shares in what they earn.
+Part of [maava](https://github.com/maavadao/maava), the open-source agent platform behind maavaDao: a community-owned ecosystem of agentic AI for education, where developers build and list agents for free and the community shares in what they earn.
 
 ## Run
 
@@ -67,9 +67,9 @@ tables are already in place for it.
 
 ## Contributing
 
-Read the [contributing guide](https://github.com/mawadao/mawa/blob/main/CONTRIBUTING.md) before opening a pull request.
-This service lives in the `mawa` repository; pull requests go there. Releases are tagged
-`manager-vX.Y.Z` as described in [RELEASING.md](https://github.com/mawadao/mawa/blob/main/RELEASING.md).
+Read the [contributing guide](https://github.com/maavadao/maava/blob/main/CONTRIBUTING.md) before opening a pull request.
+This service lives in the `maava` repository; pull requests go there. Releases are tagged
+`manager-vX.Y.Z` as described in [RELEASING.md](https://github.com/maavadao/maava/blob/main/RELEASING.md).
 
 ## Licence
 

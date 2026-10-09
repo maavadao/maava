@@ -23,7 +23,7 @@ func GenerateJWT(secret, userID, email string) (string, error) {
 	return GenerateJWTWithTenant(secret, userID, email, "", "")
 }
 
-const jwtIssuer = "mawadao-auth"
+const jwtIssuer = "maavadao-auth"
 
 // GenerateJWTWithTenant creates a JWT that includes tenant/subdomain claims.
 func GenerateJWTWithTenant(secret, userID, email, subdomain, tenantID string) (string, error) {

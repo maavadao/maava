@@ -1,4 +1,4 @@
-# Prometheus configuration for mawaDao monitoring.
+# Prometheus configuration for maavaDao monitoring.
 # Scrapes metrics from the configuration API and Nginx stub_status.
 
 global:
@@ -7,12 +7,12 @@ global:
 
 scrape_configs:
   # Configuration API — Prometheus-compatible /metrics endpoint
-  - job_name: "mawa-api"
+  - job_name: "maava-api"
     metrics_path: /metrics
     static_configs:
       - targets: ["host.docker.internal:3003"]
         labels:
-          service: mawa-api
+          service: maava-api
           environment: production
 
   # Auth service health (probe-style — check /health returns 200)
@@ -25,7 +25,7 @@ scrape_configs:
 
 
   # Cloud Run deployer health
-  - job_name: "mawa-deployer"
+  - job_name: "maava-deployer"
     metrics_path: /health
     static_configs:
       - targets: ["host.docker.internal:3002"]

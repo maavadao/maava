@@ -1,4 +1,4 @@
-module github.com/mawadao/mawa/microservices/auth
+module github.com/maavadao/maava/microservices/auth
 
 go 1.23.0
 

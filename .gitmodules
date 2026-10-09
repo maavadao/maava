@@ -1,28 +1,28 @@
 [submodule "apps/frontend"]
 	path = apps/frontend
-	url = https://github.com/mawadao/mawa-frontend.git
+	url = https://github.com/maavadao/maava-frontend.git
 	branch = main
 [submodule "apps/dashboard"]
 	path = apps/dashboard
-	url = https://github.com/mawadao/mawa-dashboard.git
+	url = https://github.com/maavadao/maava-dashboard.git
 	branch = main
 [submodule "runtime/gateway"]
 	path = runtime/gateway
-	url = https://github.com/mawadao/mawa-gateway.git
+	url = https://github.com/maavadao/maava-gateway.git
 	branch = main
 [submodule "microservices/api"]
 	path = microservices/api
-	url = https://github.com/mawadao/mawa-api.git
+	url = https://github.com/maavadao/maava-api.git
 	branch = main
 [submodule "microservices/mission-control"]
 	path = microservices/mission-control
-	url = https://github.com/mawadao/mawa-mission-control.git
+	url = https://github.com/maavadao/maava-mission-control.git
 	branch = main
 [submodule "db"]
 	path = db
-	url = https://github.com/mawadao/mawa-db.git
+	url = https://github.com/maavadao/maava-db.git
 	branch = main
 [submodule "runtime/core"]
 	path = runtime/core
-	url = https://github.com/mawadao/mawa-core.git
+	url = https://github.com/maavadao/maava-core.git
 	branch = main

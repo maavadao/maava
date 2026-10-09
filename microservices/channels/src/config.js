@@ -15,8 +15,8 @@ module.exports = {
   telegram: {
     botToken: process.env.TELEGRAM_BOT_TOKEN || '',
     webhookSecret: process.env.TELEGRAM_WEBHOOK_SECRET || '',
-    botUsername: process.env.TELEGRAM_BOT_USERNAME || 'mawadao_bot',
-    webhookBaseUrl: process.env.TELEGRAM_WEBHOOK_BASE_URL || '', // e.g. https://channels.mawadao.com
+    botUsername: process.env.TELEGRAM_BOT_USERNAME || 'maavadao_bot',
+    webhookBaseUrl: process.env.TELEGRAM_WEBHOOK_BASE_URL || '', // e.g. https://channels.maavadao.com
     webhookPath: process.env.TELEGRAM_WEBHOOK_PATH || '/telegram/webhook',
     allowedUpdates: (process.env.TELEGRAM_ALLOWED_UPDATES || 'message,edited_message,callback_query').split(',').map(s => s.trim()),
     parseMode: process.env.TELEGRAM_PARSE_MODE || 'Markdown',
@@ -43,6 +43,6 @@ module.exports = {
   jwtSecret: process.env.JWT_SECRET || '',
 
   publicBaseUrl: process.env.PUBLIC_BASE_URL || 'http://localhost:8090',
-  dashboardBaseUrl: process.env.DASHBOARD_BASE_URL || 'https://agent.mawadao.com',
+  dashboardBaseUrl: process.env.DASHBOARD_BASE_URL || 'https://agent.maavadao.com',
   outboundSecret: process.env.OUTBOUND_SECRET || '',
 };

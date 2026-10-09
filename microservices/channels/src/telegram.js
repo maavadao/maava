@@ -1,12 +1,12 @@
 /**
  * Telegram Handler — Receives webhook updates from Telegram Bot API,
- * routes messages to the user's mawa instance, and sends replies.
+ * routes messages to the user's maava instance, and sends replies.
  *
- * mawaDao owns ONE bot (@MawadaoBot). All users talk to it.
- * Routing: telegram_user_id → telegram_channel_links → user's mawa URL → reply.
+ * maavaDao owns ONE bot (@MaavadaoBot). All users talk to it.
+ * Routing: telegram_user_id → telegram_channel_links → user's maava URL → reply.
  *
  * Account linking:
- *   1. Deep-link: Dashboard generates token → t.me/mawadao_bot?start=TOKEN → bot validates → link.
+ *   1. Deep-link: Dashboard generates token → t.me/maavadao_bot?start=TOKEN → bot validates → link.
  *   2. Login Widget: Dashboard embeds Telegram Login Widget → frontend verifies hash → link.
  *
  * Features:
@@ -51,7 +51,7 @@ async function sendAndLog(chatId, text, user, telegramUserId) {
     const results = await tgApi.sendMessage(chatId, text);
     const msgId = results[0]?.message_id || null;
     await tgStore.logMessage({
-      mawadaoUserId: user?.userId || null,
+      maavadaoUserId: user?.userId || null,
       telegramUserId,
       chatId,
       direction: 'outbound',
@@ -62,7 +62,7 @@ async function sendAndLog(chatId, text, user, telegramUserId) {
     return results;
   } catch (err) {
     await tgStore.logMessage({
-      mawadaoUserId: user?.userId || null,
+      maavadaoUserId: user?.userId || null,
       telegramUserId,
       chatId,
       direction: 'outbound',
@@ -105,7 +105,7 @@ async function handleLinkToken(chatId, telegramUserId, fromUser, token) {
 
       await sendAndLog(
         chatId,
-        `This link has expired or was already used.\n\nGo back to your mawaDao dashboard and click "Link Telegram" again to generate a new one.`,
+        `This link has expired or was already used.\n\nGo back to your maavaDao dashboard and click "Link Telegram" again to generate a new one.`,
         null,
         telegramUserId,
       );
@@ -133,7 +133,7 @@ async function handleLinkToken(chatId, telegramUserId, fromUser, token) {
     const name = fromUser.first_name || 'there';
     await sendAndLog(
       chatId,
-      `✅ *Account linked!*\n\nHey ${name}, your Telegram is now connected to mawaDao.\nJust send me a message and I'll route it to your AI agent.`,
+      `✅ *Account linked!*\n\nHey ${name}, your Telegram is now connected to maavaDao.\nJust send me a message and I'll route it to your AI agent.`,
       { userId },
       telegramUserId,
     );
@@ -270,8 +270,8 @@ router.post('/webhook', async (req, res) => {
       } else {
         await sendAndLog(
           chatId,
-          `Welcome to *mawaDao*! 🤖\n\n` +
-          `To connect this Telegram account to your mawa, ` +
+          `Welcome to *maavaDao*! 🤖\n\n` +
+          `To connect this Telegram account to your maava, ` +
           `go to your dashboard and open *Channels → Telegram*, then click "Link Telegram".\n\n` +
           `Once linked, just message me and I'll route it to your AI assistant.`,
           null,
@@ -311,7 +311,7 @@ router.post('/webhook', async (req, res) => {
     if (text === '/unlink') {
       const user = await tgStore.findTelegramUser(telegramUserId);
       if (!user) {
-        await sendAndLog(chatId, `Your Telegram is not linked to any mawaDao account.`, null, telegramUserId);
+        await sendAndLog(chatId, `Your Telegram is not linked to any maavaDao account.`, null, telegramUserId);
         return;
       }
       await tgStore.unlinkTelegramUser(telegramUserId);
@@ -319,7 +319,7 @@ router.post('/webhook', async (req, res) => {
       setSelectedAgent('telegram', telegramUserId, null);
       await sendAndLog(
         chatId,
-        `✅ Your Telegram account has been unlinked from mawaDao.\n\nYou can re-link anytime from your dashboard → Channels → Telegram.`,
+        `✅ Your Telegram account has been unlinked from maavaDao.\n\nYou can re-link anytime from your dashboard → Channels → Telegram.`,
         user,
         telegramUserId,
       );
@@ -330,7 +330,7 @@ router.post('/webhook', async (req, res) => {
     if (text === '/agents') {
       const user = await tgStore.findTelegramUser(telegramUserId);
       if (!user) {
-        await sendAndLog(chatId, `Link your account first — go to your mawaDao dashboard → Channels → Telegram.`, null, telegramUserId);
+        await sendAndLog(chatId, `Link your account first — go to your maavaDao dashboard → Channels → Telegram.`, null, telegramUserId);
         return;
       }
 
@@ -341,7 +341,7 @@ router.post('/webhook', async (req, res) => {
         await sendAndLog(
           chatId,
           `You don't have any agents installed yet.\n\n` +
-          `Go to your mawaDao dashboard → *Agent Marketplace* to install agents.\n` +
+          `Go to your maavaDao dashboard → *Agent Marketplace* to install agents.\n` +
           `Without an agent selected, I'll use the default assistant.`,
           user,
           telegramUserId,
@@ -426,13 +426,13 @@ router.post('/webhook', async (req, res) => {
     if (text === '/help') {
       await sendAndLog(
         chatId,
-        `*mawaDao Bot Commands*\n\n` +
+        `*maavaDao Bot Commands*\n\n` +
         `/new — Start a new conversation session\n` +
         `/agents — List your installed AI agents\n` +
         `/agent <#> — Switch to a different agent\n` +
         `/agent 0 — Switch back to default assistant\n` +
         `/clear — Reset everything (history + agent)\n` +
-        `/unlink — Disconnect this Telegram from mawaDao\n` +
+        `/unlink — Disconnect this Telegram from maavaDao\n` +
         `/help — Show this help message\n\n` +
         `Just type any message and I'll route it to your AI agent!`,
         null,
@@ -447,7 +447,7 @@ router.post('/webhook', async (req, res) => {
       await sendAndLog(
         chatId,
         `I don't recognize your Telegram account yet.\n\n` +
-        `Go to your mawaDao dashboard → *Channels → Telegram* and click "Link Telegram" to connect.`,
+        `Go to your maavaDao dashboard → *Channels → Telegram* and click "Link Telegram" to connect.`,
         null,
         telegramUserId,
       );

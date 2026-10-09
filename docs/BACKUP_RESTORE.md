@@ -1,8 +1,8 @@
-# mawaDao — Database Backup & Restore Guide
+# maavaDao — Database Backup & Restore Guide
 
 ## Overview
 
-mawaDao uses a two-tier backup strategy:
+maavaDao uses a two-tier backup strategy:
 
 | Tier | Method | Frequency | Retention | Where |
 |------|--------|-----------|-----------|-------|
@@ -18,19 +18,19 @@ Supabase PITR is the primary disaster-recovery mechanism. The `pg_dump` backups 
 ### Manual Backup
 
 ```bash
-export DATABASE_URL="postgresql://postgres:PASSWORD@host:5432/mawadao?sslmode=require"
+export DATABASE_URL="postgresql://postgres:PASSWORD@host:5432/maavadao?sslmode=require"
 
 # Run once
 ./scripts/backup-db.sh
 ```
 
-The backup is saved to `./backups/mawadao_YYYYMMDD_HHMMSS.sql.gz`.
+The backup is saved to `./backups/maavadao_YYYYMMDD_HHMMSS.sql.gz`.
 
 ### Manual Backup with GCS Upload
 
 ```bash
 export DATABASE_URL="..."
-export GCS_BACKUP_BUCKET="mawadao-backups"
+export GCS_BACKUP_BUCKET="maavadao-backups"
 
 ./scripts/backup-db.sh
 ```
@@ -44,7 +44,7 @@ Requires `gsutil` (Google Cloud SDK) authenticated.
 ```bash
 # Create .env or export variables
 export DATABASE_URL="postgresql://..."
-export GCS_BACKUP_BUCKET="mawadao-backups"   # optional
+export GCS_BACKUP_BUCKET="maavadao-backups"   # optional
 export BACKUP_RETAIN_DAYS=30                # optional, default 30
 
 # Start the backup service
@@ -56,19 +56,19 @@ This runs a cron job inside a `postgres:16-alpine` container that triggers `back
 ### Check Logs
 
 ```bash
-docker logs mawadao-db-backup
+docker logs maavadao-db-backup
 ```
 
 ### Run an Immediate Backup
 
 ```bash
-docker exec mawadao-db-backup /usr/local/bin/backup-db.sh
+docker exec maavadao-db-backup /usr/local/bin/backup-db.sh
 ```
 
 ### View Stored Backups
 
 ```bash
-docker exec mawadao-db-backup ls -lh /backups/
+docker exec maavadao-db-backup ls -lh /backups/
 ```
 
 ---
@@ -89,10 +89,10 @@ This restores the full database state including all tables, indexes, and RLS pol
 
 ```bash
 # Decompress
-gunzip mawadao_20250101_030000.sql.gz
+gunzip maavadao_20250101_030000.sql.gz
 
 # Restore to target database
-psql "${TARGET_DATABASE_URL}" < mawadao_20250101_030000.sql
+psql "${TARGET_DATABASE_URL}" < maavadao_20250101_030000.sql
 ```
 
 The dump uses `--clean --if-exists` so it will `DROP ... IF EXISTS` before recreating objects.
@@ -101,7 +101,7 @@ The dump uses `--clean --if-exists` so it will `DROP ... IF EXISTS` before recre
 
 ```bash
 # Extract one table from the dump
-gunzip -c mawadao_20250101_030000.sql.gz \
+gunzip -c maavadao_20250101_030000.sql.gz \
   | sed -n '/^-- Name: agents;/,/^-- Name: [^a]/p' \
   > agents_only.sql
 
@@ -115,7 +115,7 @@ psql "${TARGET_DATABASE_URL}" < agents_only.sql
 
 ```bash
 # Create the bucket (one-time)
-gsutil mb -l us-central1 gs://mawadao-backups
+gsutil mb -l us-central1 gs://maavadao-backups
 
 # Set lifecycle policy: delete objects older than 90 days
 cat > /tmp/lifecycle.json << 'EOF'
@@ -127,7 +127,7 @@ cat > /tmp/lifecycle.json << 'EOF'
 }
 EOF
 
-gsutil lifecycle set /tmp/lifecycle.json gs://mawadao-backups
+gsutil lifecycle set /tmp/lifecycle.json gs://maavadao-backups
 ```
 
 If using the Docker backup service, mount a GCP service account key:

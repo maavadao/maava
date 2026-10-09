@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * mawaDao Multi-Service Health Check
+ * maavaDao Multi-Service Health Check
  *
  * Probes every service's /health endpoint and reports status.
  * Exit code 0 if all critical services are healthy, 1 otherwise.
@@ -124,7 +124,7 @@ async function main() {
     };
     console.log(JSON.stringify(out, null, 2));
   } else {
-    console.log("\n  mawaDao Health Check\n");
+    console.log("\n  maavaDao Health Check\n");
     console.log("=".repeat(60));
 
     for (const r of results) {

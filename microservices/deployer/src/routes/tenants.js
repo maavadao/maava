@@ -17,10 +17,10 @@ const CloudRunDeployService = require("../services/CloudRunDeployService");
 const { Storage } = require("@google-cloud/storage");
 const config = require("../config");
 
-/** The member space (mawa-dashboard) that talks to every tenant's runtime. */
-const MEMBER_SPACE_URL = (process.env.MEMBER_SPACE_URL || "https://agent.mawadao.com").replace(/\/+$/, "");
+/** The member space (maava-dashboard) that talks to every tenant's runtime. */
+const MEMBER_SPACE_URL = (process.env.MEMBER_SPACE_URL || "https://agent.maavadao.com").replace(/\/+$/, "");
 
-/** mawa-storage service URL and secret for creating GCS folders + seeding openclaw.json */
+/** maava-storage service URL and secret for creating GCS folders + seeding openclaw.json */
 const STORAGE_URL = process.env.STORAGE_URL || "";
 const STORAGE_API_SECRET = process.env.STORAGE_API_SECRET || "";
 
@@ -67,8 +67,8 @@ function getGCSCredentials() {
  * Gateway token and Cloud Run serviceUrl are injected so authentication and proxy trust work
  * correctly from the first container start.
  *
- * @param {string} gatewayToken  - Auth token for the mawa gateway.
- * @param {string} [serviceUrl]  - Cloud Run service URL (e.g. https://mawadao-foo-xxxx.run.app).
+ * @param {string} gatewayToken  - Auth token for the maava gateway.
+ * @param {string} [serviceUrl]  - Cloud Run service URL (e.g. https://maavadao-foo-xxxx.run.app).
  *                                 Added to trustedProxies and controlUi.allowedOrigins so the
  *                                 gateway accepts requests routed through Cloud Run's load balancer.
  */
@@ -90,10 +90,10 @@ function buildDefaultGatewayConfig(gatewayToken, serviceUrl, subdomain) {
     : regionParts[0].slice(0, 2);
 
   const trustedProxies = [];
-  const allowedOrigins = ["https://platform.mawadao.com", "https://mawadao.com"];
+  const allowedOrigins = ["https://platform.maavadao.com", "https://maavadao.com"];
 
   if (serviceUrl && subdomain) {
-    const serviceName = `mawadao-${subdomain}`;
+    const serviceName = `maavadao-${subdomain}`;
 
     // Detect which format serviceUrl is, and build the other
     // Legacy format contains ".a.run.app", new format contains ".run.app" but NOT ".a.run.app"
@@ -271,7 +271,7 @@ function buildDefaultGatewayConfig(gatewayToken, serviceUrl, subdomain) {
 }
 
 /**
- * Calls the mawa-storage service to scaffold the per-user folder structure
+ * Calls the maava-storage service to scaffold the per-user folder structure
  * inside a tenant bucket and seed openclaw.json on first provisioning.
  *
  * Bucket layout created:
@@ -285,7 +285,7 @@ function buildDefaultGatewayConfig(gatewayToken, serviceUrl, subdomain) {
  */
 async function seedTenantBucketConfig(gcsBucket, userId, gatewayToken, serviceUrl, subdomain) {
   if (!STORAGE_URL) {
-    console.warn("[mawa-storage] STORAGE_URL not set — skipping folder scaffold and openclaw.json seeding");
+    console.warn("[maava-storage] STORAGE_URL not set — skipping folder scaffold and openclaw.json seeding");
     return;
   }
 
@@ -303,12 +303,12 @@ async function seedTenantBucketConfig(gcsBucket, userId, gatewayToken, serviceUr
       });
       if (!res.ok) {
         const body = await res.text();
-        console.warn(`[mawa-storage] CreateFolder failed for ${gcsBucket}/${path} (HTTP ${res.status}): ${body}`);
+        console.warn(`[maava-storage] CreateFolder failed for ${gcsBucket}/${path} (HTTP ${res.status}): ${body}`);
       } else {
-        console.log(`[mawa-storage] Created folder ${gcsBucket}/${path}`);
+        console.log(`[maava-storage] Created folder ${gcsBucket}/${path}`);
       }
     } catch (err) {
-      console.warn(`[mawa-storage] CreateFolder request failed for ${gcsBucket}/${path}:`, err.message);
+      console.warn(`[maava-storage] CreateFolder request failed for ${gcsBucket}/${path}:`, err.message);
     }
   };
 
@@ -332,16 +332,16 @@ async function seedTenantBucketConfig(gcsBucket, userId, gatewayToken, serviceUr
     );
     if (!fileRes.ok) {
       const body = await fileRes.text();
-      console.warn(`[mawa-storage] WriteFile failed for ${gcsBucket}/${filePath} (HTTP ${fileRes.status}): ${body}`);
+      console.warn(`[maava-storage] WriteFile failed for ${gcsBucket}/${filePath} (HTTP ${fileRes.status}): ${body}`);
     } else {
-      console.log(`[mawa-storage] Seeded openclaw.json in ${gcsBucket}/${filePath}`);
+      console.log(`[maava-storage] Seeded openclaw.json in ${gcsBucket}/${filePath}`);
     }
   } catch (err) {
-    console.warn(`[mawa-storage] WriteFile request failed for ${gcsBucket}/${userId}/mountfolder/openclaw.json:`, err.message);
+    console.warn(`[maava-storage] WriteFile request failed for ${gcsBucket}/${userId}/mountfolder/openclaw.json:`, err.message);
   }
 
   // 3. Seed auth-profiles.json with actual API key credentials
-  //    mawa resolves keys in order: auth-profiles.json → env var → models.json apiKey.
+  //    maava resolves keys in order: auth-profiles.json → env var → models.json apiKey.
   //    We must seed this file so that even if the container MOONSHOT_API_KEY env var is
   //    empty (e.g. when the deployer itself doesn't have the key set), the agent still
   //    authenticates correctly on first boot.
@@ -372,24 +372,24 @@ async function seedTenantBucketConfig(gcsBucket, userId, gatewayToken, serviceUr
       );
       if (!authRes.ok) {
         const body = await authRes.text();
-        console.warn(`[mawa-storage] WriteFile failed for ${gcsBucket}/${authPath} (HTTP ${authRes.status}): ${body}`);
+        console.warn(`[maava-storage] WriteFile failed for ${gcsBucket}/${authPath} (HTTP ${authRes.status}): ${body}`);
       } else {
         const keys = Object.keys(authProfiles).join(", ");
-        console.log(`[mawa-storage] Seeded auth-profiles.json (${keys}) in ${gcsBucket}/${authPath}`);
+        console.log(`[maava-storage] Seeded auth-profiles.json (${keys}) in ${gcsBucket}/${authPath}`);
       }
     } catch (err) {
-      console.warn(`[mawa-storage] WriteFile request failed for auth-profiles.json:`, err.message);
+      console.warn(`[maava-storage] WriteFile request failed for auth-profiles.json:`, err.message);
     }
   } else {
     console.warn(
-      "[mawa-storage] MOONSHOT_API_KEY is not set in the deployer environment — " +
+      "[maava-storage] MOONSHOT_API_KEY is not set in the deployer environment — " +
       "auth-profiles.json not seeded. Set this env var in the deployer Cloud Run service to fix new tenant provisioning."
     );
   }
 
   // 4. Seed models.json at agents/main/agent/models.json
   //    This is the per-agent provider config. Mirror Alien's working Moonshot-first setup.
-  //    mawa checks this as a fallback when auth-profiles.json and env vars don't resolve.
+  //    maava checks this as a fallback when auth-profiles.json and env vars don't resolve.
   try {
     const agentModels = {
       providers: {
@@ -438,12 +438,12 @@ async function seedTenantBucketConfig(gcsBucket, userId, gatewayToken, serviceUr
     );
     if (!modelsRes.ok) {
       const body = await modelsRes.text();
-      console.warn(`[mawa-storage] WriteFile failed for ${gcsBucket}/${modelsPath} (HTTP ${modelsRes.status}): ${body}`);
+      console.warn(`[maava-storage] WriteFile failed for ${gcsBucket}/${modelsPath} (HTTP ${modelsRes.status}): ${body}`);
     } else {
-      console.log(`[mawa-storage] Seeded models.json in ${gcsBucket}/${modelsPath}`);
+      console.log(`[maava-storage] Seeded models.json in ${gcsBucket}/${modelsPath}`);
     }
   } catch (err) {
-    console.warn(`[mawa-storage] WriteFile request failed for models.json:`, err.message);
+    console.warn(`[maava-storage] WriteFile request failed for models.json:`, err.message);
   }
 }
 
@@ -492,7 +492,7 @@ router.use(requireDeployerAuth);
 /** Cloud container image for per-user backends */
 const CLOUD_BACKEND_IMAGE =
   process.env.CLOUD_BACKEND_IMAGE ||
-  "ghcr.io/mawadao/mawa-gateway:latest";
+  "ghcr.io/maavadao/maava-gateway:latest";
 
 /** Gateway token sourced from environment — never hardcode */
 const OPENCLAW_GATEWAY_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN || "";
@@ -550,13 +550,13 @@ router.post(
       });
     }
 
-    const serviceName = `mawadao-${subdomain}`;
+    const serviceName = `maavadao-${subdomain}`;
     const resolvedContainerImage =
       typeof containerImage === "string" && containerImage.trim()
         ? containerImage.trim()
         : CLOUD_BACKEND_IMAGE;
-    // All tenants share a single pre-existing bucket; mawa-storage SA already has objectAdmin on it.
-    const gcsBucket = process.env.GCS_BUCKET_NAME || "mawa-data";
+    // All tenants share a single pre-existing bucket; maava-storage SA already has objectAdmin on it.
+    const gcsBucket = process.env.GCS_BUCKET_NAME || "maava-data";
     const deployRegion = region || config.cloudRun.region || "europe-west1";
 
     // Pre-compute the Cloud Run service URL — the format is deterministic:
@@ -604,10 +604,10 @@ router.post(
       // their own watchdogs (STREAM_READ_TIMEOUT_MS, MAX_CONTINUATIONS).
       // NOTE: existing tenants keep their original timeout until their next
       // deploy/redeploy; operators can update them via:
-      //   gcloud run services update mawadao-{sub} --timeout=3600 \
+      //   gcloud run services update maavadao-{sub} --timeout=3600 \
       //     --region=europe-west1 --project=mawadao-customer-side
       timeout: "3600s",
-      description: `mawaDao Cloud backend for ${subdomain}`,
+      description: `maavaDao Cloud backend for ${subdomain}`,
       publicAccess: true,
       // Mount the user's GCS subfolder at the state directory.
       // only-dir scopes the gcsfuse mount to {userId}/mountfolder/ so that
@@ -662,7 +662,7 @@ router.delete(
   asyncHandler(async (req, res) => {
     const { subdomain } = req.params;
     const userId = req.query.userId || null;
-    const serviceName = `mawadao-${subdomain}`;
+    const serviceName = `maavadao-${subdomain}`;
     const region = req.query.region || config.cloudRun.region || "europe-west1";
 
     const result = await CloudRunDeployService.deleteService(serviceName, { region });
@@ -670,7 +670,7 @@ router.delete(
     // Delete the user's GCS folder from the shared bucket (best-effort)
     let gcsFolderDeleted = false;
     if (userId && STORAGE_URL) {
-      const gcsBucket = process.env.GCS_BUCKET_NAME || "mawa-data";
+      const gcsBucket = process.env.GCS_BUCKET_NAME || "maava-data";
       const headers = {};
       if (STORAGE_API_SECRET) headers["X-Storage-Secret"] = STORAGE_API_SECRET;
       try {
@@ -680,13 +680,13 @@ router.delete(
         );
         if (gcsRes.ok) {
           gcsFolderDeleted = true;
-          console.log(`[mawa-storage] Deleted GCS folder for user ${userId}`);
+          console.log(`[maava-storage] Deleted GCS folder for user ${userId}`);
         } else {
           const body = await gcsRes.text();
-          console.warn(`[mawa-storage] GCS folder delete failed for ${userId} (HTTP ${gcsRes.status}): ${body}`);
+          console.warn(`[maava-storage] GCS folder delete failed for ${userId} (HTTP ${gcsRes.status}): ${body}`);
         }
       } catch (gcsErr) {
-        console.warn(`[mawa-storage] GCS folder delete error for ${userId}:`, gcsErr.message);
+        console.warn(`[maava-storage] GCS folder delete error for ${userId}:`, gcsErr.message);
       }
     }
 

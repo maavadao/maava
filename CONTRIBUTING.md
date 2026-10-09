@@ -1,6 +1,6 @@
-# Contributing to mawa
+# Contributing to maava
 
-Thank you for helping. mawa's larger components have their own repositories, tied
+Thank you for helping. maava's larger components have their own repositories, tied
 together by this repository with Git submodules; small microservices live in this repository under
 `microservices/`. This guide covers all of them.
 
@@ -14,13 +14,13 @@ will move it.
 
 | You want to change | Repository |
 | --- | --- |
-| A page on the public website | `mawa-frontend` |
-| A member's workspace (chat, channels, inbox, boards) | `mawa-dashboard` |
-| How an agent runs, its tools or skills | `mawa-gateway` or `mawa-core` |
-| An API endpoint | the service that owns it: `mawa-api`, `mawa-mission-control`, or a folder in `microservices/` here |
-| A table, column or index | `mawa-db` (a new migration) |
-| A small microservice (auth, channels, deployer, storage, skills, platform, manager) | `mawa`, in `microservices/<name>` |
-| How components are wired together, or the docs here | `mawa` |
+| A page on the public website | `maava-frontend` |
+| A member's workspace (chat, channels, inbox, boards) | `maava-dashboard` |
+| How an agent runs, its tools or skills | `maava-gateway` or `maava-core` |
+| An API endpoint | the service that owns it: `maava-api`, `maava-mission-control`, or a folder in `microservices/` here |
+| A table, column or index | `maava-db` (a new migration) |
+| A small microservice (auth, channels, deployer, storage, skills, platform, manager) | `maava`, in `microservices/<name>` |
+| How components are wired together, or the docs here | `maava` |
 
 ## Workflow
 
@@ -45,7 +45,7 @@ the page that shows it.
 
 ## Database changes
 
-All shared schema changes are new files in `mawa-db/migrations/`. Never edit a
+All shared schema changes are new files in `maava-db/migrations/`. Never edit a
 migration that has already been released. CI applies every migration to an empty database, so
 run `scripts/migrate.sh` locally first. Mission Control and the platform service manage their
 own schemas in their own repositories.
@@ -54,7 +54,7 @@ own schemas in their own repositories.
 
 - **Code:** follow the linters and formatters configured in each repository.
 - **Commits:** a short subject in the imperative ("Add pagination to the feed"), and a body explaining why when it isn't obvious.
-- **Writing:** British English in documentation and interface text (organisation, licence). Write the name as "mawaDao".
+- **Writing:** British English in documentation and interface text (organisation, licence). Write the name as "maavaDao".
 - **Secrets:** never commit credentials, `.env` files or real hostnames. Add new settings to `.env.example` with an empty value.
 
 ## Security
@@ -65,4 +65,4 @@ Do not open public issues for vulnerabilities. Use GitHub's private vulnerabilit
 ## Licence
 
 By contributing you agree that your work is released under the Apache License 2.0, the licence
-of every mawa repository.
+of every maava repository.

@@ -13,7 +13,7 @@ import jwt
 import psycopg
 
 ADMIN_DSN = os.environ.get(
-    "ADMIN_DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/mawa_platform"
+    "ADMIN_DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/maava_platform"
 )
 JWT_SECRET = os.environ.get("AP_JWT_SECRET", "dev-secret-change-me")
 

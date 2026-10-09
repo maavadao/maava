@@ -1,7 +1,7 @@
 {
-  "name": "mawa-channels",
+  "name": "maava-channels",
   "version": "0.1.0",
-  "description": "mawa channels: platform-owned bots that route messages to members' agents",
+  "description": "maava channels: platform-owned bots that route messages to members' agents",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

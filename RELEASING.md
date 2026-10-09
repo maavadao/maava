@@ -1,4 +1,4 @@
-# Releasing mawa
+# Releasing maava
 
 ## Branches
 
@@ -30,7 +30,7 @@ Components in their own repository are released from that repository. Microservi
    git push origin main vX.Y.Z
    ```
 
-5. The release workflow publishes the container image to `ghcr.io/mawadao/<repository>` as `X.Y.Z`, `X.Y` and `latest`, and creates a GitHub release with generated notes. `mawa-db` publishes release notes only.
+5. The release workflow publishes the container image to `ghcr.io/maavadao/<repository>` as `X.Y.Z`, `X.Y` and `latest`, and creates a GitHub release with generated notes. `maava-db` publishes release notes only.
 
 ## Releasing a microservice
 
@@ -45,11 +45,11 @@ repository as `<name>-vX.Y.Z` (for example `auth-v0.2.0`).
    git push origin main auth-v0.2.0
    ```
 
-3. `.github/workflows/release-microservice.yml` publishes `ghcr.io/mawadao/mawa-<name>` as `X.Y.Z` and `latest`, and creates a GitHub release.
+3. `.github/workflows/release-microservice.yml` publishes `ghcr.io/maavadao/maava-<name>` as `X.Y.Z` and `latest`, and creates a GitHub release.
 
 ## Releasing the platform
 
-A mawa release is a set of component versions that have been tested together.
+A maava release is a set of component versions that have been tested together.
 
 1. Release each component that changed, as above.
 2. Here, move each submodule to its release tag (microservices are already in this repository at the release commit):
@@ -60,6 +60,6 @@ A mawa release is a set of component versions that have been tested together.
    ```
 
 3. Add a section to this repository's `CHANGELOG.md` listing the component versions included.
-4. Commit `Release mawa vA.B.C`, tag `vA.B.C` and push.
+4. Commit `Release maava vA.B.C`, tag `vA.B.C` and push.
 
 Between platform releases, the submodules may point at any commit on each component's `main`.

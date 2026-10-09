@@ -8,10 +8,10 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/mawadao/mawa/microservices/auth/config"
-	"github.com/mawadao/mawa/microservices/auth/database"
-	"github.com/mawadao/mawa/microservices/auth/handlers"
-	"github.com/mawadao/mawa/microservices/auth/middleware"
+	"github.com/maavadao/maava/microservices/auth/config"
+	"github.com/maavadao/maava/microservices/auth/database"
+	"github.com/maavadao/maava/microservices/auth/handlers"
+	"github.com/maavadao/maava/microservices/auth/middleware"
 )
 
 func main() {
@@ -68,7 +68,7 @@ func main() {
 			status = "degraded"
 		}
 		c.JSON(http.StatusOK, gin.H{
-			"service":           "mawaDao Auth",
+			"service":           "maavaDao Auth",
 			"status":            status,
 			"dbConnected":       dbConnected,
 			"oauthConfigured":   oauthConfigured,
@@ -114,7 +114,7 @@ func main() {
 		})
 
 		addr := ":" + cfg.Port
-		log.Printf("mawaDao Auth server starting on %s (degraded: no DB)", addr)
+		log.Printf("maavaDao Auth server starting on %s (degraded: no DB)", addr)
 		if err := r.Run(addr); err != nil {
 			log.Fatalf("Failed to start server: %v", err)
 		}
@@ -166,7 +166,7 @@ func main() {
 	r.GET("/auth/profile", authHandler.Profile)
 
 	addr := ":" + cfg.Port
-	log.Printf("mawaDao Auth server starting on %s", addr)
+	log.Printf("maavaDao Auth server starting on %s", addr)
 	if err := r.Run(addr); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}

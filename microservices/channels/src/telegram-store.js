@@ -130,7 +130,7 @@ setInterval(() => {
 // ---------------------------------------------------------------------------
 
 /**
- * Find a mawaDao user by their Telegram user ID.
+ * Find a maavaDao user by their Telegram user ID.
  * Queries telegram_channel_links first, falls back to platform_channel_links.
  *
  * @param {string|number} telegramUserId
@@ -141,7 +141,7 @@ async function findTelegramUser(telegramUserId) {
   try {
     const result = await pool.query(
       `SELECT
-         tcl.mawadao_user_id AS user_id,
+         tcl.maavadao_user_id AS user_id,
          tcl.telegram_user_id,
          tcl.telegram_chat_id,
          tcl.telegram_username,
@@ -153,8 +153,8 @@ async function findTelegramUser(telegramUserId) {
          t.subdomain,
          t.id AS tenant_id
        FROM telegram_channel_links tcl
-       JOIN users u ON u.id = tcl.mawadao_user_id
-       JOIN tenants t ON t.user_id = tcl.mawadao_user_id AND t.status = 'active'
+       JOIN users u ON u.id = tcl.maavadao_user_id
+       JOIN tenants t ON t.user_id = tcl.maavadao_user_id AND t.status = 'active'
        WHERE tcl.telegram_user_id = $1
          AND tcl.is_active = true
        LIMIT 1`,
@@ -220,22 +220,22 @@ async function findTelegramUser(telegramUserId) {
 /**
  * Create or update a Telegram account link.
  *
- * @param {string} mawadaoUserId - UUID of the mawaDao user
+ * @param {string} maavadaoUserId - UUID of the maavaDao user
  * @param {object} telegramData - { telegramUserId, chatId, username, firstName, lastName }
  * @param {'widget'|'deep_link'|'manual'} linkedVia
  */
-async function linkTelegramUser(mawadaoUserId, telegramData, linkedVia = 'deep_link') {
+async function linkTelegramUser(maavadaoUserId, telegramData, linkedVia = 'deep_link') {
   const { telegramUserId, chatId, username, firstName, lastName } = telegramData;
 
   // Upsert into telegram_channel_links
   await pool.query(
     `INSERT INTO telegram_channel_links
-       (mawadao_user_id, telegram_user_id, telegram_chat_id, telegram_username,
+       (maavadao_user_id, telegram_user_id, telegram_chat_id, telegram_username,
         telegram_first_name, telegram_last_name, linked_via, is_active, last_seen_at)
      VALUES ($1, $2, $3, $4, $5, $6, $7, true, NOW())
      ON CONFLICT (telegram_user_id)
      DO UPDATE SET
-       mawadao_user_id      = EXCLUDED.mawadao_user_id,
+       maavadao_user_id      = EXCLUDED.maavadao_user_id,
        telegram_chat_id    = COALESCE(EXCLUDED.telegram_chat_id, telegram_channel_links.telegram_chat_id),
        telegram_username   = COALESCE(EXCLUDED.telegram_username, telegram_channel_links.telegram_username),
        telegram_first_name = COALESCE(EXCLUDED.telegram_first_name, telegram_channel_links.telegram_first_name),
@@ -244,7 +244,7 @@ async function linkTelegramUser(mawadaoUserId, telegramData, linkedVia = 'deep_l
        is_active           = true,
        last_seen_at        = NOW(),
        updated_at          = NOW()`,
-    [mawadaoUserId, BigInt(telegramUserId), chatId ? BigInt(chatId) : BigInt(telegramUserId), username || null, firstName || null, lastName || null, linkedVia],
+    [maavadaoUserId, BigInt(telegramUserId), chatId ? BigInt(chatId) : BigInt(telegramUserId), username || null, firstName || null, lastName || null, linkedVia],
   );
 
   // Also upsert into platform_channel_links for backward compatibility
@@ -264,10 +264,10 @@ async function linkTelegramUser(mawadaoUserId, telegramData, linkedVia = 'deep_l
        is_active     = true,
        linked_at     = NOW(),
        updated_at    = NOW()`,
-    [mawadaoUserId, String(telegramUserId), platformMeta],
+    [maavadaoUserId, String(telegramUserId), platformMeta],
   );
 
-  console.log(`[telegram-store] Linked user ${mawadaoUserId} ← telegram ${telegramUserId} via ${linkedVia}`);
+  console.log(`[telegram-store] Linked user ${maavadaoUserId} ← telegram ${telegramUserId} via ${linkedVia}`);
 }
 
 /**
@@ -308,18 +308,18 @@ async function updateLastSeen(telegramUserId) {
 }
 
 /**
- * Find Telegram chat_id for outbound delivery by mawaDao user_id.
- * @param {string} mawadaoUserId
+ * Find Telegram chat_id for outbound delivery by maavaDao user_id.
+ * @param {string} maavadaoUserId
  * @returns {Promise<{chatId: string, telegramUsername: string}|null>}
  */
-async function findTelegramChatByUserId(mawadaoUserId) {
+async function findTelegramChatByUserId(maavadaoUserId) {
   try {
     const result = await pool.query(
       `SELECT telegram_chat_id, telegram_user_id, telegram_username
        FROM telegram_channel_links
-       WHERE mawadao_user_id = $1 AND is_active = true
+       WHERE maavadao_user_id = $1 AND is_active = true
        LIMIT 1`,
-      [mawadaoUserId],
+      [maavadaoUserId],
     );
 
     if (result.rows[0]) {
@@ -340,7 +340,7 @@ async function findTelegramChatByUserId(mawadaoUserId) {
      FROM platform_channel_links
      WHERE user_id = $1 AND platform = 'telegram' AND is_active = true
      LIMIT 1`,
-    [mawadaoUserId],
+    [maavadaoUserId],
   );
 
   if (!fallback.rows[0]) return null;
@@ -359,7 +359,7 @@ async function findTelegramChatByUserId(mawadaoUserId) {
  *
  * @param {object} params
  * @param {number} [params.updateId]
- * @param {string} [params.mawadaoUserId]
+ * @param {string} [params.maavadaoUserId]
  * @param {number|string} params.telegramUserId
  * @param {number|string} params.chatId
  * @param {'inbound'|'outbound'} params.direction
@@ -373,13 +373,13 @@ async function logMessage(params) {
   try {
     await pool.query(
       `INSERT INTO telegram_message_logs
-         (telegram_update_id, mawadao_user_id, telegram_user_id, telegram_chat_id,
+         (telegram_update_id, maavadao_user_id, telegram_user_id, telegram_chat_id,
           direction, message_text, telegram_message_id, status, error, metadata)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        ON CONFLICT (telegram_update_id) DO NOTHING`,
       [
         params.updateId || null,
-        params.mawadaoUserId || null,
+        params.maavadaoUserId || null,
         params.telegramUserId ? BigInt(params.telegramUserId) : null,
         params.chatId ? BigInt(params.chatId) : null,
         params.direction,

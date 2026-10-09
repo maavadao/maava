@@ -1,4 +1,4 @@
-module github.com/mawadao/mawa/microservices/storage
+module github.com/maavadao/maava/microservices/storage
 
 go 1.24.0
 

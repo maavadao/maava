@@ -1,20 +1,20 @@
 version: "3.8"
 
-# Load balancer (Nginx reverse proxy) for the mawaDao multi-service stack.
+# Load balancer (Nginx reverse proxy) for the maavaDao multi-service stack.
 # Usage:
 #   docker compose -f infra/docker-compose.lb.yml up -d
 
 services:
   lb:
     image: nginx:alpine
-    container_name: mawadao-lb
+    container_name: maavadao-lb
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/ssl/mawadao:ro
+      - ./ssl:/etc/ssl/maavadao:ro
     extra_hosts:
       # Let Nginx resolve localhost services from within the container
       - "host.docker.internal:host-gateway"

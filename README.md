@@ -1,7 +1,7 @@
-# mawa
+# maava
 
-The open-source agent platform behind mawaDao: a community-owned ecosystem of agentic AI and
-blockchain technologies for education. Developers build and list agents on the mawa
+The open-source agent platform behind maavaDao: a community-owned ecosystem of agentic AI and
+blockchain technologies for education. Developers build and list agents on the maava
 Marketplace, free; educators, students and content creators use them to teach, learn, research
 and inform. When a product earns money, 75% goes to the community who built it and 25% funds
 education for deserving children, orphans and street children.
@@ -16,15 +16,15 @@ under `microservices/<service-name>`.
 
 | Folder | Repository | What it is | Stack |
 | --- | --- | --- | --- |
-| `apps/frontend` | [mawa-frontend](https://github.com/mawadao/mawa-frontend) | Public website: community, marketplace, agent builder, sign-up and provisioning | Next.js 14 |
-| `apps/dashboard` | [mawa-dashboard](https://github.com/mawadao/mawa-dashboard) | The member space at `agent.mawadao.com/<username>`: chat, channels, skills, inbox, Mission Control | Next.js 14 |
-| `runtime/gateway` | [mawa-gateway](https://github.com/mawadao/mawa-gateway) | Per-member agent runtime (OpenClaw-based) with a multi-tenant REST API | TypeScript |
-| `runtime/core` | [mawa-core](https://github.com/mawadao/mawa-core) | Lightweight agent runtime (PicoClaw-based) | Go |
-| `microservices/api` | [mawa-api](https://github.com/mawadao/mawa-api) | Main REST API: agents, communities, marketplace, media, channels | Express |
-| `microservices/mission-control` | [mawa-mission-control](https://github.com/mawadao/mawa-mission-control) | Boards, tasks and approvals for teams of agents | FastAPI |
-| `db` | [mawa-db](https://github.com/mawadao/mawa-db) | Shared Postgres schema and migrations | SQL |
+| `apps/frontend` | [maava-frontend](https://github.com/maavadao/maava-frontend) | Public website: community, marketplace, agent builder, sign-up and provisioning | Next.js 14 |
+| `apps/dashboard` | [maava-dashboard](https://github.com/maavadao/maava-dashboard) | The member space at `agent.maavadao.com/<username>`: chat, channels, skills, inbox, Mission Control | Next.js 14 |
+| `runtime/gateway` | [maava-gateway](https://github.com/maavadao/maava-gateway) | Per-member agent runtime (OpenClaw-based) with a multi-tenant REST API | TypeScript |
+| `runtime/core` | [maava-core](https://github.com/maavadao/maava-core) | Lightweight agent runtime (PicoClaw-based) | Go |
+| `microservices/api` | [maava-api](https://github.com/maavadao/maava-api) | Main REST API: agents, communities, marketplace, media, channels | Express |
+| `microservices/mission-control` | [maava-mission-control](https://github.com/maavadao/maava-mission-control) | Boards, tasks and approvals for teams of agents | FastAPI |
+| `db` | [maava-db](https://github.com/maavadao/maava-db) | Shared Postgres schema and migrations | SQL |
 
-**Microservices in this repository** (each published as its own image, `ghcr.io/mawadao/mawa-<name>`):
+**Microservices in this repository** (each published as its own image, `ghcr.io/maavadao/maava-<name>`):
 
 | Folder | What it is | Stack |
 | --- | --- | --- |
@@ -34,15 +34,15 @@ under `microservices/<service-name>`.
 | [`microservices/storage`](microservices/storage) | Workspace files on Google Cloud Storage | Go |
 | [`microservices/skills`](microservices/skills) | Scheduled scraper that keeps the skills catalogue current | FastAPI |
 | [`microservices/platform`](microservices/platform) | Next-generation agent builder: custom agents, skills, MCP servers, chat | FastAPI |
-| [`microservices/manager`](microservices/manager) | Control plane for hosted `mawa-core` instances on Kubernetes | FastAPI |
+| [`microservices/manager`](microservices/manager) | Control plane for hosted `maava-core` instances on Kubernetes | FastAPI |
 
 See [docs/architecture.md](docs/architecture.md) for how they fit together.
 
 ## Get the code
 
 ```bash
-git clone --recurse-submodules https://github.com/mawadao/mawa.git
-cd mawa
+git clone --recurse-submodules https://github.com/maavadao/maava.git
+cd maava
 ```
 
 Already cloned without submodules? Run `git submodule update --init --recursive`.

@@ -15,7 +15,7 @@ from pathlib import Path
 
 import psycopg
 
-DEFAULT_DSN = "postgresql://postgres:postgres@localhost:5432/mawa_platform"
+DEFAULT_DSN = "postgresql://postgres:postgres@localhost:5432/maava_platform"
 MIGRATIONS_DIR = Path(__file__).parent / "migrations"
 
 

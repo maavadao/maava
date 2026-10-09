@@ -8,7 +8,7 @@ import httpx
 from app.config import settings
 from app.database import get_pool
 
-# ── Awesome mawa scraper constants ────────────────────────────────────────
+# ── Awesome maava scraper constants ────────────────────────────────────────
 AWESOME_README_URL = (
     "https://raw.githubusercontent.com/VoltAgent/awesome-openclaw-skills/main/README.md"
 )
@@ -242,7 +242,7 @@ async def run_awesome_scrape_job(job_id: str) -> None:
     try:
         async with httpx.AsyncClient(
             follow_redirects=True,
-            headers={"User-Agent": "mawa-skills/1.0"},
+            headers={"User-Agent": "maava-skills/1.0"},
             timeout=30.0,
         ) as client:
             # Step 1: Fetch README

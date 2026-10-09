@@ -2,9 +2,9 @@
  * WhatsApp Handler — Receives webhook events from Meta Cloud API.
  *
  * Option A (implemented here): Shared Platform Number
- *   - mawaDao registers ONE WhatsApp Business number via Meta Cloud API
+ *   - maavaDao registers ONE WhatsApp Business number via Meta Cloud API
  *   - All users message this number
- *   - Routing: phone_number → platform_channel_links → user's mawa instance
+ *   - Routing: phone_number → platform_channel_links → user's maava instance
  *
  * Option B (future): Embedded Signup — each user brings their own number
  */
@@ -89,14 +89,14 @@ router.post('/webhook', async (req, res) => {
       if (!user) {
         await sendWhatsAppMessage(
           from,
-          `Welcome to mawaDao! 🤖\n\n` +
+          `Welcome to maavaDao! 🤖\n\n` +
           `I don't recognize your phone number yet.\n` +
           `Please link it at: ${config.dashboardBaseUrl}/channels/whatsapp`,
         );
         continue;
       }
 
-      // Route to mawa
+      // Route to maava
       const reply = await routeMessage(user.runtimeEndpoint, user.gatewayToken, text);
       await sendWhatsAppMessage(from, reply);
     }

@@ -1,6 +1,6 @@
 import "./globals.css";
 
-export const metadata = { title: "mawa Platform — Demo" };
+export const metadata = { title: "maava Platform — Demo" };
 
 export default function RootLayout({ children }) {
   return (

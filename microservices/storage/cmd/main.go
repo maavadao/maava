@@ -11,8 +11,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
-	"github.com/mawadao/mawa/microservices/storage/config"
-	"github.com/mawadao/mawa/microservices/storage/handlers"
+	"github.com/maavadao/maava/microservices/storage/config"
+	"github.com/maavadao/maava/microservices/storage/handlers"
 )
 
 // requireAPISecret returns a middleware that enforces X-Storage-Secret.
@@ -22,7 +22,7 @@ func requireAPISecret(cfg *config.Config) gin.HandlerFunc {
 		if cfg.APISecret == "" {
 			if cfg.Environment == "production" {
 				c.AbortWithStatusJSON(http.StatusServiceUnavailable, gin.H{
-					"error": "mawa-storage API secret not configured",
+					"error": "maava-storage API secret not configured",
 				})
 				return
 			}
@@ -31,7 +31,7 @@ func requireAPISecret(cfg *config.Config) gin.HandlerFunc {
 		}
 		provided := c.GetHeader("X-Storage-Secret")
 		if subtle.ConstantTimeCompare([]byte(provided), []byte(cfg.APISecret)) != 1 {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid mawa-storage API credentials"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid maava-storage API credentials"})
 			return
 		}
 		c.Next()
@@ -73,7 +73,7 @@ func main() {
 	// Health + root endpoints
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"service": "mawa-storage",
+			"service": "maava-storage",
 			"status":  "ok",
 		})
 	})
@@ -109,8 +109,8 @@ func main() {
 	}
 
 	addr := ":" + cfg.Port
-	log.Printf("mawa-storage listening on %s", addr)
+	log.Printf("maava-storage listening on %s", addr)
 	if err := r.Run(addr); err != nil {
-		log.Fatalf("failed to start mawa-storage: %v", err)
+		log.Fatalf("failed to start maava-storage: %v", err)
 	}
 }

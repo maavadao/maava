@@ -1,4 +1,4 @@
-# Frontend Developer Guide — mawa Manager Dashboard
+# Frontend Developer Guide — maava Manager Dashboard
 
 > How to build the customer dashboard against the control-plane API.
 > Endpoint details: [endpoints.md](endpoints.md).
@@ -13,13 +13,13 @@ Three nouns drive the whole UI:
 
 1. **Org** — the tenant. A user can belong to several orgs with a different
    role in each. Everything else lives inside an org.
-2. **Instance** — one managed mawa core bot (launcher + gateway in the cloud).
+2. **Instance** — one managed maava core bot (launcher + gateway in the cloud).
    Has a lifecycle `status` you must render prominently.
 3. **Permission** — what the current user may do *in the current org/instance*.
    The UI never hardcodes "is admin?" checks — it derives visibility from the
    role's permission list (see §5).
 
-Instance pages are mostly a **remote control for the mawa core launcher**: the
+Instance pages are mostly a **remote control for the maava core launcher**: the
 `/v1/instances/{id}/…` proxy routes return the launcher's own JSON unchanged,
 so the dashboard's config/models/sessions screens are built against the
 launcher payloads documented in [launcher-api.md](launcher-api.md).

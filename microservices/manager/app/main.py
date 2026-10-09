@@ -20,10 +20,10 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="mawa Manager",
+    title="maava Manager",
     version="0.1.0",
     description=(
-        "Multi-tenant management API for hosted mawa core instances with "
+        "Multi-tenant management API for hosted maava core instances with "
         "org/instance-scoped RBAC. Instance routes proxy to each instance's "
         "launcher API using platform-held credentials."
     ),

@@ -1,4 +1,4 @@
-# mawaDao Platform — Realtime Architecture Redesign
+# maavaDao Platform — Realtime Architecture Redesign
 
 > **Author:** Principal Staff Engineer  
 > **Status:** RFC / Architecture Proposal  
@@ -24,7 +24,7 @@
 
 ## 1. Executive Summary
 
-The mawaDao platform currently relies on **11+ distinct polling loops** across 4 frontend applications to maintain UI state. These polls fire between every **1.5s–15s**, generating unnecessary HTTP round-trips, database queries, and Cloud Run instance-seconds. This document proposes migrating to an **event-driven architecture** using the platform's existing WebSocket infrastructure, supplemented by SSE for Next.js API routes, and adaptive polling as a fallback.
+The maavaDao platform currently relies on **11+ distinct polling loops** across 4 frontend applications to maintain UI state. These polls fire between every **1.5s–15s**, generating unnecessary HTTP round-trips, database queries, and Cloud Run instance-seconds. This document proposes migrating to an **event-driven architecture** using the platform's existing WebSocket infrastructure, supplemented by SSE for Next.js API routes, and adaptive polling as a fallback.
 
 ### Key Outcomes
 
@@ -43,17 +43,17 @@ The mawaDao platform currently relies on **11+ distinct polling loops** across 4
 
 | # | Location | Endpoint | Interval | Condition | Severity |
 |---|----------|----------|----------|-----------|----------|
-| P1 | `mawa-dashboard` chat | `/api/conversations/{id}/stream-status` | **1.5s** | `isStreamRecovery === true` | 🔴 Critical |
-| P2 | `mawa-dashboard` chat | `/api/conversations/{id}/stream-status` | **1.5s** (max 30s) | Post-stream DB sync | 🔴 Critical |
+| P1 | `maava-dashboard` chat | `/api/conversations/{id}/stream-status` | **1.5s** | `isStreamRecovery === true` | 🔴 Critical |
+| P2 | `maava-dashboard` chat | `/api/conversations/{id}/stream-status` | **1.5s** (max 30s) | Post-stream DB sync | 🔴 Critical |
 | P3 | `openclaw-ui` control panel | `/api/nodes` (gateway WS) | **5s** | Always when panel open | 🟡 Medium |
 | P4 | `openclaw-ui` control panel | `/api/logs` (gateway WS) | **2s** | `tab === "logs"` | 🟡 Medium |
 | P5 | `openclaw-ui` control panel | `/api/debug` (gateway WS) | **3s** | `tab === "debug"` | 🟡 Medium |
-| P6 | `mawa-dashboard` import modal | `/api/products/import-job/{id}` | **2s** | Job active | 🟠 High |
-| P7 | `mawadao-frontend` chat | `/api/setup/provision/status` | **15s** | During provisioning | 🟢 Low |
-| P8 | `mawa-dashboard` chat | `/api/backend-status` | On-demand | `IS_CLOUD` mode | 🟢 Low |
-| P9 | `mawadao-frontend` chat | `/api/conversations/{id}/stream-status` | **1.5s** | Stream recovery | 🔴 Critical |
-| P10 | `mawadao-frontend` chat | Provision animation | **2.5s** | Client-only timers | ⚪ N/A |
-| P11 | `mawa-dashboard` social accounts | OAuth callback check | **2–5s** | During OAuth flow | 🟢 Low |
+| P6 | `maava-dashboard` import modal | `/api/products/import-job/{id}` | **2s** | Job active | 🟠 High |
+| P7 | `maavadao-frontend` chat | `/api/setup/provision/status` | **15s** | During provisioning | 🟢 Low |
+| P8 | `maava-dashboard` chat | `/api/backend-status` | On-demand | `IS_CLOUD` mode | 🟢 Low |
+| P9 | `maavadao-frontend` chat | `/api/conversations/{id}/stream-status` | **1.5s** | Stream recovery | 🔴 Critical |
+| P10 | `maavadao-frontend` chat | Provision animation | **2.5s** | Client-only timers | ⚪ N/A |
+| P11 | `maava-dashboard` social accounts | OAuth callback check | **2–5s** | During OAuth flow | 🟢 Low |
 
 ### 2.2 Stream Recovery Deep Dive (P1 + P2 — Highest Impact)
 
@@ -74,9 +74,9 @@ Browser refresh during AI stream → isStreamRecovery = true
 - Post-stream sync (P2) fires 20 additional polls after *every* chat response, even when content is already complete
 - No deduplication — multiple tabs = multiplied polls
 
-### 2.3 mawa Control Panel Polling (P3–P5)
+### 2.3 maava Control Panel Polling (P3–P5)
 
-The mawa UI already connects to the gateway via WebSocket (`openclaw-ws-chat.ts`), yet the control panel uses HTTP polling for nodes/logs/debug. The gateway's `broadcast()` function can push these events directly.
+The maava UI already connects to the gateway via WebSocket (`openclaw-ws-chat.ts`), yet the control panel uses HTTP polling for nodes/logs/debug. The gateway's `broadcast()` function can push these events directly.
 
 **Current waste:** A developer with the control panel open and logs tab active generates:
 - Nodes: 12 polls/min
@@ -198,8 +198,8 @@ Replaces raw `setInterval` loops. Exponentially backs off when responses indicat
 graph TB
     subgraph "Browser"
         TD[Tenant Dashboard]
-        BF[mawaDao Frontend]
-        OC[mawa UI]
+        BF[maavaDao Frontend]
+        OC[maava UI]
     end
 
     subgraph "Next.js API Layer"
@@ -209,7 +209,7 @@ graph TB
         API_PS["/api/setup/provision/status"]
     end
 
-    subgraph "mawa Gateway"
+    subgraph "maava Gateway"
         GW_WS["WS Server :19001"]
         GW_HTTP["HTTP Handlers"]
     end
@@ -248,8 +248,8 @@ graph TB
 graph TB
     subgraph "Browser"
         TD[Tenant Dashboard]
-        BF[mawaDao Frontend]
-        OC[mawa UI]
+        BF[maavaDao Frontend]
+        OC[maava UI]
         EB["EventBridge<br/>(shared lib)"]
     end
 
@@ -259,7 +259,7 @@ graph TB
         API_AI["/api/ai-chat (SSE stream)"]
     end
 
-    subgraph "mawa Gateway"
+    subgraph "maava Gateway"
         GW_WS["WS Server :19001<br/>+ stream.status<br/>+ nodes.delta<br/>+ logs.append<br/>+ debug.update"]
     end
 
@@ -448,13 +448,13 @@ event: status
 data: {"ready":false,"reason":"provisioning","phase":"deploying"}
 
 event: ready
-data: {"ready":true,"backendUrl":"https://tenant.mawadao.com"}
+data: {"ready":true,"backendUrl":"https://tenant.maavadao.com"}
 ```
 
 ### 5.3 EventBridge Client API
 
 ```typescript
-import { createEventBridge } from '@mawadao/event-bridge';
+import { createEventBridge } from '@maavadao/event-bridge';
 
 const bridge = createEventBridge({
   ws: {
@@ -497,10 +497,10 @@ useEffect(() => unsub, []);
 |------|--------|
 | `gateway/src/gateway/server-methods/chat/` | Emit `stream.status` event when AI stream writes to buffer |
 | `gateway/src/gateway/server-runtime-state.ts` | Add `streamStatusSubscriptions` map to track which clients care about which conversations |
-| `mawa-dashboard/src/lib/gateway-ws-chat.ts` | Add `subscribeStreamStatus(convId)` method |
-| `mawa-dashboard/src/components/chat/index.tsx` | Replace `setInterval(poll, 1500)` blocks with WS subscription |
-| `mawadao-frontend/src/components/chat/index.tsx` | Same replacement |
-| `mawa-dashboard/src/app/api/conversations/[id]/stream-status/route.ts` | Keep as fallback; add `Cache-Control: no-store` header |
+| `maava-dashboard/src/lib/gateway-ws-chat.ts` | Add `subscribeStreamStatus(convId)` method |
+| `maava-dashboard/src/components/chat/index.tsx` | Replace `setInterval(poll, 1500)` blocks with WS subscription |
+| `maavadao-frontend/src/components/chat/index.tsx` | Same replacement |
+| `maava-dashboard/src/app/api/conversations/[id]/stream-status/route.ts` | Keep as fallback; add `Cache-Control: no-store` header |
 
 **Feature flag:** `NEXT_PUBLIC_REALTIME_STREAM_STATUS=ws|poll` (default: `poll`)
 
@@ -514,13 +514,13 @@ useEffect(() => unsub, []);
 
 | File | Change |
 |------|--------|
-| `mawa-dashboard/src/app/api/products/import-job/[id]/events/route.ts` | **New** SSE endpoint using `pg_notify` listener |
-| `mawa-dashboard/src/components/import-market-modal.tsx` | Replace `setInterval(2000)` with `EventSource` connection |
+| `maava-dashboard/src/app/api/products/import-job/[id]/events/route.ts` | **New** SSE endpoint using `pg_notify` listener |
+| `maava-dashboard/src/components/import-market-modal.tsx` | Replace `setInterval(2000)` with `EventSource` connection |
 | Database migration | Add `NOTIFY` trigger on `import_jobs` table status updates |
 
 **Feature flag:** `NEXT_PUBLIC_REALTIME_IMPORT_SSE=true|false` (default: `false`)
 
-### Phase 3: mawa Control Panel → WS Push (Medium Impact)
+### Phase 3: maava Control Panel → WS Push (Medium Impact)
 
 **Priority:** 🟡 Medium — eliminates 42 HTTP requests/min per developer
 
@@ -672,7 +672,7 @@ The gateway already authenticates WS connections during the `connect.challenge` 
 
 ### 8.4 CSP Updates
 
-The existing CSP already allows `wss://*.mawadao.com` and `ws://localhost:19001`. No CSP changes needed for Tier 1. SSE endpoints are same-origin — no changes needed for Tier 2.
+The existing CSP already allows `wss://*.maavadao.com` and `ws://localhost:19001`. No CSP changes needed for Tier 1. SSE endpoints are same-origin — no changes needed for Tier 2.
 
 ---
 
@@ -778,7 +778,7 @@ ORDER BY 1;
 **Symptoms:** 502/503 errors, high instance count, SSE connections timing out  
 **Check:**
 1. Cloud Run console → instance count, request count
-2. `gcloud run services describe mawa-dashboard --format='value(status.traffic)'`
+2. `gcloud run services describe maava-dashboard --format='value(status.traffic)'`
 
 **Mitigate:**
 1. Flip feature flag: `NEXT_PUBLIC_REALTIME_IMPORT_SSE=false`
@@ -827,24 +827,24 @@ WS Push (Tier 1) ──fails──→ SSE (Tier 2) ──fails──→ Adaptive
 | `apps/microservices/openclaw-gateway/src/gateway/server-runtime-state.ts` | Add stream subscription tracking |
 | `apps/microservices/openclaw-gateway/src/gateway/server/ws-connection.ts` | Handle `stream.status.subscribe` requests |
 | `apps/microservices/openclaw-gateway/src/gateway/server-methods/` | Emit `stream.status` events during chat streaming |
-| `apps/frontend/mawa-dashboard/src/lib/gateway-ws-chat.ts` | Add `subscribeStreamStatus()` |
-| `apps/frontend/mawa-dashboard/src/components/chat/index.tsx` | Replace polling with WS subscription |
-| `apps/frontend/mawadao-frontend/src/components/chat/index.tsx` | Same |
-| `apps/frontend/mawa-dashboard/src/lib/feature-flags.ts` | **New** — feature flag utility |
+| `apps/frontend/maava-dashboard/src/lib/gateway-ws-chat.ts` | Add `subscribeStreamStatus()` |
+| `apps/frontend/maava-dashboard/src/components/chat/index.tsx` | Replace polling with WS subscription |
+| `apps/frontend/maavadao-frontend/src/components/chat/index.tsx` | Same |
+| `apps/frontend/maava-dashboard/src/lib/feature-flags.ts` | **New** — feature flag utility |
 
 ### Phase 2 — Import Job SSE
 
 | File | Action |
 |------|--------|
-| `apps/frontend/mawa-dashboard/src/app/api/products/import-job/[id]/events/route.ts` | **New** — SSE endpoint |
-| `apps/frontend/mawa-dashboard/src/components/import-market-modal.tsx` | Replace polling with EventSource |
+| `apps/frontend/maava-dashboard/src/app/api/products/import-job/[id]/events/route.ts` | **New** — SSE endpoint |
+| `apps/frontend/maava-dashboard/src/components/import-market-modal.tsx` | Replace polling with EventSource |
 | Database migration | Add `NOTIFY` trigger |
 
 ### Phase 3 — Control Panel
 
 | File | Action |
 |------|--------|
-| `_mc-reference/frontend/src/ui/app-polling.ts` (mawa UI) | Replace with WS subscriptions |
+| `_mc-reference/frontend/src/ui/app-polling.ts` (maava UI) | Replace with WS subscriptions |
 | Gateway server methods | Add node/log/debug push handlers |
 
 ### Phase 4 — Adaptive Polling

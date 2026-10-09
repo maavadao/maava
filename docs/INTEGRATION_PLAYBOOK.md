@@ -1,4 +1,4 @@
-# mawa Integration Playbook — Production Implementation Guide
+# maava Integration Playbook — Production Implementation Guide
 
 > **Version:** 1.0 | **Date:** 2026-03-25 | **Scope:** All 8 Use Cases
 
@@ -6,11 +6,11 @@
 
 ## 1. Executive Summary
 
-This document maps every required skill/integration across all 8 mawa use cases to a verified implementation path. The mawa platform supports five integration modes, listed here in preference order:
+This document maps every required skill/integration across all 8 maava use cases to a verified implementation path. The maava platform supports five integration modes, listed here in preference order:
 
 1. **Native Channel** — built-in bidirectional messaging (Slack, Discord, Telegram, WhatsApp, etc.)
 2. **Composio Toolkit** — 980+ pre-built toolkits with managed OAuth; best for outbound actions against SaaS APIs
-3. **ClawHub / Community Skill** — SKILL.md-based from the mawa marketplace; installed via `openclaw skills install`
+3. **ClawHub / Community Skill** — SKILL.md-based from the maava marketplace; installed via `openclaw skills install`
 4. **Direct MCP Server** — Model Context Protocol server called via the bundled `mcporter` skill; best for research/planning tools
 5. **Custom Skill / Plugin** — hand-written SKILL.md or plugin when nothing above exists
 
@@ -18,7 +18,7 @@ This document maps every required skill/integration across all 8 mawa use cases 
 
 | Layer | Default |
 |---|---|
-| Inbound messaging | Native mawa channel (Slack, Telegram, WhatsApp, Discord) |
+| Inbound messaging | Native maava channel (Slack, Telegram, WhatsApp, Discord) |
 | Outbound SaaS actions | Composio toolkit (Gmail, Google Calendar, Google Sheets, HubSpot, etc.) |
 | Research / scraping | Direct MCP (Tavily, Firecrawl) |
 | Social media publishing | ClawHub community skill (Zernio, PostFast, Post Bridge) |
@@ -31,7 +31,7 @@ This document maps every required skill/integration across all 8 mawa use cases 
 
 ### 2A. Native Channel
 
-**What it is:** A built-in adapter in the mawa gateway that handles inbound messages from a platform and delivers agent replies back.
+**What it is:** A built-in adapter in the maava gateway that handles inbound messages from a platform and delivers agent replies back.
 
 **Built-in channels:** Slack, Discord, Telegram, WhatsApp, Signal, iMessage, Teams, Matrix, Zalo, WebChat
 
@@ -58,7 +58,7 @@ channels:
 
 **Install pattern:**
 ```bash
-# Install the Composio mawa plugin (one-time)
+# Install the Composio maava plugin (one-time)
 openclaw plugins install composio
 
 # In gateway config
@@ -121,7 +121,7 @@ npx clawhub@latest install mikipalet/zernio-api
 
 ### 2D. Direct MCP Server
 
-**What it is:** A Model Context Protocol server that exposes tools over HTTP or stdio. Called from mawa via the bundled `mcporter` skill.
+**What it is:** A Model Context Protocol server that exposes tools over HTTP or stdio. Called from maava via the bundled `mcporter` skill.
 
 **Install pattern (Remote MCP):**
 ```bash
@@ -253,7 +253,7 @@ mcporter call https://mcp.tavily.com/mcp/?tavilyApiKey=YOUR_KEY tavily-search qu
 - **Toolkit** = agent *sends messages to Slack* proactively (alerts, digests, notifications)
 
 **Best implementation path:**
-- Inbound: Native mawa Slack channel
+- Inbound: Native maava Slack channel
 - Outbound: Composio Slack toolkit OR bundled Slack skill
 
 **Install steps (channel):**
@@ -285,7 +285,7 @@ mcporter call https://mcp.tavily.com/mcp/?tavilyApiKey=YOUR_KEY tavily-search qu
 **Fallback:** Use direct Slack API with `SLACK_BOT_TOKEN` via custom skill.
 
 **Documentation:**
-- mawa Slack channel config: gateway docs
+- maava Slack channel config: gateway docs
 - Slack API: https://api.slack.com/
 - Composio: https://composio.dev/toolkits/slack
 
@@ -337,7 +337,7 @@ mcporter call https://mcp.tavily.com/mcp/?tavilyApiKey=YOUR_KEY tavily-search qu
 1. Create Notion integration at https://www.notion.so/my-integrations
 2. Share target pages/databases with the integration
 3. Set `NOTION_API_KEY=secret_xxx` in skill-connections
-4. Bundled Notion skill already exists in mawa
+4. Bundled Notion skill already exists in maava
 
 **Config/Auth:** `NOTION_API_KEY` (integration token) already in skill-connections.ts
 
@@ -345,10 +345,10 @@ mcporter call https://mcp.tavily.com/mcp/?tavilyApiKey=YOUR_KEY tavily-search qu
 - "Create a new page in my Notion database with today's meeting notes"
 - "Find all tasks marked as 'In Progress' in my project tracker"
 
-**Fallback:** The mawa bundled `notion` skill already exists.
+**Fallback:** The maava bundled `notion` skill already exists.
 
 **Documentation:**
-- mawa bundled skill: workspace `skills/notion/SKILL.md`
+- maava bundled skill: workspace `skills/notion/SKILL.md`
 - Notion API: https://developers.notion.com/
 - Composio: https://composio.dev/toolkits/notion
 
@@ -389,7 +389,7 @@ mcporter call https://mcp.tavily.com/mcp/?tavilyApiKey=YOUR_KEY tavily-search qu
 - **Native channel** = users chat with agent from WhatsApp
 - **Outbound** = agent sends reminders, follow-ups, alerts
 
-**Best implementation path:** Native mawa WhatsApp channel
+**Best implementation path:** Native maava WhatsApp channel
 
 **Install steps:**
 1. Register WhatsApp Business Account via Meta Business Suite
@@ -427,7 +427,7 @@ mcporter call https://mcp.tavily.com/mcp/?tavilyApiKey=YOUR_KEY tavily-search qu
 
 **Where it fits:** Native channel (inbound) + outbound notifications
 
-**Best implementation path:** Native mawa Telegram channel
+**Best implementation path:** Native maava Telegram channel
 
 **Install steps:**
 1. Create bot via @BotFather on Telegram
@@ -1093,8 +1093,8 @@ echo 'ZERNIO_API_KEY=sk_your_key_here' >> ~/.openclaw/.env
 | **Post Bridge** | ⚠️ Unverified | Same as PostFast | Search ClawHub; fallback to Zernio |
 | **Humanizer** | ⚠️ Unverified | Only 2 mentions, no provider identified | Research or drop from required list |
 | **Unified.to** | ⚠️ Unverified | CRM aggregator, unclear if MCP/skill exists | Build custom SKILL.md or use per-CRM Composio toolkits |
-| **QuickNode** | ⚠️ Unverified | No confirmed mawa integration | Search ClawHub; else custom SKILL.md wrapping JSON-RPC |
-| **WooCommerce** | ❌ No integration | No mawa/Composio/MCP integration found | Custom SKILL.md wrapping WooCommerce REST API v3 |
+| **QuickNode** | ⚠️ Unverified | No confirmed maava integration | Search ClawHub; else custom SKILL.md wrapping JSON-RPC |
+| **WooCommerce** | ❌ No integration | No maava/Composio/MCP integration found | Custom SKILL.md wrapping WooCommerce REST API v3 |
 | **Google Analytics 4** | ⚠️ Indirect | Available via Composio "Google Super" toolkit | Verify Google Super includes GA4 Data API |
 | **PDF Extraction** | ⚠️ Unclear | No dedicated MCP/skill found | Use Firecrawl extract for web PDFs; custom skill for local PDFs |
 | **CoinGecko** | ❌ No integration | Simple REST API, no integration exists | Custom SKILL.md (trivial — public API, no auth for basic) |
@@ -1107,7 +1107,7 @@ echo 'ZERNIO_API_KEY=sk_your_key_here' >> ~/.openclaw/.env
 
 **Next research steps:**
 1. Run `openclaw skills search "postfast"` / `"post-bridge"` / `"quicknode"` / `"helixa"` to verify ClawHub availability
-2. Verify Composio plugin installation for mawa
+2. Verify Composio plugin installation for maava
 3. Test Composio Google Super toolkit for GA4 Data API coverage
 4. Build custom SKILL.md for: WooCommerce, CoinGecko, PDF extraction
 
@@ -1261,7 +1261,7 @@ After installing each integration, test with these prompts:
 
 | Integration | Test Prompt |
 |---|---|
-| Tavily | "Search for the latest mawa release notes" |
+| Tavily | "Search for the latest maava release notes" |
 | Firecrawl | "Scrape https://example.com and summarize the content" |
 | Slack channel | "Send a test message to #general" |
 | Gmail | "Draft an email to test@example.com saying hello" |
@@ -1305,9 +1305,9 @@ npm update -g firecrawl-mcp tavily-mcp
 4. **ClawHub page:** `https://clawhub.ai/<publisher>/<skill-name>`
 5. **Composio toolkit page:** `https://composio.dev/toolkits/<toolkit-name>`
 6. **MCP server repo:** Check GitHub for README and examples
-7. **mawa docs:** Skills creation, plugin development, channel configuration
+7. **maava docs:** Skills creation, plugin development, channel configuration
 8. **Source code:** Inspect the skill's SKILL.md frontmatter for `requires`, `install`, and `config` keys
-9. **Community:** mawa Discord, ClawHub discussions
+9. **Community:** maava Discord, ClawHub discussions
 
 ---
 
